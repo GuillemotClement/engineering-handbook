@@ -6,4 +6,6 @@ theme:
 
 nav:
   - Accueil: index.md
-  - Fish shell: fish-shell/alias.md
+  - Fish shell:
+      - Introduction: fish-shell/index.md
+      - Tips: fish-shell/tips.md
