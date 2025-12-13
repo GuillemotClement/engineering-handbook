@@ -1,1 +1,9 @@
-site_name: Glt engineering handbook
+site_name: Engineering Handbook
+site_url: https://engineering-handbook.netlify.app
+
+theme:
+  name: material
+
+nav:
+  - Accueil: index.md
+  - Fish shell: fish-shell/alias.md
