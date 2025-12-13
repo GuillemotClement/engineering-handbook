@@ -6,6 +6,7 @@ theme:
 
 nav:
   - Accueil: index.md
-  - Fish shell:
-      - Introduction: fish-shell/index.md
-      - Tips: fish-shell/tips.md
+  - Fish shell: fish-shell/index.md
+  - Git: git/index.md
+  - MkDocs: mkdocs/index.md
+  - Nvim: nvim/index.md
