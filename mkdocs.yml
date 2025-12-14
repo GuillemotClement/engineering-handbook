@@ -17,3 +17,7 @@ nav:
   - Git: git/index.md
   - MkDocs: mkdocs/index.md
   - Nvim: nvim/index.md
+  - React:
+      - React: react/index.md
+      - Tanstack router: react/tanstack/tanstack-router.md
+  - Biome: biome/index.md
