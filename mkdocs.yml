@@ -36,3 +36,4 @@ nav:
       - Tanstack router: react/tanstack/tanstack-router.md
   - Biome: biome/index.md
   - Mermaid: mermaid/index.md
+  - Zod: zod/index.md
