@@ -13,3 +13,8 @@ Pour lancer le server `mkdocs`, et tester que le rendu est correct
 ```shell
 mkdocs serve
 ```
+
+## Documentation 
+
+- [MkDocs](https://www.mkdocs.org/)
+- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)

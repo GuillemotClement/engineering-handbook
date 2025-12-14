@@ -3,13 +3,27 @@ site_url: https://engineering-handbook.netlify.app
 
 theme:
   name: material
-  code:
-    highlight_theme: github
   palette:
     primary: "indigo"
     accent: "indigo"
-  codehilite:
-    guess_lang: false
+  features:
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
   - Accueil: index.md
@@ -21,3 +35,4 @@ nav:
       - React: react/index.md
       - Tanstack router: react/tanstack/tanstack-router.md
   - Biome: biome/index.md
+  - Mermaid: mermaid/index.md

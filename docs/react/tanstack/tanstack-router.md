@@ -34,7 +34,7 @@ src/
 
 Dans le fichier `router.tsx`, on viens déclarer notre routeur principale.
 
-```tsx
+```tsx linenums="1"
 import {
   createRootRoute,
   createRoute,
@@ -77,7 +77,7 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
-````
+```
 
 On viens ensuite ajouter notre routeur sur notre `main.tsx` 
 
@@ -93,7 +93,7 @@ createRoot(document.getElementById("root") as HTMLElement).render(
     <RouterProvider router={router} /> // on passe notre router
   </StrictMode>,
 );
-````
+```
 
 On utiliseras ce composant pour définir le layout principal `layouts/RootLayout.tsx` 
 
