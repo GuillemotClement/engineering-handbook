@@ -1,11 +1,4 @@
-# Zod 
+# Zod
 
-## Valider des number 
+Permet d'ajouter une couche de validation sur des données fournis par un utilisateur. Il peut être utilisé côté front et back.
 
-Il existe un soucis entre Zod et Tanstack Form. Il faut utiliser une regex puis convertir lors de la soumission du formulaire.
-
-```tsx
-const schema = z.object({
-  age: z.string().regex(/^\d*$/, "La valeur doit être un nombre"),
-})
-```
