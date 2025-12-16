@@ -30,8 +30,8 @@ const schema = z.object({
 type FcmFormData = z.infer<typeof schema>; // typage des données retourné par le formulaire
 
 // typage des valeurs par défaut.
-const defaultValues = {
-  age: "" as string | number, // pour les nombre il est nécessaire d'utiliser ce typage.
+const defaultValues: z.input<typeof schema> = {
+  age: "",
 };
 
 export default function FcmPage() {
@@ -228,5 +228,3 @@ export default function FormSubscribe({
   );
 }
 ```
-
-
