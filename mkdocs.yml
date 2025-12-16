@@ -27,6 +27,7 @@ markdown_extensions:
 
 nav:
   - Accueil: index.md
+  - SQL: sql/index.md
   - Fish-shell: fish-shell/index.md
   - Git: git/index.md
   - MkDocs: mkdocs/index.md
