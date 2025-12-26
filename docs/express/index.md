@@ -25,3 +25,11 @@ import { userRouter } from "./router/userRouter.ts";
 // on viens connecter le sous routeur. Pour accéder aux route, on viens utiliser la path /user
 app.use('/user', userRouter);
 ```
+
+## Middleware
+
+## Middleware Express
+
+### Morgan 
+
+Ce middleware permet de récupérer des infos sur les requêtes reçu par le serveur.
