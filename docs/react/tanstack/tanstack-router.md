@@ -126,3 +126,165 @@ export default function Homepage() {
 De cette manière, on obtient un router basique, qui permet de gérer la navigation.
 
 ---
+
+
+## Utiliser des paramètre dynamique
+
+On commence par déclarer une nouvelle route qui prend un paramètre dynamique.
+
+```tsx 
+export const detailClubPage = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/clubs/$clubId",
+	component: () => <ClubDetail />,
+});
+```
+
+- `$clubId`: c'est le paramètre dynamique. 
+
+Dans le composant, on pourras récupérer cette donnée en venant récupérer la route, et en extrayant la donnée de l'objet.
+```tsx 
+import { detailClubPage } from "../../router/router";
+
+type ClubDetailProps = {};
+
+export default function ClubDetail({}: ClubDetailProps) {
+  // ici on récupère le paramètre. 
+	const { clubId } = detailClubPage.useParams();
+
+	console.log(clubId);
+
+	return <div>ClubDetail</div>;
+}
+```
+
+## Routeur multi-file 
+
+On déclare le `rootRoute` dans un fichier séparer 
+
+```tsx 
+//router/root.tsx
+import { createRootRoute } from "@tanstack/react-router";
+import RootLayout from "../layouts/RootLayout";
+
+export const rootRoute = createRootRoute({
+	component: () => <RootLayout />,
+});
+```
+
+On déclare ensuite un nouveau fichier qui contient les différentes routes d'un sous routeur 
+```tsx 
+//router/toolsRoute.tsx
+import { createRoute } from "@tanstack/react-router";
+import ConvertorPage from "../pages/Tools/Convertor/ConvertorPage";
+import FcmPage from "../pages/Tools/FCM/FcmPage";
+import PurcentPage from "../pages/Tools/Purcent/PurcentPage";
+import ToolsPage from "../pages/Tools/ToolsPage";
+import VmaPage from "../pages/Tools/VMA/VmaPage";
+import { rootRoute } from "./root";
+
+// définition du parent de la section. On l'exporte car c'est lui qu'on rattache au routeur principal
+export const toolsRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/tools",
+	component: () => <ToolsPage />,
+});
+
+// définition des enfants. Leur layout se base sur la parent.
+const fcmPage = createRoute({
+	getParentRoute: () => toolsRoute,
+	path: "/fcm",
+	component: () => <FcmPage />,
+});
+
+const vmaPage = createRoute({
+	getParentRoute: () => toolsRoute,
+	path: "/vma",
+	component: () => <VmaPage />,
+});
+
+const purcentPage = createRoute({
+	getParentRoute: () => toolsRoute,
+	path: "/purcent",
+	component: () => <PurcentPage />,
+});
+
+const convertorPage = createRoute({
+	getParentRoute: () => toolsRoute,
+	path: "/convertor",
+	component: () => <ConvertorPage />,
+});
+
+// on attache les enfants au parent
+toolsRoute.addChildren([fcmPage, vmaPage, purcentPage, convertorPage]);
+```
+
+On viens ensuite assembler le tout dans le fichier `router.tsx`
+```tsx
+import { createRoute, createRouter } from "@tanstack/react-router";
+
+import LoginPage from "../pages/Auth/LoginPage";
+import RegisterPage from "../pages/Auth/RegisterPage";
+import ClubDetail from "../pages/Club/ClubDetail";
+import ClubForm from "../pages/Club/ClubForm";
+import ClubPage from "../pages/Club/ClubPage";
+import Homepage from "../pages/Homepage/Homepage";
+import { rootRoute } from "./root";
+import { toolsRoute } from "./toolsRoutes";
+
+const indexRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/",
+	component: () => <Homepage />,
+});
+
+// Auth ======================================
+const loginPage = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/login",
+	component: () => <LoginPage />,
+});
+
+const registerPage = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/register",
+	component: () => <RegisterPage />,
+});
+
+// Club =========================================
+const clubPage = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/clubs",
+	component: () => <ClubPage />,
+});
+
+const createClubPage = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/create-club",
+	component: () => <ClubForm />,
+});
+
+export const detailClubPage = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/clubs/$clubId",
+	component: () => <ClubDetail />,
+});
+
+const routeTree = rootRoute.addChildren([
+	indexRoute,
+	loginPage,
+	registerPage,
+	clubPage,
+	createClubPage,
+	detailClubPage,
+	toolsRoute, // on ajoute le sous routeur
+]);
+
+export const router = createRouter({
+	routeTree,
+	defaultPreload: "intent",
+	scrollRestoration: true,
+});
+```
+
+De cette manière, le code est plus propre et plus simple à maintenir.
