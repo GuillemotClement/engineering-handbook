@@ -295,42 +295,40 @@ De cette manière, le code est plus propre et plus simple à maintenir.
 
 Cette technique permet de déclarer une route parent d'un ensemble de page. De cette manière, on déclare un pathname parent sur `club`. Par la suite les routes enfants, utiliseront cette url de base pour accéder au composant.
 
-Dans le composant parent, si il n'y a pas de layout commun entre les route enfant, on returne directement le composant `<Outlet />` qui se charge d'afficher le composant parent 
+Dans le composant parent, si il n'y a pas de layout commun entre les route enfant, on returne directement le composant `<Outlet />` qui se charge d'afficher le composant parent.
+
+Il faudras forcément utiliser un parent qui retourne un composant `<Outlet />`
 
 ```tsx 
 import { createRoute, Outlet } from "@tanstack/react-router";
-import ClubDetail from "../pages/Club/ClubDetail";
-import ClubForm from "../pages/Club/ClubForm";
-import ClubListe from "../pages/Club/ClubListe";
+import LoginPage from "../pages/Auth/LoginPage";
+import RegisterPage from "../pages/Auth/RegisterPage";
 import { rootRoute } from "./root";
 
-// on créer un Namespace url. Il n'y a rien en commun mais permet de rassember les pathname sur une url commune
-export const clubRouter = createRoute({
+// on créer la route de base
+const authBaseRoute = createRoute({
 	getParentRoute: () => rootRoute,
-	path: "/club",
-	// il retourner directmeent outlet, ce qui viendras afficher les vrai composant
+	path: "/auth",
+	// on utilise <Outlet /> pour directement afficher la route enfant
 	component: () => <Outlet />,
 });
 
-// on as le premier composant qui permet de lister
-const clubIndexRoute = createRoute({
-	getParentRoute: () => clubRouter,
-	path: "/",
-	component: () => <ClubListe />,
+// on créer les routes enfants
+const loginRoute = createRoute({
+	getParentRoute: () => authBaseRoute,
+	path: "/login",
+	component: () => <LoginPage />,
 });
 
-const clubCreateRoute = createRoute({
-	getParentRoute: () => clubRouter,
-	path: "create",
-	component: () => <ClubForm />,
+const registerRoute = createRoute({
+	getParentRoute: () => authBaseRoute,
+	path: "/register",
+	component: () => <RegisterPage />,
 });
 
-// à exporter car on l'utilise pour récupérer l'id de l'élément
-export const clubDetailRoute = createRoute({
-	getParentRoute: () => clubRouter,
-	path: "$clubId",
-	component: () => <ClubDetail />,
-});
-
-clubRouter.addChildren([clubIndexRoute, clubCreateRoute, clubDetailRoute]);
+// on créer une nouvelle variable qui exporte le vrai routeur pour TS.
+export const authRouter = authBaseRoute.addChildren([
+	loginRoute,
+	registerRoute,
+]);
 ```
