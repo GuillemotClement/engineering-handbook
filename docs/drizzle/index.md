@@ -40,6 +40,8 @@ On viens également ajouter un script dans le `package.json` afin de lancer le s
 "seed": "tsx --env-file=.env src/db/seed.ts",
 ```
 
+---
+
 ## Typage 
 
 Drizzle fournis des utiliaires pour typer automatiquement les insertions et les select d'un enregistrement en se basant sur le schema de table.
@@ -52,6 +54,10 @@ export type NewClub = InferInsertModel<typeof club>;
 ```
 
 ---
+
+## Insert
+
+
 
 ## Select 
 
