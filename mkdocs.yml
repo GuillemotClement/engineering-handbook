@@ -35,7 +35,9 @@ nav:
       - Tanstack Query: react/tanstack/tanstack-query.md
   - Drizzle: drizzle/index.md 
   - Zod: zod/index.md
-  - SQL: sql/index.md
+  - Base de données:
+    - BDD: base_de_donnees/index.md
+    - SQL: sql/index.md
   - PHP: php/index.md
   - Elysia: elysia/index.md
   - Fish-shell: fish-shell/index.md

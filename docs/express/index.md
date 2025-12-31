@@ -24,6 +24,30 @@ C'est dans cette couche que sont réalisées les traitement métiers.
 
 C'est dans cette couche qu'est réaliser la récupérer des données depuis la requête, et l'envoie de la réponse vers le front end.
 
+```tsx
+// gestion d'un get all()
+async getAll(_req: Request, res: Response) {
+  try {
+    const clubs = await clubService.getAll();
+
+    // on itère sur les données pour préparer le bon objet de response -> simplifier dans le cas du listing all
+    const response = clubs.map((club) => ({
+      id: club.id,
+      name: club.name,
+      image: club.image,
+      city: club.city,
+    }));
+
+    return res.status(200).json(response);
+  } catch (err: unknown) {
+    console.error("Erreur récupération des clubs :", err);
+    return res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des clubs" });
+  }
+},
+```
+
 ### Router
 
 C'est ici que les différentes endpoints de l'api sont déclaré.
