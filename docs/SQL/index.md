@@ -293,6 +293,72 @@ FROM products
 ORDER BY prix_remisé ASC;
 ```
 
+## LIMIT
+
+Permet de limiter le nombre de lignes retournées par la requête.
+
+Cela permet de limiter la charge sur le serveur et le réseau.
+
+```sql
+SELECT colonne1, colonne2
+FROM table
+LIMIT nombre_de_lignes;
+
+-- limiter le résultat au 3 première lignes
+SELECT *
+FROM students
+LIMIT 3;
+
+-- les 5 premiers produits les plus chères
+SELECT product_name, price
+FROM products
+ORDER BY price DESC
+LIMIT 5;
+```
+
+`LIMIT` permet également de faciliter le debug lors de l'écriture des requêtes. Une fois la logique sur, on peut retourner l'ensemble des résultats.
+
+### `LIMIT` sans `ORDER BY`
+
+Si on ne précise pas un ordre de trie, les données seront retourner de manière aléatoire et retourner des résultats imprévisible.
+
+Généralement, on utilise les deux pour obtenir de bon résultats.
+
+### Utilisation combinée avec `WHERE`
+
+Il est possible de combiner `WHERE` pour filtrer les lignes et `LIMIT` pour limiter le résultat.
+
+```sql 
+SELECT *
+FROM students
+WHERE age > 18
+LIMIT 5;
+```
+
+### Afficher les première page de données
+
+On peut utiliser le `LIMIT` pour créer une pagination sur un affichage de listing. Par exmeple, à l'affichage de la page, on affiche les 10 premier enregistrement 
+
+```sql
+SELECT *
+FROM employees
+ORDER BY hire_date
+LIMIT 10;
+```
+
+### Combiner LIMIT avec des agrégats
+
+Par exemple, on veut afficher les trois catégories de produits les plus populaire
+
+```sql 
+SELECT category, COUNT(*) AS total_products
+FROM products
+GROUP BY category
+ORDER BY total_products DESC
+LIMIT 3;
+```
+
+La requête groupe d'abords les produits par catégorie, trie par quantité puis limit au 3 première lignes.
 
 ---
 
