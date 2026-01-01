@@ -362,6 +362,78 @@ La requête groupe d'abords les produits par catégorie, trie par quantité puis
 
 ---
 
+## OFFSET 
+
+La commande `OFFSET` permet de sauter des lignes, et de mettre en place une pagination. 
+
+```sql 
+SELECT colonne1, colonne2
+FROM table
+OFFSET nombre_de_lignes;
+
+-- afficher à partir de la troisième ligne 
+SELECT *
+FROM students
+OFFSET 2;
+```
+
+### Combiner OFFSET et LIMIT
+
+`OFFSET` est généralement utilisé avec `LIMIT`. Cela permet de sauter les lignes ET de limiter le résultat à un certain nombre d'enregistrements. De cette manière, on peut faire une pagination pour afficher qu'une certaine partie des données.
+
+```sql
+-- on affiche deux enregistrement à la fois à partir de la 3 lignes
+SELECT *
+FROM students
+LIMIT 2
+OFFSET 2;
+```
+
+### Pagination 
+
+1. Première page: on saute 0 ligne `OFFSET 0`
+2. Deuxième page: on saute les 2 premiere ligne `OFFSET 2`
+3. Troisième page: on saute les 4 premiere ligne `OFFSET 4`
+
+```sql 
+-- requête pour afficher la deuxième page
+SELECT *
+FROM students
+ORDER BY id
+LIMIT 2
+OFFSET 2;
+
+-- requête de la troisième page
+SELECT *
+FROM students
+ORDER BY id
+LIMIT 2
+OFFSET 4;
+```
+
+### Pagination automatique
+
+Pour faire de la pagination automatique, on peut utiliser cette formulaire 
+
+```sql
+OFFSET = (numero_page - 1) * nb_row_per_page
+```
+
+### Performance
+
+Lorsque l'on travail avec de grosse table, OFFSET peut devenir lent car le SGBD parcour l'ensemble de la table avant de sortir le résultat. Dans ce cas, on peut venir utiliser un identifiant unique comme marqueur de pagination.
+
+Pour optimiser, on peut utiliser la technique du curseur. Au lieu de sauter des lignes avec `OFFSET`, on mémoire l'id de la dernière ligne reçue de la page précédente et on l'utilise pour la requête suivante
+```sql
+SELECT *
+FROM students
+WHERE id > dernier_id_affiche
+ORDER BY id
+LIMIT 2;
+```
+
+---
+
 ## Table 
 
 ### Alias de table
