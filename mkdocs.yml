@@ -29,7 +29,11 @@ nav:
   - Language: 
     - PHP: language/php/index.md 
     - Python: language/python/index.md 
-    - SQL: language/sql/index.md
+    - SQL: 
+      - Base de donnée: concept/database.md 
+      - Instruction de base: language/sql/instruction_base.md 
+      - DB: language/sql/database.md 
+      - Postgres: language/sql/postgres.md
   - PHP: php/index.md
   - Pyhton: python/index.md
   - JavaSscript: javascript/index.md

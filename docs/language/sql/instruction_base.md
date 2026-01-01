@@ -37,6 +37,27 @@ FROM customers
 WHERE delivery_address = 'Anytown';
 ```
 
+### Guillemts 
+
+Le nom des colonnes et de tables qui contiennent des espaces ou des caractères spéciaux doivent être entourés de guillemets doubles.
+
+```sql
+SELECT "first name", age FROM students;
+```
+
+## Optimisation
+
+-> Toujours selectionner les colonnes que l'on souhaite afficher.
+
+## Ecrire des requêtes 
+
+Quelque astuce permettent de faciliter l'écritude de requête 
+
+- Vérifier la syntaxe
+- Commencer par de petit échantillons: Ajouter `LIMIT 5` pour tester le résultat
+- Utiliser des commentaire pour expliquer ce que fais la requête
+- Tester avec différentes données pour vérifier que la logique tient la route 
+
 ## Ordre d'exécution d'une requête 
 
 C'est la partie `FROM` qui est exécuté en premier. C'est seulement après que l'on vient récupérer le résultat.
@@ -45,7 +66,7 @@ C'est la partie `FROM` qui est exécuté en premier. C'est seulement après que 
 2. Les conditions sur les lignes sont appliquées: il ne garde que les lignes qui valide la condition
 3. Les colonnes demandées sont sélectionnées: il extrait les données souhaité restante.
 
-# Opération de base 
+## Opération de base 
 
 ## SELECT
 
@@ -432,6 +453,46 @@ LIMIT 2;
 ```
 
 ---
+
+## Requête simple 
+
+```sql
+SELECT colonne1, colonne2, colonne3
+FROM table
+WHERE condition
+ORDER BY colonne ASC
+LIMIT nombre_de_lignes
+OFFSET nombre_de_lignes;
+
+-- récupérer les étudiants qui ont une note A trié par nom 
+SELECT name
+FROM students
+WHERE grade = 'A'
+ORDER BY name ASC;
+
+-- recherche de produit par prix decroissant
+SELECT product_name, price
+FROM products
+WHERE category = 'Electronics'
+ORDER BY price DESC;
+
+-- etudiant de + 21ans qui ont une note B ou C et trie par age
+SELECT name, age, grade
+FROM students
+WHERE age > 21 AND (grade = 'B' OR grade = 'C')
+ORDER BY age ASC;
+
+-- produits à moins de 50 000, trier par catégorie et dans chaque catégorie triage par prix
+SELECT product_name, category, price
+FROM products
+WHERE price < 50000
+ORDER BY category ASC, price ASC;
+```
+
+Une requête de base SQL est écrite dans cet ordre stricte. Il est possible d'en omettre.
+
+---
+
 
 ## Table 
 
