@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/postgres.md",
+                "file": "language/sql/05_Formatage_des_donnees.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "postgres"
+              "title": "05_Formatage_des_donnees"
             }
           }
         ]
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/postgres.md",
+                "file": "language/sql/05_Formatage_des_donnees.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of postgres"
+              "title": "Outline of 05_Formatage_des_donnees"
             }
           }
         ],
@@ -184,9 +184,11 @@
       "bases:Create new base": false
     }
   },
-  "active": "346d92cde367e727",
+  "active": "75e0cbd8ece0f2e7",
   "lastOpenFiles": [
     "language/sql/instruction_base.md",
+    "language/sql/05_Formatage_des_donnees.md",
+    "language/sql/table.md",
     "language/sql/database.md",
     "language/sql/postgres.md",
     "language/sql/index.md"

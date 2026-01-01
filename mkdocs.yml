@@ -34,6 +34,7 @@ nav:
       - Instruction de base: language/sql/instruction_base.md 
       - DB: language/sql/database.md 
       - Postgres: language/sql/postgres.md
+      - Formatage: language/sql/05_Formatage_des_donnees.md
   - PHP: php/index.md
   - Pyhton: python/index.md
   - JavaSscript: javascript/index.md

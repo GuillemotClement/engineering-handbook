@@ -37,7 +37,7 @@ FROM customers
 WHERE delivery_address = 'Anytown';
 ```
 
-### Guillemts 
+### Guillemets 
 
 Le nom des colonnes et de tables qui contiennent des espaces ou des caractères spéciaux doivent être entourés de guillemets doubles.
 
@@ -110,10 +110,18 @@ Ici, on récupére les données que pour les deux colonnes indiquer dans la requ
 ```sql
 SELECT name, 21-age
 FROM students;
+
+-- 
+SELECT 2+2*2;
 ```
 
 Pour la deuxième colonne, on affiche directement le résultat du calcul.
 
+### Convertir une chaîne en majuscule 
+
+```sql
+SELECT UPPER('hello world');
+```
 ### Concaténation 
 
 Il est possible de concaténer directement deux colonnes. Les deux valeurs seront afficher dans la même colonne
