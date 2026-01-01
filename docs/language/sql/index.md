@@ -47,7 +47,6 @@ C'est la partie `FROM` qui est exécuté en premier. C'est seulement après que 
 
 # Opération de base 
 
-
 ## SELECT
 
 La commande `SELECT` est la commande de base en SQL. Elle permet d'extrare des info.
