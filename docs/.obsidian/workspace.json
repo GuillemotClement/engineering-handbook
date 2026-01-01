@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/05_Formatage_des_donnees.md",
+                "file": "language/sql/06_chaine.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "05_Formatage_des_donnees"
+              "title": "06_chaine"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "right": {
     "id": "1d05e07ee06a12d7",
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/05_Formatage_des_donnees.md",
+                "file": "language/sql/06_chaine.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 05_Formatage_des_donnees"
+              "title": "Outline of 06_chaine"
             }
           }
         ],
@@ -184,10 +184,11 @@
       "bases:Create new base": false
     }
   },
-  "active": "75e0cbd8ece0f2e7",
+  "active": "346d92cde367e727",
   "lastOpenFiles": [
-    "language/sql/instruction_base.md",
     "language/sql/05_Formatage_des_donnees.md",
+    "language/sql/06_chaine.md",
+    "language/sql/instruction_base.md",
     "language/sql/table.md",
     "language/sql/database.md",
     "language/sql/postgres.md",

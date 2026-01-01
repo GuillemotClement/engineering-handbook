@@ -213,8 +213,11 @@ SELECT start_date::DATE, start_date::TEXT, start_date::TIMESTAMP
 FROM courses;
 ```
 
-### Cas réel 
+### TO_CHAR
 
+Fonction qui permet de formater dans un format spécifique.
+
+#### Formate date
 On veux récupérer une liste d'étudiants avec nom et prénom fusionné, et la date de naissance au format `DD-MM-YYYY`.
 
 ```sql
@@ -227,6 +230,7 @@ FROM
 
 `TO_CHAR()`: permet de convertir dans un format. Ici DD-MM-YYYY
 
+#### Format monétaire
 On veux maintenant préparer une liste pour un export au format `CSV` pour travailler dessus avec Excel.
 Les format dans la base de sont pas conforme à ce qui est attendu, il faut donc venir formater les données.
 
