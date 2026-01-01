@@ -35,7 +35,8 @@ nav:
       - DB: language/sql/database.md 
       - Postgres: language/sql/postgres.md
       - Formatage: language/sql/05_Formatage_des_donnees.md
-      - Chaîne de caractere: language/sql/06_chaine.md
+      - Selection et trie: language/sql/06_selection_tri.md
+      - Regroupement et agrégats: language/sql/07-regroupement-agregat.md
   - PHP: php/index.md
   - Pyhton: python/index.md
   - JavaSscript: javascript/index.md
