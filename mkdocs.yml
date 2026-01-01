@@ -26,19 +26,21 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
-  - Express: express/index.md
+  - PHP: php/index.md
+  - Pyhton: python/index.md
+  - JavaSscript: javascript/index.md
   - React:
       - React: react/index.md
       - Tanstack Router: react/tanstack/tanstack-router.md
       - Tanstack Form: react/tanstack/tanstack-form.md
       - Tanstack Table: react/tanstack/tanstack-table.md 
       - Tanstack Query: react/tanstack/tanstack-query.md
+  - Express: express/index.md
+  - Base de données:
+    - BDD: baseDeDonnees/index.md
+    - SQL: sql/index.md
   - Drizzle: drizzle/index.md 
   - Zod: zod/index.md
-  - Base de données:
-    - BDD: base_de_donnees/index.md
-    - SQL: sql/index.md
-  - PHP: php/index.md
   - Elysia: elysia/index.md
   - Fish-shell: fish-shell/index.md
   - Git: git/index.md
@@ -49,5 +51,4 @@ nav:
   - PNPM: pnpm/index.md
   - Vite: vite/index.md
   - Biome: biome/index.md
-  - Pyhton: python/index.md
 
