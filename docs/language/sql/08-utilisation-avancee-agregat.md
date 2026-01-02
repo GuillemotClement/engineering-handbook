@@ -200,6 +200,18 @@ GROUP BY department
 HAVING AVG(age) > 20;
 ```
 
+#### Ordonner le trie
+
+```sql
+SELECT  
+    reviews.product,  
+    AVG(rating) AS avg_rating  
+FROM reviews  
+GROUP BY product  
+HAVING AVG(rating) >= 4  
+ORDER BY AVG(rating) DESC;
+```
+
 ---
 
 ## Fonction numérique

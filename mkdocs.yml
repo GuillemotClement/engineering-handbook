@@ -38,6 +38,8 @@ nav:
       - Selection et trie: language/sql/06_selection_tri.md
       - Regroupement et agrégats: language/sql/07-regroupement-agregat.md
       - Utilisation avancée des agrégats: language/sql/08-utilisation-avancee-agregat.md
+      - Utilisation du NULL: language/sql/09-null.md
+      - Condition avancée: language/sql/10-condition-avancee.md
   - PHP: php/index.md
   - Pyhton: python/index.md
   - JavaSscript: javascript/index.md
