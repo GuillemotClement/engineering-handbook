@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/10-condition-avancee.md",
+                "file": "language/sql/11-jointure.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "10-condition-avancee"
+              "title": "11-jointure"
             }
           }
         ]
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/10-condition-avancee.md",
+                "file": "language/sql/11-jointure.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 10-condition-avancee"
+              "title": "Outline of 11-jointure"
             }
           }
         ],
@@ -185,8 +185,9 @@
   },
   "active": "346d92cde367e727",
   "lastOpenFiles": [
-    "language/sql/09-null.md",
     "language/sql/10-condition-avancee.md",
+    "language/sql/11-jointure.md",
+    "language/sql/09-null.md",
     "language/sql/02-instruction_base.md",
     "language/sql/01-introduction.md",
     "language/sql/07-regroupement-agregat.md",

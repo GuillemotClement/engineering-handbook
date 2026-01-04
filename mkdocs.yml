@@ -39,6 +39,7 @@ nav:
       - GROUP BY - HAVING: language/sql/08-utilisation-avancee-agregat.md
       - NULL: language/sql/09-null.md
       - CASE - WHEN: language/sql/10-condition-avancee.md
+      - Jointure: language/sql/11-jointure.md
       - DB: language/sql/database.md 
 
   - PHP: php/index.md
