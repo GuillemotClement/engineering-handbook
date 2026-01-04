@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "1d05e07ee06a12d7",
@@ -188,14 +187,15 @@
   "lastOpenFiles": [
     "language/sql/09-null.md",
     "language/sql/10-condition-avancee.md",
-    "language/sql/08-utilisation-avancee-agregat.md",
+    "language/sql/02-instruction_base.md",
+    "language/sql/01-introduction.md",
     "language/sql/07-regroupement-agregat.md",
+    "language/sql/08-utilisation-avancee-agregat.md",
     "language/sql/05_Formatage_des_donnees.md",
-    "language/sql/06_selection_tri.md",
-    "language/sql/instruction_base.md",
-    "language/sql/table.md",
+    "language/sql/03-postgres.md",
     "language/sql/database.md",
-    "language/sql/postgres.md",
+    "language/sql/table.md",
+    "language/sql/06_selection_tri.md",
     "language/sql/index.md"
   ]
 }
