@@ -227,3 +227,96 @@ WHERE course IN ('Programmation', 'Mathématiques', 'Physique');
 ```
 
 Avec cette requête, seule les donnée qui valide le `IN` seront retournée.
+
+---
+
+## NOT IN
+
+Permet de retourner les valeurs qui ne valide pas la conditon 
+
+```sql
+SELECT name, course
+FROM students
+WHERE course NOT IN ('Programmation', 'Mathématiques', 'Physique');
+```
+
+Cette requête retourne les élève qui ne participe aux cours définit dans la conditon.
+
+### Utilisation avec des sous requêtes
+
+On souhaite trouver les étudiants inscrits à des cours qui existe dans la table `courses`. On peut venir utiliser l'opérateur `IN`.
+
+```sql
+SELECT name
+FROM students
+WHERE course_id IN (
+    SELECT id
+    FROM courses
+);
+```
+
+La sous requête permet de récupérer la liste des id des cours. On viens ensuite avec `IN` sélectionnera les cours souhaités.
+
+### Comportement avec des NULL
+
+La valeur `NULL` est ignoré avec le `IN`. 
+
+Avec `NOT IN`, on peut avoir des comportements innatendu. On viendras donc faire une vérification en plus 
+
+```sql
+SELECT student_id
+FROM grades
+WHERE grade NOT IN ('A', 'B', 'C')
+   OR grade IS NULL;
+```
+
+---
+
+## EXISTS
+
+Vérifie l'existence d'un enregistrement dans le résultat d'une sous requête. Si la requête retourne au moins une liste, return `TRUE`.
+
+Dès qu'nune correspondance est trouvé, la requête est stoper.
+
+```sql
+SELECT colonnes
+FROM table
+WHERE EXISTS (
+    SELECT 1
+    FROM autre_table
+    WHERE condition
+);
+```
+
+- La sous requête peut être n'importe quel requête 
+- C'est le résultat de la sous requête qui décide si on retourne `TRUE`
+
+```sql
+SELECT 1
+WHERE EXISTS (
+    SELECT *
+    FROM students
+    WHERE grade > 3.5
+);
+```
+
+Si au moins une donnée vérifie la condition, la requête retourne `1`
+
+---
+
+## NOT EXISTS
+
+Retourne `TRUE` si la sous requête ne retourne aucune ligne.
+
+```sql
+SELECT *
+FROM students s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM students
+    WHERE grade IS NOT NULL
+    AND id = s.id
+);
+```
+
+La requête va retourner tous les étudiants qui n'ont pas de note.
