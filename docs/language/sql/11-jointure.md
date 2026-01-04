@@ -398,3 +398,77 @@ INNER JOIN courses
 ---
 
 ## SELF JOIN 
+
+Permet de joindre une table avec elle-même.
+
+Par exemple, une table employée, et chaque employée a un manager. Le manager est également un employée.
+`SELF JOIN` permet de relier les employés à leur manager.
+
+`SELF JOIN` est un `JOIN` mais on utilise deux fois la même table en lui donnant des alias différents pour distinguer ses versions.
+
+On utilise `SELF JOIN` : 
+- Les relations hiérarchique : relation parent-> enfant
+- Analyse de données dans la même table
+- Requête complexe sur des structures avec de la logique dupliquée
+
+```sql
+SELECT
+    A.column_name,
+    B.column_name
+FROM
+    table_name A
+JOIN
+    table_name B
+ON
+    A.common_column = B.common_column;
+```
+
+- `table_name A` et `table_name B` : même table mais avec un alias
+- `A.common_column` et `B.common_column` : les colonnes utilisé pour joindre les lignes.
+
+|employee_id|name|manager_id|
+|---|---|---|
+|1|Alex Lin|NULL|
+|2|Maria Chi|1|
+|3|Otto Song|1|
+|4|Nina Zhao|2|
+- `employee_id`: identifiant de l'employé
+- `name` : nom de l'employé
+- `manager_id` : identifiant du manager, qui est également `employee_id` d'un autre employé
+
+```sql
+SELECT
+    e.name AS employee_name,
+    m.name AS manager_name
+FROM
+    employees e
+LEFT JOIN
+    employees m
+ON
+    e.manager_id = m.employee_id;
+```
+
+### Trouver des produits similaire 
+|product_id|product_name|category|
+|---|---|---|
+|1|Réfrigérateur|Technika|
+|2|Machine à laver|Technika|
+|3|Smartphone|Gadzhety|
+|4|Tablette|Gadzhety|
+On veux trouver les paires de produits qui sont dans la même catégorie 
+
+```sql
+SELECT
+    p1.product_name AS product_1,
+    p2.product_name AS product_2
+FROM
+    products p1
+JOIN
+    products p2
+ON
+    p1.category = p2.category
+AND
+    p1.product_id < p2.product_id;
+```
+
+La dernière condition permet d'éviter de dupliquer les paires.

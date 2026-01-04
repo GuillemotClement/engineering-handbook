@@ -40,6 +40,7 @@ nav:
       - NULL: language/sql/09-null.md
       - CASE - WHEN: language/sql/10-condition-avancee.md
       - Jointure: language/sql/11-jointure.md
+      - Sous-requête: language/sql/12-sous-requete.md
       - DB: language/sql/database.md 
 
   - PHP: php/index.md
