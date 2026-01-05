@@ -227,3 +227,372 @@ WHERE course IN ('Programmation', 'Mathématiques', 'Physique');
 ```
 
 Avec cette requête, seule les donnée qui valide le `IN` seront retournée.
+
+---
+
+## NOT IN
+
+Permet de retourner les valeurs qui ne valide pas la conditon 
+
+```sql
+SELECT name, course
+FROM students
+WHERE course NOT IN ('Programmation', 'Mathématiques', 'Physique');
+```
+
+Cette requête retourne les élève qui ne participe aux cours définit dans la conditon.
+
+### Utilisation avec des sous requêtes
+
+On souhaite trouver les étudiants inscrits à des cours qui existe dans la table `courses`. On peut venir utiliser l'opérateur `IN`.
+
+```sql
+SELECT name
+FROM students
+WHERE course_id IN (
+    SELECT id
+    FROM courses
+);
+```
+
+La sous requête permet de récupérer la liste des id des cours. On viens ensuite avec `IN` sélectionnera les cours souhaités.
+
+### Comportement avec des NULL
+
+La valeur `NULL` est ignoré avec le `IN`. 
+
+Avec `NOT IN`, on peut avoir des comportements innatendu. On viendras donc faire une vérification en plus 
+
+```sql
+SELECT student_id
+FROM grades
+WHERE grade NOT IN ('A', 'B', 'C')
+   OR grade IS NULL;
+```
+
+---
+
+## EXISTS
+
+Vérifie l'existence d'un enregistrement dans le résultat d'une sous requête. Si la requête retourne au moins une liste, return `TRUE`.
+
+Dès qu'nune correspondance est trouvé, la requête est stoper.
+
+```sql
+SELECT colonnes
+FROM table
+WHERE EXISTS (
+    SELECT 1
+    FROM autre_table
+    WHERE condition
+);
+```
+
+- La sous requête peut être n'importe quel requête 
+- C'est le résultat de la sous requête qui décide si on retourne `TRUE`
+
+```sql
+SELECT 1
+WHERE EXISTS (
+    SELECT *
+    FROM students
+    WHERE grade > 3.5
+);
+```
+
+Si au moins une donnée vérifie la condition, la requête retourne `1`
+
+### Etudiants inscrits à des cours 
+
+On recherche ceux qui sont déjà inscrit quelque part.
+
+```sql
+SELECT name
+FROM students s
+WHERE EXISTS (
+    SELECT 1
+    FROM enrollments e
+    WHERE s.id = e.student_id
+);
+```
+
+Si un étudiant apparait dans `enrollments`, il est dans le résultat.
+
+### Cours avec au moins 5 étudiants inscrits
+
+`courses`
+
+|course_id|name|
+|---|---|
+|1|Mathématiques|
+|2|Histoire|
+|3|Biologie|
+|4|Philosophie|
+`enrollments`
+
+|student_id|course_id|
+|---|---|
+|1|1|
+|2|1|
+|3|1|
+|4|1|
+|5|1|
+|6|1|
+|7|2|
+|8|2|
+|9|2|
+|10|NULL|
+On souhaite trouver les cours où plus de 5 étudiants sont inscrits. `EXISTS` demande s'il y a au moins un groupe d'inscriptions pour ce cours où il y a plus de cinq étudiants ?
+
+```sql
+SELECT name 
+FROM courses c 
+WHERE EXISTS ( 
+	SELECT 1 
+	FROM enrollments e 
+	WHERE c.course_id = e.course_id 
+	GROUP BY e.course_id 
+	HAVING COUNT(*) > 5 
+);
+```
+
+On obtient "Mathématiques" qui a six étudiants inscrits.
+
+---
+
+## NOT EXISTS
+
+Retourne `TRUE` si la sous requête ne retourne aucune ligne.
+
+|id|name|grade|
+|---|---|---|
+|1|Otto|NULL|
+|2|Anna|4.7|
+|3|Dan|5.0|
+|4|Lina|NULL|
+
+
+```sql
+SELECT *
+FROM students s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM students
+    WHERE grade IS NOT NULL
+    AND id = s.id
+);
+```
+
+La requête va retourner tous les étudiants qui n'ont pas de note.
+
+|id|name|grade|
+|---|---|---|
+|1|Otto|NULL|
+|4|Lina|NULL|
+### Etudiants sans cours
+
+On cherche les étudiants qui existent dans le système, mais qui ne sont inscrit nulle part 
+
+```sql
+SELECT name 
+FROM students s 
+WHERE NOT EXISTS ( 
+	SELECT 1 
+	FROM enrollments e 
+	WHERE s.id = e.student_id 
+);
+```
+
+## Comparaison EXISTS et IN
+
+`EXISTS` et `IN` font plus ou moins la même chose. Mais il existe quelque subtilités, surtout avec les `NULL`.
+Le comportement de `IN` peut être innatendu, alors qu'avec le `EXISTS` non.
+
+`courses`
+
+|course_id|name|
+|---|---|
+|1|Mathématiques|
+|2|Histoire|
+
+`students`
+
+|student_id|name|
+|---|---|
+|1|Alex Lin|
+|2|Anna Song|
+|3|Maria Chi|
+|4|Dan Seth|
+|5|Shadow Moon|
+
+`enrollments`
+
+| student_id | course_id |
+| ---------- | --------- |
+| 1          | 1         |
+| 2          | 2         |
+| 3          | NULL      |
+
+On veut sélectionner les noms des cours ou quelqu'un est inscrit.
+
+```sql
+-- avec IN 
+SELECT name 
+FROM courses 
+WHERE course_id IN ( 
+	SELECT course_id 
+	FROM enrollments 
+);
+```
+
+Dans le cas où il y a un `NULL` dans `course_id`, `IN` peut retourner rien du tout. Car `NULL` rend la sous requête indéfinie, et SQL bug.
+
+```sql
+-- avec EXISTS
+SELECT name 
+FROM courses c 
+WHERE EXISTS ( 
+	SELECT 1 
+	FROM enrollments e 
+	WHERE c.course_id = e.course_id 
+);
+```
+
+Avec `EXISTS`, on vérifie simplement qu'une ligne au moins corresponde à l'id. Donc pas de bug.
+
+Conclusion: si la sous requête peut contenir des `NULL`, alors il vaut mieux utiliser `EXISTS` pour éviter les surprises.
+
+---
+
+## VIEW
+
+Les `VIEW` sont des "requêtes sauvegardée" à laquelle on donne un nom et que l'on peut utiliser comme une table. Elle ne stocke pas les donnée, juste la structure de la requête.
+
+Elles sont utilisé lorsqu'une requête devient trop longue, trop complexe, et que l'on se retrouve à répéter la même chose partout. Par exemple, pour un rapport sur les étudiants avec leurs moyennes et le nombre de cours, ou l'on copie la même sous requête cinq fois. Pour éviter cette duplication, on peut utiliser les vues.
+
+Créer une vue, c'est créer une pseudo-table basées sur une requête `SELECT`.
+
+La view devras être créer sur le serveur PG !
+
+```sql
+CREATE VIEW student_avg_grades AS 
+SELECT 
+	s.student_id, 
+	s.name, 
+	AVG(g.grade) AS avg_grade 
+FROM students s 
+	JOIN grades g ON s.student_id = g.student_id 
+GROUP BY s.student_id, s.name;
+```
+
+On fois créer, on peut venir l'utiliser comme une table normal :
+
+```sql 
+SELECT * 
+FROM student_avg_grades 
+WHERE avg_grade > 4.5;
+```
+
+Un VIEW est réellement utilise :
+- Faire des rapports : une `VIEW` correspond à une logique `avg_count`
+- Gestion d'accès : on créer une `VIEW` qui retourne des données limitées selon les rôle 
+- Réutilisation : au lieu de copier des sous-requête, on lui donne une forme de `VIEW`
+### Utilisation des VIEW
+
+On travail sur un rapport sur les étudiants, leurs cours et leurs notes. On souhaite faire un rapport récapitulatif pour chaque étudiant :
+- nom,
+- nombre d'inscriptions aux cours
+- note moyenne
+
+Si on fais tout d'un coup, on obtiens une requête SQL longue et dur à lire. On peut venir découper la requête, en commençant par créer deux vues, puis en les combinant.
+
+`students`
+
+|id|name|
+|---|---|
+|1|Alex Lin|
+|2|Anna Song|
+|3|Maria Chi|
+|4|Dan Seth|
+
+`enrollments`
+
+|student_id|course_id|grade|
+|---|---|---|
+|1|1|90|
+|1|2|85|
+|2|2|88|
+|2|3|91|
+|3|1|75|
+|3|3|NULL|
+
+On créer la première vue qui permet de compte combien de cours chaque étudiant à :
+
+```sql
+CREATE VIEW student_course_count AS 
+SELECT 
+	student_id, 
+	COUNT(*) AS course_count 
+FROM enrollments 
+GROUP BY student_id;
+```
+
+On créer une seconde vue avec la note moyenne
+
+```sql
+CREATE VIEW student_avg_grade AS 
+SELECT 
+	student_id, AVG(grade) AS avg_grade 
+FROM enrollments 
+WHERE grade IS NOT NULL 
+GROUP BY student_id;
+```
+
+On peut ensuite venir travailler avec ces view pour simplifier la requête final 
+
+```sql
+SELECT 
+	s.name, 
+	c.course_count, -- on récupère la sum des cours depuis la view
+	a.avg_grade -- on récupère la moyenne depuis la view
+FROM students s 
+-- on viens joindre les deux views
+	LEFT JOIN student_course_count c ON s.student_id = c.student_id 
+	LEFT JOIN student_avg_grade a ON s.student_id = a.student_id;
+```
+
+### Update des VIEWS
+
+Les vues en général ne contiennent pas de données, c'est simplement un wrapper autour d'une requête. Il est quand même possible de les utiliser pour mettre à jour des données, si la `VIEW` respect certaine condition (pas de `JOIN`, `GROUP BY`, ou d'agrégat)
+
+```sql
+CREATE VIEW active_students AS 
+SELECT * 
+FROM students 
+WHERE active = true;
+```
+
+On peut maintenant faire : 
+
+```sql
+UPDATE active_students 
+SET name = 'Ivan Petrov' 
+WHERE student_id = 2;
+```
+
+### Supprimer une VIEW
+
+```sql
+DROP VIEW student_avg_grade;
+```
+
+### Modifier une VIEW
+
+```sql
+CREATE OR REPLACE VIEW student_avg_grade AS 
+SELECT 
+	student_id, 
+	ROUND(AVG(grade), 2) AS avg_grade 
+FROM grades 
+GROUP BY student_id;
+```
