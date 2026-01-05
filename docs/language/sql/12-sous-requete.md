@@ -470,7 +470,9 @@ Les `VIEW` sont des "requêtes sauvegardée" à laquelle on donne un nom et que 
 
 Elles sont utilisé lorsqu'une requête devient trop longue, trop complexe, et que l'on se retrouve à répéter la même chose partout. Par exemple, pour un rapport sur les étudiants avec leurs moyennes et le nombre de cours, ou l'on copie la même sous requête cinq fois. Pour éviter cette duplication, on peut utiliser les vues.
 
-Créer une vue, c'est créer une pseudo-table basées sur une requête `SELECT`
+Créer une vue, c'est créer une pseudo-table basées sur une requête `SELECT`.
+
+La view devras être créer sur le serveur PG !
 
 ```sql
 CREATE VIEW student_avg_grades AS 
@@ -489,4 +491,108 @@ On fois créer, on peut venir l'utiliser comme une table normal :
 SELECT * 
 FROM student_avg_grades 
 WHERE avg_grade > 4.5;
+```
+
+Un VIEW est réellement utilise :
+- Faire des rapports : une `VIEW` correspond à une logique `avg_count`
+- Gestion d'accès : on créer une `VIEW` qui retourne des données limitées selon les rôle 
+- Réutilisation : au lieu de copier des sous-requête, on lui donne une forme de `VIEW`
+### Utilisation des VIEW
+
+On travail sur un rapport sur les étudiants, leurs cours et leurs notes. On souhaite faire un rapport récapitulatif pour chaque étudiant :
+- nom,
+- nombre d'inscriptions aux cours
+- note moyenne
+
+Si on fais tout d'un coup, on obtiens une requête SQL longue et dur à lire. On peut venir découper la requête, en commençant par créer deux vues, puis en les combinant.
+
+`students`
+
+|id|name|
+|---|---|
+|1|Alex Lin|
+|2|Anna Song|
+|3|Maria Chi|
+|4|Dan Seth|
+
+`enrollments`
+
+|student_id|course_id|grade|
+|---|---|---|
+|1|1|90|
+|1|2|85|
+|2|2|88|
+|2|3|91|
+|3|1|75|
+|3|3|NULL|
+
+On créer la première vue qui permet de compte combien de cours chaque étudiant à :
+
+```sql
+CREATE VIEW student_course_count AS 
+SELECT 
+	student_id, 
+	COUNT(*) AS course_count 
+FROM enrollments 
+GROUP BY student_id;
+```
+
+On créer une seconde vue avec la note moyenne
+
+```sql
+CREATE VIEW student_avg_grade AS 
+SELECT 
+	student_id, AVG(grade) AS avg_grade 
+FROM enrollments 
+WHERE grade IS NOT NULL 
+GROUP BY student_id;
+```
+
+On peut ensuite venir travailler avec ces view pour simplifier la requête final 
+
+```sql
+SELECT 
+	s.name, 
+	c.course_count, -- on récupère la sum des cours depuis la view
+	a.avg_grade -- on récupère la moyenne depuis la view
+FROM students s 
+-- on viens joindre les deux views
+	LEFT JOIN student_course_count c ON s.student_id = c.student_id 
+	LEFT JOIN student_avg_grade a ON s.student_id = a.student_id;
+```
+
+### Update des VIEWS
+
+Les vues en général ne contiennent pas de données, c'est simplement un wrapper autour d'une requête. Il est quand même possible de les utiliser pour mettre à jour des données, si la `VIEW` respect certaine condition (pas de `JOIN`, `GROUP BY`, ou d'agrégat)
+
+```sql
+CREATE VIEW active_students AS 
+SELECT * 
+FROM students 
+WHERE active = true;
+```
+
+On peut maintenant faire : 
+
+```sql
+UPDATE active_students 
+SET name = 'Ivan Petrov' 
+WHERE student_id = 2;
+```
+
+### Supprimer une VIEW
+
+```sql
+DROP VIEW student_avg_grade;
+```
+
+### Modifier une VIEW
+
+```sql
+CREATE OR REPLACE VIEW student_avg_grade AS 
+SELECT 
+	student_id, 
+	ROUND(AVG(grade), 2) AS avg_grade 
+FROM grades 
+GROUP BY student_id;
 ```
