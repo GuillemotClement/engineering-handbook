@@ -302,11 +302,75 @@ WHERE EXISTS (
 
 Si au moins une donnée vérifie la condition, la requête retourne `1`
 
+### Etudiants inscrits à des cours 
+
+On recherche ceux qui sont déjà inscrit quelque part.
+
+```sql
+SELECT name
+FROM students s
+WHERE EXISTS (
+    SELECT 1
+    FROM enrollments e
+    WHERE s.id = e.student_id
+);
+```
+
+Si un étudiant apparait dans `enrollments`, il est dans le résultat.
+
+### Cours avec au moins 5 étudiants inscrits
+
+`courses`
+
+|course_id|name|
+|---|---|
+|1|Mathématiques|
+|2|Histoire|
+|3|Biologie|
+|4|Philosophie|
+`enrollments`
+
+|student_id|course_id|
+|---|---|
+|1|1|
+|2|1|
+|3|1|
+|4|1|
+|5|1|
+|6|1|
+|7|2|
+|8|2|
+|9|2|
+|10|NULL|
+On souhaite trouver les cours où plus de 5 étudiants sont inscrits. `EXISTS` demande s'il y a au moins un groupe d'inscriptions pour ce cours où il y a plus de cinq étudiants ?
+
+```sql
+SELECT name 
+FROM courses c 
+WHERE EXISTS ( 
+	SELECT 1 
+	FROM enrollments e 
+	WHERE c.course_id = e.course_id 
+	GROUP BY e.course_id 
+	HAVING COUNT(*) > 5 
+);
+```
+
+On obtient "Mathématiques" qui a six étudiants inscrits.
+
 ---
 
 ## NOT EXISTS
 
 Retourne `TRUE` si la sous requête ne retourne aucune ligne.
+
+|id|name|grade|
+|---|---|---|
+|1|Otto|NULL|
+|2|Anna|4.7|
+|3|Dan|5.0|
+|4|Lina|NULL|
+
 
 ```sql
 SELECT *
@@ -320,3 +384,109 @@ WHERE NOT EXISTS (
 ```
 
 La requête va retourner tous les étudiants qui n'ont pas de note.
+
+|id|name|grade|
+|---|---|---|
+|1|Otto|NULL|
+|4|Lina|NULL|
+### Etudiants sans cours
+
+On cherche les étudiants qui existent dans le système, mais qui ne sont inscrit nulle part 
+
+```sql
+SELECT name 
+FROM students s 
+WHERE NOT EXISTS ( 
+	SELECT 1 
+	FROM enrollments e 
+	WHERE s.id = e.student_id 
+);
+```
+
+## Comparaison EXISTS et IN
+
+`EXISTS` et `IN` font plus ou moins la même chose. Mais il existe quelque subtilités, surtout avec les `NULL`.
+Le comportement de `IN` peut être innatendu, alors qu'avec le `EXISTS` non.
+
+`courses`
+
+|course_id|name|
+|---|---|
+|1|Mathématiques|
+|2|Histoire|
+
+`students`
+
+|student_id|name|
+|---|---|
+|1|Alex Lin|
+|2|Anna Song|
+|3|Maria Chi|
+|4|Dan Seth|
+|5|Shadow Moon|
+
+`enrollments`
+
+| student_id | course_id |
+| ---------- | --------- |
+| 1          | 1         |
+| 2          | 2         |
+| 3          | NULL      |
+
+On veut sélectionner les noms des cours ou quelqu'un est inscrit.
+
+```sql
+-- avec IN 
+SELECT name 
+FROM courses 
+WHERE course_id IN ( 
+	SELECT course_id 
+	FROM enrollments 
+);
+```
+
+Dans le cas où il y a un `NULL` dans `course_id`, `IN` peut retourner rien du tout. Car `NULL` rend la sous requête indéfinie, et SQL bug.
+
+```sql
+-- avec EXISTS
+SELECT name 
+FROM courses c 
+WHERE EXISTS ( 
+	SELECT 1 
+	FROM enrollments e 
+	WHERE c.course_id = e.course_id 
+);
+```
+
+Avec `EXISTS`, on vérifie simplement qu'une ligne au moins corresponde à l'id. Donc pas de bug.
+
+Conclusion: si la sous requête peut contenir des `NULL`, alors il vaut mieux utiliser `EXISTS` pour éviter les surprises.
+
+---
+
+## VIEW
+
+Les `VIEW` sont des "requêtes sauvegardée" à laquelle on donne un nom et que l'on peut utiliser comme une table. Elle ne stocke pas les donnée, juste la structure de la requête.
+
+Elles sont utilisé lorsqu'une requête devient trop longue, trop complexe, et que l'on se retrouve à répéter la même chose partout. Par exemple, pour un rapport sur les étudiants avec leurs moyennes et le nombre de cours, ou l'on copie la même sous requête cinq fois. Pour éviter cette duplication, on peut utiliser les vues.
+
+Créer une vue, c'est créer une pseudo-table basées sur une requête `SELECT`
+
+```sql
+CREATE VIEW student_avg_grades AS 
+SELECT 
+	s.student_id, 
+	s.name, 
+	AVG(g.grade) AS avg_grade 
+FROM students s 
+	JOIN grades g ON s.student_id = g.student_id 
+GROUP BY s.student_id, s.name;
+```
+
+On fois créer, on peut venir l'utiliser comme une table normal :
+
+```sql 
+SELECT * 
+FROM student_avg_grades 
+WHERE avg_grade > 4.5;
+```
