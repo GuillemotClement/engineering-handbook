@@ -42,6 +42,8 @@ nav:
       - Jointure: language/sql/11-jointure.md
       - Sous-requête: language/sql/12-sous-requete.md
       - DB: language/sql/database.md 
+  - Outils:
+    - Linux: tools/linux/index.md 
 
   - PHP: php/index.md
   - Pyhton: python/index.md
