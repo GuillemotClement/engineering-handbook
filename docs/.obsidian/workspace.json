@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tools/linux/index.md",
+                "file": "language/sql/12-sous-requete.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "12-sous-requete"
             }
           }
         ]
@@ -157,17 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "tools/linux/index.md",
+                "file": "language/sql/12-sous-requete.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-<<<<<<< HEAD
-              "title": "Outline of index"
-=======
               "title": "Plan de 12-sous-requete"
->>>>>>> 2dcaf208a57dbed71caede23f668963ad08598b4
             }
           }
         ],
@@ -190,11 +186,10 @@
   },
   "active": "346d92cde367e727",
   "lastOpenFiles": [
-    "language/sql/12-sous-requete.md",
     "tools/linux/index.md",
     "tools/linux",
-    "tools/docker",
     "language/sql/11-jointure.md",
+    "language/sql/12-sous-requete.md",
     "language/sql/10-condition-avancee.md",
     "language/sql/09-null.md",
     "language/sql/02-instruction_base.md",

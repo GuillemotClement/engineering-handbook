@@ -122,10 +122,46 @@ WHERE âge > (
 | Emilia | 22  |
 
 ---
-
 ## Requête imbriqué dans SELECT 
 
 Une sous requête dans le `SELECT` permet de calculer des valeurs directement pendant l'exécution de la requête principale. Cela permet de combiner des calculs agrégés, des filtres complexes, ou même d'autre collection de données dans une seule requête.
+
+Elle permet d'ajouter des colonnes supplémntaire avec des valeurs calculées ou des données qui dépendent d'autre enregistrements ou table.
+
+```sql
+SELECT 
+	column1, 
+	column2, 
+	(
+		SELECT agrégation_ou_condition 
+		FROM autre_table 
+		WHERE condition) AS nouveau_nom_colonne 
+FROM table_principale;
+```
+
+Attention, la sous-requête ne retourne qu'une seule valeur, qui apparaît dans le résultat comme une nouvelle colonne.
+
+La condition peut faire référence aux colonnes de la `table_principale`.
+
+Si la sous requête ne trouve pas de donnée, le résultat sera `NULL`.
+### Ajouter la moyenne d'un étudiant
+
+```sql
+SELECT 
+	s.id, 
+	s.name, 
+	(
+		SELECT 
+			AVG(g.grade) 
+		FROM grades g 
+		WHERE g.student_id = s.id
+	) AS average_grade 
+FROM students s;
+```
+
+La sous requête viens calculer la moyenne pour chaque étudiant. Elle retourne une valeur pour chaque ligne de la table `student`.
+
+Cela permet d'éviter de faire un `JOIN` ou préparer des `VIEW`.
 
 ### Ajouter la note maximal du groupe 
 
@@ -201,12 +237,79 @@ FROM
     students s;
 ```
 
-Ici, le `CASE` dans la sous requête permet de donner un status selon la conditon.
+Ici, le `CASE` dans la sous requête permet de donner un statuts selon la condition.
 ### Limite et recommandations
 
-1. Chaque sous requête s'exécute pour chaque ligne de la requête princiaple. Cela peut ralentir l'exécution de la requête si les tables sont grosses.
-2. Index: pour accélérer ce genre de requête, il est important d'indéxer les colonnes utilisées dans la condition de la sous requête
-3. Lisibilité: attention à pas trop ajouter d'imbrication. Si les sous requête deviennent trop complete, il faut penser à la déplacer dans le `FROM` ou créer des tables temporaire.
+1. Chaque sous requête s'exécute pour chaque ligne de la requête principale. Cela peut ralentir l'exécution de la requête si les tables sont grosses. L'utilise d'un `JOIN` est préférable pour l'optimisation
+2. Index: pour accélérer ce genre de requête, il est important d'indexer les colonnes utilisées dans la condition de la sous requête
+3. Lisibilité: attention à pas trop ajouter d'imbrication. Si les sous requête deviennent trop complète, il faut penser à la déplacer dans le `FROM` ou créer des tables temporaire.
+
+---
+
+## Sous-requête dans FROM 
+
+L'utilisation de sous requête dans le `FROM` permet de créer des tables temporaire, directement utilisation dans la requête.
+Elles ne sont pas stocker sur le serveur.
+
+Elles permettent :
+- fusionner ou agréger des données temporairement avant la requête principale
+- créer des ensemble de données structurées à la volée
+- réduire le nombre d'opérations, en demandant à la base de stocker un minimum de données intermédiaires
+
+1. On écrit la sous requête dans le `FROM` entre parenthèses
+2. On lui donne un alias 
+3. On utilise cette alias comme si c'était une table 
+
+```sql
+SELECT 
+	colonnes 
+FROM ( 
+		SELECT colonnes 
+		FROM table 
+		WHERE condition 
+) AS alias 
+WHERE condition_externe;
+```
+
+On utilise ce type de sous requête :
+- Pour les données agrégée
+- Pour filtrer les données
+- Pour simplifier les requêtes complexes
+### Etudiants et moyenne des notes 
+
+On commence par écrire une sous requête qui calcule la moyenne de chaque étudiant, puis l'utiliser dans la requête principale
+
+```sql
+SELECT 
+	s.student_name, 
+	g.avg_grade -- on tape dans la table temporaire
+FROM ( 
+	SELECT 
+		student_id, 
+		AVG(grade) AS avg_grade 
+	FROM grades 
+	GROUP BY student_id 
+) AS g 
+JOIN students AS s ON s.student_id = g.student_id;
+```
+
+### Deux niveau de traitements 
+
+On veut trouver les étudiants qui ont une moyenne supérieur à 80. On commence par une sous-requête qui calcule les moyenne, puis on utilise dans le filtre 
+
+```sql
+SELECT 
+	s.student_name, 
+	g.avg_grade 
+FROM students AS s 
+	JOIN ( 
+		SELECT student_id, 
+		AVG(grade) AS avg_grade 
+		FROM grades 
+		GROUP BY student_id 
+	) AS g ON s.student_id = g.student_id 
+WHERE g.avg_grade > 80;
+```
 
 ---
 
