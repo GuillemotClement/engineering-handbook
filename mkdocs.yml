@@ -50,10 +50,11 @@ nav:
           - Selection et trie: language/sql/06_selection_tri.md
           - Fonction d'agrégat: language/sql/07-regroupement-agregat.md
           - GROUP BY - HAVING: language/sql/08-utilisation-avancee-agregat.md
-          - NULL: language/sql/09-null.md
+          - Travailler avec le NULL: language/sql/09-null.md
           - CASE - WHEN: language/sql/10-condition-avancee.md
           - Jointure: language/sql/11-jointure.md
           - Sous-requête: language/sql/12-sous-requete.md
+          - Type SQL: language/sql/13-type-donnee.md
           - DB: language/sql/database.md
   - Outils:
       - Linux: tools/linux/index.md
@@ -65,6 +66,6 @@ nav:
       - MkDocs: tools/mkdocs/index.md
       - Nvim: tools/nvim/index.md
       - Pnpm: tools/pnpm/index.md
-      - Zod: tools.zod/index.md
+      - Zod: tools/zod/index.md
   - Concept:
       - Gestion mémoire: concept/memory_managment.md
