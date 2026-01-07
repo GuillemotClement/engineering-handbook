@@ -26,38 +26,45 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
-  - Language: 
-    - Go: language/go/index.md
-    - PHP: language/php/index.md 
-    - Python: language/python/index.md 
-    - JavaSscript: javascript/index.md
-    - React:
-      - React: react/index.md
-      - Tanstack Router: react/tanstack/tanstack-router.md
-      - Tanstack Form: react/tanstack/tanstack-form.md
-      - Tanstack Table: react/tanstack/tanstack-table.md 
-      - Tanstack Query: react/tanstack/tanstack-query.md
-    - Express: express/index.md
-    - SQL: 
-      - Introduction: language/sql/01-introduction 
-      - Instruction de base: language/sql/02-instruction_base.md 
-      - Postgres: language/sql/03-postgres.md
-      - Formatage: language/sql/05_Formatage_des_donnees.md
-      - Selection et trie: language/sql/06_selection_tri.md
-      - Fonction d'agrégat: language/sql/07-regroupement-agregat.md
-      - GROUP BY - HAVING: language/sql/08-utilisation-avancee-agregat.md
-      - NULL: language/sql/09-null.md
-      - CASE - WHEN: language/sql/10-condition-avancee.md
-      - Jointure: language/sql/11-jointure.md
-      - Sous-requête: language/sql/12-sous-requete.md
-      - DB: language/sql/database.md 
+  - Language:
+      - C: language/c/index.md
+      - Go: language/go/index.md
+      - PHP: language/php/index.md
+      - Python: language/python/index.md
+      - JavaSscript:
+          - JavaScript: language/javascript/index.md
+          - Bun: language/bun/index.md
+          - Elysia: language/elysia/index.md
+      - React:
+          - React: language/react/index.md
+          - Tanstack Router: language/react/tanstack/tanstack-router.md
+          - Tanstack Form: language/react/tanstack/tanstack-form.md
+          - Tanstack Table: language/react/tanstack/tanstack-table.md
+          - Tanstack Query: language/react/tanstack/tanstack-query.md
+      - Express: language/express/index.md
+      - SQL:
+          - Introduction: language/sql/01-introduction
+          - Instruction de base: language/sql/02-instruction_base.md
+          - Postgres: language/sql/03-postgres.md
+          - Formatage: language/sql/05_Formatage_des_donnees.md
+          - Selection et trie: language/sql/06_selection_tri.md
+          - Fonction d'agrégat: language/sql/07-regroupement-agregat.md
+          - GROUP BY - HAVING: language/sql/08-utilisation-avancee-agregat.md
+          - NULL: language/sql/09-null.md
+          - CASE - WHEN: language/sql/10-condition-avancee.md
+          - Jointure: language/sql/11-jointure.md
+          - Sous-requête: language/sql/12-sous-requete.md
+          - DB: language/sql/database.md
   - Outils:
-    - Linux: tools/linux/index.md 
-    - Git: git/index.md
-
-  
-  - Base de données:
-    - Base de donnée: db/index.md
-    - SQL: sql/index.md
-
-
+      - Linux: tools/linux/index.md
+      - Git: tools/git/index.md
+      - Biome: tools/biome/index.md
+      - Drizzle: tools/drizzle/index.md
+      - Fish-Shell: tools/fish-shell/index.md
+      - Mermaid: tools/mermaid/index.md
+      - MkDocs: tools/mkdocs/index.md
+      - Nvim: tools/nvim/index.md
+      - Pnpm: tools/pnpm/index.md
+      - Zod: tools.zod/index.md
+  - Concept:
+      - Gestion mémoire: concept/memory_managment.md
