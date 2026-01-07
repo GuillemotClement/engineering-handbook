@@ -1,3 +1,9 @@
+- [ ] Pas terminé, à reprendre par la suite (Surtout pour les SR dans le having)
+
+--- 
+
+# Sous-requête
+
 Les sous requête sont des requêtes utiliser à l'intérieur d'une autre requête SQL. Cette sous requête s'exécute en premier, et son résultat est utilisé par la requête principale.
 
 On as deux tables :
@@ -18,6 +24,7 @@ On as deux tables :
 |1|Classe mathématique|
 |2|Classe physique|
 |3|Classe littéraire|
+
 Si on souhaite connaitre le nom des groupes où étudient les étudiants, on peut venir utiliser une sous requête.
 
 ```sql
@@ -69,13 +76,14 @@ SELECT nom, âge,
 FROM students;
 ```
 
-|nom|âge|âge_max|
-|---|---|---|
-|Alisa|20|23|
-|Bob|22|23|
-|Klark|21|23|
-|Dina|23|23|
-|Emilia|22|23|
+| nom    | âge | âge_max |
+| ------ | --- | ------- |
+| Alisa  | 20  | 23      |
+| Bob    | 22  | 23      |
+| Klark  | 21  | 23      |
+| Dina   | 23  | 23      |
+| Emilia | 22  | 23      |
+
 #### Sous requête dans le FROM 
 
 La sous requête sera utilisée comme une table temporaire. C'est utile lorsque l'on doit d'abord agréger ou transformer les données.
@@ -100,6 +108,7 @@ WHERE tmp.âge_moyen > 21;
 |---|---|
 |2|22.0|
 |3|23.0|
+
 #### Sous requête HAVING ou WHERE 
 
 La sous requête permet d'ajouter une condition pour filtrer les lignes. C'est généralement utiliser pour vérifier l'existence d'enregistrement ou comparer des valeurs 
@@ -311,7 +320,62 @@ FROM students AS s
 WHERE g.avg_grade > 80;
 ```
 
+### Compter le nombre d'étudiants pour chaque cours
+
+```sql
+SELECT
+    c.course_name, -- Nom du cours depuis la table courses
+    sub.students_count -- Nombre d'étudiants depuis la sous-requête
+FROM
+    courses c
+INNER JOIN (
+    -- Sous-requête pour compter le nombre d'étudiants par cours
+    SELECT
+        e.course_id, -- Identifiant du cours
+        COUNT(e.student_id) AS students_count -- Compter le nombre d'étudiants
+    FROM
+        enrollments e
+    GROUP BY
+        e.course_id -- Regrouper par identifiant du cours
+) sub ON c.course_id = sub.course_id; -- Jointure avec la table courses sur course_id
+```
+
 ---
+## Sous-requête dans HAVING 
+
+Parfois on doit venir grouper des données et filtrer le résultat, mais également comparer la note moyenne des étudiants dans un groupe avec un critère externe. 
+
+Dans ce cas, on viendras utiliser un `HAVING` avec des sous-requête.
+
+### Filtrer les facs par note moyenne
+
+On souhaite trouver les facs où les étudiants ont une meilleur moyenne que la moyenne de l'université.
+
+`students`
+
+| student_id | student_name | department | grade |
+| ---------- | ------------ | ---------- | ----- |
+| 1          | Alex         | Physics    | 80    |
+| 2          | Maria        | Physics    | 85    |
+| 3          | Dan          | Math       | 90    |
+| 4          | Lisa         | Math       | 60    |
+| 5          | John         | History    | 70    |
+
+```sql
+SELECT 
+	department, 
+	AVG(grade) AS avg_grade 
+	FROM students 
+	GROUP BY department 
+	HAVING AVG(grade) > (SELECT AVG(grade) FROM students);
+```
+
+La sous requête calcul la moyenne générale. La requête principale groupe ensuite les étudiants par fac, et calcule la moyenne pour chaque fac.
+
+`HAVING` compare la moyenne de la fac avec la moyenne générale, et ne garde que celle qui sont supérieur.
+
+
+----
 
 ## IN 
 
@@ -699,3 +763,7 @@ SELECT
 FROM grades 
 GROUP BY student_id;
 ```
+
+---
+
+## Combiner EXISTS, IN, HAVING 
