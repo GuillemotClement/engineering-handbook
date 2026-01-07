@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "b9e9885877e3e236",
@@ -166,11 +165,13 @@
               "title": "Plan de 12-sous-requete"
             }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -185,6 +186,10 @@
   },
   "active": "4cd104270ef04121",
   "lastOpenFiles": [
+    "language/sql/13-type-donnee.md",
+    "language/sql/12-sous-requete.md",
+    "language/sql/13-type-donne",
+    "tools/drizzle/index.md",
     "language/elysia/index.md",
     "language/elysia",
     "language/bun/index.md",

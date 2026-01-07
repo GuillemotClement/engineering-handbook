@@ -1,5 +1,9 @@
 # Drizzle 
 
+- [ ] : ajouter les jointure 
+- [ ] : ajouter les select avec des colonnes définis 
+- [ ] 
+
 ## Seeding 
 
 Drizzle permet de créer des seed pour fournis des données initiale à la base de donnée.
