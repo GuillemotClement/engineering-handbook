@@ -14,7 +14,6 @@
               "type": "markdown",
               "state": {
                 "file": "language/sql/12-sous-requete.md",
-                "file": "language/go/index.md",
                 "mode": "source",
                 "source": false
               },
@@ -79,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "b81a11847688b13b",
@@ -96,8 +94,8 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "language/go/index.md",
-                "collapseAll": false,
+                "file": "language/sql/12-sous-requete.md",
+                "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
@@ -106,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for index"
+              "title": "Backlinks for 12-sous-requete"
             }
           },
           {
@@ -158,29 +156,21 @@
             "state": {
               "type": "outline",
               "state": {
-<<<<<<< Updated upstream
                 "file": "language/sql/12-sous-requete.md",
-=======
-                "file": "language/go/index.md",
->>>>>>> Stashed changes
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-<<<<<<< Updated upstream
-              "title": "Plan de 12-sous-requete"
-=======
-              "title": "Outline of index"
->>>>>>> Stashed changes
+              "title": "Outline of 12-sous-requete"
             }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -193,29 +183,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "7a1ffa0a2981c8a1",
+  "active": "050eace3a1257c03",
   "lastOpenFiles": [
-<<<<<<< Updated upstream
-    "tools/linux/index.md",
-    "tools/linux",
-    "language/sql/11-jointure.md",
-    "language/sql/12-sous-requete.md",
-    "language/sql/10-condition-avancee.md",
-    "language/sql/09-null.md",
-    "language/sql/02-instruction_base.md",
-    "language/sql/01-introduction.md",
-    "language/sql/07-regroupement-agregat.md",
-    "language/sql/08-utilisation-avancee-agregat.md",
-    "language/sql/05_Formatage_des_donnees.md",
-    "language/sql/03-postgres.md",
-    "language/sql/database.md",
-    "language/sql/table.md",
-    "language/sql/06_selection_tri.md",
-    "language/sql/index.md"
-=======
-    "Untitled.md",
     "language/go/index.md",
+    "Untitled.md",
     "language/go"
->>>>>>> Stashed changes
   ]
 }
