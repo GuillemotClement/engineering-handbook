@@ -44,7 +44,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Explorateur de fichiers"
+              "title": "Files"
             }
           },
           {
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "b9e9885877e3e236",
@@ -157,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/13-type-donnee.md",
+                "file": "language/sql/14-tableau-et-json.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Plan de 13-type-donnee"
+              "title": "Outline of 14-tableau-et-json"
             }
           }
         ],
@@ -171,31 +170,30 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Ouvrir le sélecteur rapide": false,
-      "graph:Ouvrir la vue graphique": false,
-      "canvas:Créer une nouvelle toile": false,
-      "daily-notes:Ouvrir la note quotidienne": false,
-      "templates:Insérer le modèle": false,
-      "command-palette:Ouvrir la palette de commandes": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
       "bases:Create new base": false
     }
   },
   "active": "4cd104270ef04121",
   "lastOpenFiles": [
+    "language/bun/index.md",
+    "language/sql/14-tableau-et-json.md",
     "tools/git/index.md",
     "language/sql/13-type-donnee.md",
-    "language/sql/14-tableau-et-json.md",
     "language/sql/12-sous-requete.md",
     "language/sql/13-type-donne",
     "tools/drizzle/index.md",
     "language/elysia/index.md",
     "language/elysia",
-    "language/bun/index.md",
     "language/bun",
     "language/express/index.md",
     "language/express",
