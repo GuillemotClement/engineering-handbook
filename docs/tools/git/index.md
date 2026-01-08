@@ -35,3 +35,41 @@ Une fois le tag créer, il faut forcer l'envoie sur Github
 git push origin <name_tag> 
 ```
 
+---
+
+## STASH 
+
+### Accéder au stash 
+
+```shell
+# accéder au supprimer le stash 
+git stash pop
+```
+
+### Ajouter un stash avec un nom 
+
+```shell
+git stash push -m "message de stash"
+
+# ancienne syntaxe
+git stash save "message de stash"
+```
+
+### Voir la liste des stash 
+
+```shell
+git stash list 
+```
+
+### Supprimer les stash 
+
+```shell
+# supprimer tous les stash 
+git stash clear 
+
+# supprimer un stash précis 
+git stash drop stash@{2} # ou 2 est l'index du stash
+
+# supprimer le dernier 
+git stash drop 
+```

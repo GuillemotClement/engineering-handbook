@@ -1,24 +1,24 @@
 {
   "main": {
-    "id": "369a9af2d063194e",
+    "id": "5df671e51f82c55b",
     "type": "split",
     "children": [
       {
-        "id": "d25578fc430962a6",
+        "id": "46bbf20d84226fd9",
         "type": "tabs",
         "children": [
           {
-            "id": "7a1ffa0a2981c8a1",
+            "id": "4cd104270ef04121",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/14-tableau-et-json.md",
+                "file": "tools/git/index.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "14-tableau-et-json"
+              "title": "index"
             }
           }
         ]
@@ -27,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "7b8dac819c8720e6",
+    "id": "ffe30446bb893638",
     "type": "split",
     "children": [
       {
-        "id": "7aa310586f7ca7f7",
+        "id": "a032b25d2a6ba664",
         "type": "tabs",
         "children": [
           {
-            "id": "f788d2f4d9907a48",
+            "id": "849ab2c835277b65",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -44,11 +44,11 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Explorateur de fichiers"
             }
           },
           {
-            "id": "6a42ff3453cd4305",
+            "id": "8d3781fe84033a03",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -61,17 +61,17 @@
                 "sortOrder": "alphabetical"
               },
               "icon": "lucide-search",
-              "title": "Search"
+              "title": "Rechercher"
             }
           },
           {
-            "id": "fe24b596f44a7544",
+            "id": "673f4ae0df8feb1d",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
               "state": {},
               "icon": "lucide-bookmark",
-              "title": "Bookmarks"
+              "title": "Signets"
             }
           }
         ]
@@ -81,20 +81,20 @@
     "width": 300
   },
   "right": {
-    "id": "b81a11847688b13b",
+    "id": "b9e9885877e3e236",
     "type": "split",
     "children": [
       {
-        "id": "62bdc908e889ef2c",
+        "id": "c6908be83970733c",
         "type": "tabs",
         "children": [
           {
-            "id": "6e9838c04dd80f4c",
+            "id": "003d0145ee77579a",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "language/sql/12-sous-requete.md",
+                "file": "language/sql/13-type-donnee.md",
                 "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,25 +104,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 12-sous-requete"
+              "title": "Rétrolien pour 13-type-donnee"
             }
           },
           {
-            "id": "faca96af27a1d636",
+            "id": "e8ad31a67ada87c7",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "language/go/index.md",
+                "file": "language/sql/13-type-donnee.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from index"
+              "title": "Liens sortants de 13-type-donnee"
             }
           },
           {
-            "id": "3f07bfdf291c0a5a",
+            "id": "f47920f1aa9d686f",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -133,11 +133,11 @@
                 "searchQuery": ""
               },
               "icon": "lucide-tags",
-              "title": "Tags"
+              "title": "Mots-clés"
             }
           },
           {
-            "id": "754301a16b53a5cf",
+            "id": "747dc448114897ce",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -147,22 +147,22 @@
                 "searchQuery": ""
               },
               "icon": "lucide-archive",
-              "title": "All properties"
+              "title": "Toutes les propriétés"
             }
           },
           {
-            "id": "050eace3a1257c03",
+            "id": "5f8875b65ee1e6fe",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/14-tableau-et-json.md",
+                "file": "language/sql/13-type-donnee.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 14-tableau-et-json"
+              "title": "Plan de 13-type-donnee"
             }
           }
         ],
@@ -170,41 +170,43 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "templates:Insérer le modèle": false,
+      "command-palette:Ouvrir la palette de commandes": false,
       "bases:Create new base": false
     }
   },
-  "active": "7a1ffa0a2981c8a1",
+  "active": "4cd104270ef04121",
   "lastOpenFiles": [
     "language/sql/13-type-donnee.md",
     "language/sql/14-tableau-et-json.md",
     "language/sql/12-sous-requete.md",
-    "tools/zod/index.md",
-    "tools/zod",
-    "language/react/tanstack/tanstack-table.md",
-    "language/react/tanstack/tanstack-router.md",
-    "language/react/tanstack/tanstack-query.md",
-    "language/react/tanstack/tanstack-form.md",
-    "language/react/tanstack",
-    "language/react/index.md",
-    "language/react",
-    "language/express/index.md",
-    "language/express",
+    "language/sql/13-type-donne",
+    "tools/drizzle/index.md",
     "language/elysia/index.md",
     "language/elysia",
     "language/bun/index.md",
     "language/bun",
-    "language/go/index.md",
-    "Untitled.md",
-    "language/go"
+    "language/express/index.md",
+    "language/express",
+    "tools/zod/index.md",
+    "tools/zod",
+    "language/react/zod/index.md",
+    "language/react/tanstack/tanstack-table.md",
+    "language/react/tanstack/tanstack-query.md",
+    "language/react/tanstack/tanstack-router.md",
+    "language/react/tanstack/tanstack-form.md",
+    "language/react/zod",
+    "language/react/tanstack",
+    "language/react/index.md",
+    "language/react"
   ]
 }
