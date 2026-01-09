@@ -71,3 +71,5 @@ nav:
       - Zod: tools/zod/index.md
   - Concept:
       - Gestion mémoire: concept/memory_managment.md
+  - Evode:
+      - Gestion des modales: evode/modale.md

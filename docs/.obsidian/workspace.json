@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/svelte/index.md",
+                "file": "evode/modale.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "modale"
             }
           }
         ]
@@ -186,9 +186,11 @@
   },
   "active": "4cd104270ef04121",
   "lastOpenFiles": [
+    "language/svelte/index.md",
+    "evode/modale.md",
+    "evode",
     "language/sql/14-tableau-et-json.md",
     "Sans titre.md",
-    "language/svelte/index.md",
     "language/svelte",
     "tools/git/index.md",
     "language/sql/13-type-donnee.md",
