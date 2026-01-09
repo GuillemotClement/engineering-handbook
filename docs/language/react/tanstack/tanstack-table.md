@@ -142,3 +142,48 @@ export default function ClubListe() {
 	);
 }
 ```
+
+---
+
+## Select List
+
+```tsx
+columnHelper.accessor("statusId", {
+	header: () => <span>Statut</span>,
+	cell: (info) => {
+		return (
+			<select
+				className="select"
+				// valeur selectionner par défaut
+				value={info.getValue()}> 
+				{/* on parcours la liste de status */}
+				{memberStatus?.map((status: MemberStatus) => (
+					<option value={status.id} key={status.id}>
+						{status.name}
+					</option>
+				))}
+			</select>
+		)
+	}
+}),
+```
+
+---
+
+## Gestion du typage si valeur est potentiellement null
+
+```tsx
+columnHelper.accessor("updatedAt", {
+	header: () => <span>Date de mise à jour</span>,
+	cell: (info) => {
+		// on viens créer un variable qui récupère la valeur
+		const date = info.getValue();
+		// on ternaire pour afficher ce qu'on souhaite
+		return date ? (
+			<CellData value={date}/>
+		) : (
+			<CellData value="Pas encore de date de modification" />
+		)
+	}
+}),
+```
