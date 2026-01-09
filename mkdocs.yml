@@ -27,6 +27,7 @@ markdown_extensions:
 
 nav:
   - Language:
+      - Svelte: language/svelte/index.md
       - C: language/c/index.md
       - Go: language/go/index.md
       - PHP: language/php/index.md
@@ -70,3 +71,6 @@ nav:
       - Zod: tools/zod/index.md
   - Concept:
       - Gestion mémoire: concept/memory_managment.md
+  - Evode:
+      - Gestion des modales: evode/modale.md
+      - Confirmation: evode/confirmation.md

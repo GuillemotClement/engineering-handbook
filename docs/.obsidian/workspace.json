@@ -13,12 +13,20 @@
             "state": {
               "type": "markdown",
               "state": {
+<<<<<<< HEAD
                 "file": "language/react/tanstack/tanstack-table.md",
+=======
+                "file": "evode/confirmation.md",
+>>>>>>> ba61b4daa9e68c239949f6fbe61f1d744599f272
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
+<<<<<<< HEAD
               "title": "tanstack-table"
+=======
+              "title": "confirmation"
+>>>>>>> ba61b4daa9e68c239949f6fbe61f1d744599f272
             }
           }
         ]
@@ -44,7 +52,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Explorateur de fichiers"
             }
           },
           {
@@ -157,12 +165,14 @@
               "type": "outline",
               "state": {
                 "file": "language/react/tanstack/tanstack-table.md",
+                "file": "language/sql/13-type-donnee.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
               "title": "Outline of tanstack-table"
+              "title": "Plan de 13-type-donnee"
             }
           }
         ],
@@ -170,23 +180,34 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "templates:Insérer le modèle": false,
+      "command-palette:Ouvrir la palette de commandes": false,
       "bases:Create new base": false
     }
   },
   "active": "4cd104270ef04121",
   "lastOpenFiles": [
+<<<<<<< HEAD
     "language/sql/14-tableau-et-json.md",
     "language/bun/index.md",
+=======
+    "evode/modale.md",
+    "evode/confirmation.md",
+    "language/svelte/index.md",
+    "evode",
+    "language/sql/14-tableau-et-json.md",
+    "Sans titre.md",
+    "language/svelte",
+>>>>>>> ba61b4daa9e68c239949f6fbe61f1d744599f272
     "tools/git/index.md",
     "language/sql/13-type-donnee.md",
     "language/sql/12-sous-requete.md",
@@ -194,6 +215,7 @@
     "tools/drizzle/index.md",
     "language/elysia/index.md",
     "language/elysia",
+    "language/bun/index.md",
     "language/bun",
     "language/express/index.md",
     "language/express",
