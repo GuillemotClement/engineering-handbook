@@ -73,3 +73,4 @@ nav:
       - Gestion mémoire: concept/memory_managment.md
   - Evode:
       - Gestion des modales: evode/modale.md
+      - Confirmation: evode/confirmation.md

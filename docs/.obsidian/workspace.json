@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "evode/modale.md",
+                "file": "evode/confirmation.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "modale"
+              "title": "confirmation"
             }
           }
         ]
@@ -186,8 +186,9 @@
   },
   "active": "4cd104270ef04121",
   "lastOpenFiles": [
-    "language/svelte/index.md",
     "evode/modale.md",
+    "evode/confirmation.md",
+    "language/svelte/index.md",
     "evode",
     "language/sql/14-tableau-et-json.md",
     "Sans titre.md",
