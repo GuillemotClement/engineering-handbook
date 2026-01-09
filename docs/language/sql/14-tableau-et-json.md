@@ -132,3 +132,89 @@ WHERE
     -- Extrait la valeur age comme texte, la convertit en entier et compare > 25
     (profile ->> 'age')::INTEGER > 25;
 ```
+
+
+---
+
+## ARRAY 
+
+Les tableaux permettent de stocker des valeurs du même type dans une seule colonne. Il permet de stocker pleins de valeurs dans un seul champ ce qui économise de la place et rends les requêtes plus flexibles.
+
+```sql 
+-- tableau de nombre
+{1, 2, 3, 4}
+
+-- tableau de string 
+{"pomme", "banane", "cerise"}
+
+-- tableau de dates
+{2024-10-01, 2024-10-02, 2024-10-03}
+```
+
+L'avantage des tableau :
+
+- Stockage compact des données: par exemple une liste de tags, une liste de note pour un étudiant
+- Facilité de sélection: il permet de récupérer toute une liste de valeurs depuis un seul champs, et de le manipuler facilement chaque élément du tableau 
+- Perf: les tableaux permettent d'éviter de créer des tables supplémentaires pour des données liées, ce qui peut simplifier l'architecture de la base et accélérer le dev.
+
+### Créer un tableau dans SELECT
+
+Pour créer un tableau, on utilise le constructeur `ARRAY[]`  
+
+```sql
+-- Exemple de tableau de nombres
+SELECT ARRAY[1, 2, 3, 4];
+
+-- Exemple de tableau de chaînes
+SELECT ARRAY['pomme', 'banane', 'cerise'];
+```
+
+### Créer une table avec des tableaux 
+
+|id|name - VARCHAR(50)|subjects - TEXT[]|
+|---|---|---|
+|1|Alex|{Mathematique,Physique}|
+|2|Maria|{Chimie,Biologie,Anglais}|
+|3|Peter|{Informatique}|
+On peut ensuite venir récupérer les valeurs : 
+```sql
+SELECT * FROM students;
+```
+
+|id|name|subjects|
+|---|---|---|
+|1|Alex|{Mathematique,Physique}|
+|2|Maria|{Chimie,Biologie,Anglais}|
+|3|Peter|{Informatique}|
+### Extraction des données depuis les tableaux 
+
+PG propose plusieurs fonctions et opérateurs 
+
+#### Extraire un élément du tableau 
+
+On peut utiliser les `[]` puis l'index de l'élément. La numérotation commence à 1.
+
+```sql
+-- On récupère la première matière de chaque étudiant
+SELECT name, subjects[1] AS premiere_matiere FROM students;
+```
+
+#### Extraite toute la ligne du tableau 
+
+Pour récupérer tous les éléments du tableau, on utilise un `SELECT`
+
+```sql
+SELECT name, subjects FROM students;
+```
+
+### Rechercher des valeurs dans un tableau 
+
+Parfois, on veut savoir si un tableau contient une valeur précise, pour cela on utilise `ANY`
+
+```sql
+-- Sélectionner les étudiants qui étudient "Mathematique"
+SELECT name
+FROM students
+WHERE 'Mathematique' = ANY(subjects);
+```
+

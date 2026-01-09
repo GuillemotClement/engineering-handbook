@@ -58,6 +58,7 @@ nav:
           - Type SQL: language/sql/13-type-donnee.md
           - Tableau et JSON: language/sql/14-tableau-et-json
           - DB: language/sql/database.md
+          - Conversion de type: language/sql/15-comparaison-et-conversion.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md
