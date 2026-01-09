@@ -28,6 +28,7 @@ markdown_extensions:
 nav:
   - Language:
       - Svelte: language/svelte/index.md
+      - Hono: language/hono/index.md
       - C: language/c/index.md
       - Go: language/go/index.md
       - PHP: language/php/index.md
