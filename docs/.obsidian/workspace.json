@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/15-comparaison-et-conversion.md",
+                "file": "language/sql/16-creation-modification-table.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "15-comparaison-et-conversion"
+              "title": "16-creation-modification-table"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "language/sql/15-comparaison-et-conversion.md",
+                "file": "language/sql/16-creation-modification-table.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 15-comparaison-et-conversion"
+              "title": "Backlinks for 16-creation-modification-table"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "language/sql/15-comparaison-et-conversion.md",
+                "file": "language/sql/16-creation-modification-table.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from 15-comparaison-et-conversion"
+              "title": "Outgoing links from 16-creation-modification-table"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/15-comparaison-et-conversion.md",
+                "file": "language/sql/16-creation-modification-table.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 15-comparaison-et-conversion"
+              "title": "Outline of 16-creation-modification-table"
             }
           }
         ],
@@ -185,9 +185,11 @@
   },
   "active": "4e3ae144969a06cb",
   "lastOpenFiles": [
-    "language/sql/06_selection_tri.md",
-    "language/sql/15-comparaison-et-conversion.md",
     "language/sql/05_Formatage_des_donnees.md",
+    "language/sql/16-creation-modification-table.md",
+    "language/sql/13-type-donnee.md",
+    "language/sql/15-comparaison-et-conversion.md",
+    "language/sql/06_selection_tri.md",
     "language/sql/14-tableau-et-json.md"
   ]
 }

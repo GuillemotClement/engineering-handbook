@@ -277,3 +277,97 @@ WHERE
 ORDER BY
     meeting_date, meeting_time; -- Optionnel : on trie par date et heure de la réunion
 ```
+
+---
+
+## Sélection du type adaptée
+
+L'utilisation du type adaptée permet d'optimiser la performance, la mémoire et la gestion des données.
+
+Pour choisir le type de données, il faut penser à 
+- **Nature des données** : Déterminer quelles catégories appartiennent les données
+- **Volume des données**: Combien de données seront stockée
+- **Précision et plage**: Est ce qu'il est nécessaire d'avoir une grosse précision (argent)
+- **Fréquence et type de requête**: Est ce qu'on accède souvent aux données ?
+
+### Données financière 
+
+Lorsque l'on doit travailler avec des données lié à l'argent, la compte, il n'y a pas le droit à l'erreur. Dans ce cas le type `NUMERIC` est le plus adapté.
+
+|Nom de la colonne|Type de données|Commentaire|
+|---|---|---|
+|id|SERIAL|Clé primaire|
+|amount|NUMERIC(10, 2)|Dix chiffres dont deux après la virgule|
+|currency_code|CHAR(3)|Code ISO de la monnaie, genre "USD", "EUR"|
+|transaction_date|TIMESTAMP|Date de la transaction, par défaut — l’heure actuelle|
+### Données textuel
+
+Lorsque l'on viens stocker des nom d'utilisateur, adresse, il faut mieux mettre une longueur max quand c'est possible. On privilegie `VARCHAR()` dans ce cas. Cela permet de réduire les bugs et optimise la mémoire.
+
+|Nom de la colonne|Type de données|Commentaire|
+|---|---|---|
+|id|SERIAL|Clé primaire|
+|username|VARCHAR(50)|Login de l’utilisateur, unique et obligatoire|
+|email|VARCHAR(255)|Email|
+|bio|TEXT|Bio, genre un texte bien long|
+
+Si la longueur de la chaîne est vraiment fixe (code pays), on utilise `CHAR`.
+
+|Nom de la colonne|Type de données|Commentaire|
+|---|---|---|
+|code|CHAR(2)|Code ISO du pays (genre "US"), clé primaire|
+|name|VARCHAR(100)|Nom du pays, obligatoire|
+
+### Données type TIMESTAMP
+
+Pour stocker des dates, le plus souvent c'est `TIMESTAMP` qui est utilisé, car il contient l'heure et la date.
+
+|Nom de la colonne|Type de données|Commentaire|
+|---|---|---|
+|id|SERIAL|Clé primaire|
+|event_name|VARCHAR(100)|Nom de l’événement|
+|start_time|TIMESTAMP|Heure de début de l’événement, obligatoire|
+|end_time|TIMESTAMP|Heure de fin de l’événement, obligatoire|
+Si on as juste besoin de l'heure on utilise `TIME` et la date `DATE`
+
+### Identifiant unique 
+
+Lorsque l'on doit gérer des identifiants unique, privilégier `UUID` 
+
+|Nom de la colonne|Type de données|Commentaire|
+|---|---|---|
+|request_id|UUID|Identifiant unique de la requête, généré par défaut avec `gen_random_uuid()`|
+|endpoint|VARCHAR(255)|Adresse de l’endpoint API appelé|
+|timestamp|TIMESTAMP|Date de la requête, par défaut — l’heure actuelle|
+
+### JSONB - Structure complexe
+
+Lorsque l'on doit stocker des données dont la structure peut changer ou être complexe, genre préférence utilisateur ou métadonnées, on utilise `JSONB`
+
+|Nom de la colonne|Type de données|Commentaire|
+|---|---|---|
+|user_id|SERIAL|Clé primaire (ID utilisateur)|
+|preferences|JSONB|Préférences utilisateur au format JSON|
+### Tableau 
+
+Les tableaux sont adapter pour stocker des listes de données du même types, par exemple une liste de tag 
+
+|Nom de la colonne|Type de données|Commentaire|
+|---|---|---|
+|id|SERIAL|Clé primaire|
+|title|VARCHAR(255)|Titre de l’article|
+|tags|TEXT[]|Tableau de tags|
+### Résumé 
+
+|Type de tâche|Type de données recommandé|Exemple|
+|---|---|---|
+|Identifiant d’enregistrement|`SERIAL`, `BIGSERIAL`, `UUID`|`id SERIAL PRIMARY KEY`|
+|Quantité, entiers|`INTEGER`, `BIGINT`|`quantity INTEGER`|
+|Calculs financiers|`NUMERIC`|`price NUMERIC(10, 2)`|
+|Stockage de chaînes|`VARCHAR(n)`, `TEXT`|`username VARCHAR(50)`|
+|Chaînes fixes courtes|`CHAR(n)`|`status CHAR(1)`|
+|Dates et heures|`DATE`, `TIME`, `TIMESTAMP`|`created_at TIMESTAMP DEFAULT NOW()`|
+|Identifiants uniques|`UUID`|`id UUID PRIMARY KEY DEFAULT gen_random_uuid()`|
+|Structures complexes (JSON)|`JSONB`|`metadata JSONB`|
+|Listes de valeurs|`ARRAY`|`tags TEXT[]`|
+|Valeur booléenne|`BOOLEAN`|`is_active BOOLEAN`|
