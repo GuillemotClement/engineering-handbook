@@ -239,7 +239,7 @@ ALTER TABLE table
 
 ```sql
 ALTER TABLE students
-ADD COLUMN email VARCHAR(100);
+ADD COLUMN email VARCHAR(100) NOT NULL;
 ```
 
 ### Supprimer une colonne 
@@ -251,7 +251,20 @@ DROP COLUMN email;
 
 Les données de la colonnes seront également supprimé.
 
+#### Supprimer une colonne avec dépendances
+
+Pour supprimer une colonne avec une dépendances (celle utilisée dans des vues ou des triggers), il faudra utiliser le modificateurs `CASCADE`. Attention, cela peut impacter d'autres table.
+
+```sql
+ALTER TABLE students
+DROP COLUMN email CASCADE;
+```
 ### Changer le type de donnée d'une colonne 
+
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name TYPE new_data_type;
+```
 
 ```sql
 ALTER TABLE students
@@ -259,6 +272,61 @@ ALTER COLUMN age TYPE BIGINT;
 ```
 
 Si des données sont déjà enregistrées dans la colonne, PG vérifie si elles peuvent être converties dans le nouveau type.
+
+#### Modifier le type avec conversion 
+
+Pour changer de type avec conversion, on utilise une conversion. Cela indique à PG de convertir la donnée avant de changer le type.
+
+Il est nécessaire de spécifier la conversion de type car si la conversion automatique échoue, cela provoque une erreur.
+
+```sql
+ALTER TABLE employees
+ALTER COLUMN birth_date TYPE DATE USING birth_date::DATE;
+```
+
+On peut également utiliser cette syntaxe
+
+```sql
+ALTER TABLE employees
+ALTER COLUMN birth_date TYPE DATE USING to_date(birth_date, 'YYYY-MM-DD');
+```
+
+### USING 
+
+Lorsque l'on change le type de colonne, il faut parfois indiquer comment convertir les données existante. Pour cela, on utilise le mot clé `USING`
+
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name TYPE new_data_type
+USING expression;
+```
+
+`USING` permet de préciser la formule de conversion des valeurs de l’ancien type vers le nouveau. C'est utile lorsque la conversion automatique est impossible ou ambiguë
+
+L'utilisation d'`USING`  est obligatoire :
+- Quand il n'y a pas de conversion direct de type 
+- Quand on doit transformer les données 
+- Quand les types sont incompatibles 
+
+#### Chaîne -> nombre 
+
+```sql
+ALTER TABLE users
+ALTER COLUMN age TYPE INTEGER
+USING age::INTEGER;
+```
+
+Ici, `age` était de type `TEXT` et on souhaite le convertir en `INTEGER`. On déclare une conversion explicite.
+
+#### TEXTE -> DATE
+
+```sql
+ALTER TABLE events
+ALTER COLUMN event_date TYPE DATE
+USING TO_DATE(event_date, 'YYYY-MM-DD');
+```
+
+Ici, on indique quel format pour la date.
 
 ### Renommer une table 
 
@@ -279,4 +347,77 @@ ALTER COLUMN name DROP NOT NULL;
 ```sql
 ALTER TABLE enrollments
 ALTER COLUMN enrollment_date DROP DEFAULT;
+```
+
+---
+
+## DROP TABLE 
+
+Cette commande permet de supprimer une table d'une base de données. Les données et la structure seront supprimée. Cela supprime également les index, contraintes et triggers liés.
+
+```sql
+DROP TABLE table;
+```
+
+```sql
+DROP TABLE students;
+```
+
+Avec cette commande, la table `students` sera complètement supprimée.
+
+### Supprimer plusieurs tables 
+
+```sql
+DROP TABLE table1, table2, table3;
+```
+
+### IF EXISTS
+
+La commande `DROP TABLE` retourne une erreur lorsque l'on tente de supprimer une table qui n'existe pas. Pour éviter cela, on utilise l'option 
+
+```sql
+DROP TABLE IF EXISTS table_name;
+```
+
+### CASCADE
+
+Lorsqu'une table possède des dépendances avec des clé étrangères liée à d'autre table, la suppression n'est pas possible.
+
+Pour forcer la suppression, on peut utiliser l'option qui supprimer la table et tous les objets dépendants.
+
+```sql
+DROP TABLE students CASCADE;
+```
+
+La requête va supprimer la table `students` et automatiquement tous les objets qui en dépendent.
+
+Attention avec cette option, cela peut venir supprimer plus de données que prévues.
+
+### RESTRICT
+
+Pour éviter de supprimer par erreurs des objets liées, cette option est adapté. Elle interdit la suppression de la table si d'autres table en dépendent.
+
+```sql
+DROP TABLE students RESTRICT;
+```
+
+### Suppression de tables temporaires
+
+Les table temporaire créer avec `CREATE TEMP TABLE` sont supprimées automatiquement à la fin de session. Il est possible de les supprimer manuellement 
+
+```sql
+CREATE TEMP TABLE temp_data (
+    id SERIAL PRIMARY KEY,
+    value TEXT
+);
+
+DROP TABLE temp_data;
+```
+
+### Backup avant suppression 
+
+Avant de supprimer une table, il est judicieux de faire un backup avec la commande `pg_dump`. Cela permet de restaurer les données si jamais on supprime quelque chose par erreur.
+
+```bash
+pg_dump -U username -d database_name -t table_name > table_backup.sql
 ```

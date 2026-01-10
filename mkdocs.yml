@@ -27,6 +27,8 @@ markdown_extensions:
 
 nav:
   - Language:
+      - HTML: language/HTML/base.md
+      - CSS: language/css/index.md 
       - Svelte: language/svelte/index.md
       - Hono: language/hono/index.md
       - C: language/c/index.md
@@ -61,6 +63,7 @@ nav:
           - DB: language/sql/database.md
           - Conversion de type: language/sql/15-comparaison-et-conversion.md
           - Création et modification des tables: language/sql/16-creation-modification-table.md
+          - Table temporaire: language/sql/17-table-temporaire.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md

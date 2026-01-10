@@ -13,15 +13,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/hono/index.md",
+                "file": "language/css/02-style-formulaire.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "02-style-formulaire"
+            }
+          },
+          {
+            "id": "402aa9d71503b4be",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "language/sql/16-creation-modification-table.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "16-creation-modification-table"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -156,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/hono/index.md",
+                "file": "language/sql/16-creation-modification-table.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of index"
+              "title": "Outline of 16-creation-modification-table"
             }
           }
         ],
@@ -183,10 +198,17 @@
       "bases:Create new base": false
     }
   },
-  "active": "4e3ae144969a06cb",
+  "active": "402aa9d71503b4be",
   "lastOpenFiles": [
+    "language/HTML/01-base.md",
+    "language/sql/17-table-temporaire.md",
     "language/sql/16-creation-modification-table.md",
+    "01-base.md",
+    "language/css/02-style-formulaire.md",
+    "language/HTML",
+    "language/css/index.md",
     "language/hono/index.md",
+    "language/css",
     "language/hono",
     "language/sql/05_Formatage_des_donnees.md",
     "language/sql/13-type-donnee.md",
