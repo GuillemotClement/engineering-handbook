@@ -171,3 +171,56 @@ C'est l'équivalent du `useMemo` de React.
 </button>
 
 ```
+
+---
+
+## FETCH 
+
+Svelte utilise un système de proxy pour stocker les données dans le `$state`. 
+### $inspect
+
+
+```ts
+<script lang="ts">
+  import { onMount } from "svelte";
+
+  type Project = {
+    id: string;
+    title: string;
+  }
+// =============================================
+// STATE ====================================
+// =============================================
+let projects = $state<Project[]>([]);
+let loading = $state(true);
+let error = $state("");
+
+// =============================================
+// Montage du composant ====================================
+// =============================================
+onMount(async() => {
+  loadProjects();
+})
+
+// =============================================
+// FETCH ====================================
+// =============================================
+async function loadProjects(){
+  try{
+    const response = await fetch('http://localhost:3000/projects');
+    
+    if(!response.ok){
+      console.error(response);
+      throw new Error("failed to fetch data");
+    }
+    
+    projects = await response.json();
+  }catch(err){
+    error = err instanceof Error ? err.message : "Erreur inconnue";
+  }finally{
+    loading = false;
+  }
+}
+$inspect(projects); // afficher les données stocker
+</script>
+```

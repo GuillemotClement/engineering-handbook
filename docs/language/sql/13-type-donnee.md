@@ -58,6 +58,10 @@ Utiliser pour stocker de gros nombres, mais qui n'ont pas besoin d'être super p
 
 Par exemple, le résultat de calculs scientifique (masse des atomes, distance à la lune), ou de la modélisation de donné où les erreurs sont acceptables.
 
+### SERIAL 
+
+Permet de gérer des valeurs numérique auto-incrémenter sur Postgres
+
 ### Récapitulatif
 
 |Type de données|Intervalle|Précision|Exemples d'utilisation|

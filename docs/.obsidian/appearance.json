@@ -2,5 +2,5 @@
   "cssTheme": "Things",
   "theme": "moonstone",
   "interfaceFontFamily": "JetBrains Mono",
-  "textFontFamily": "JetBrains Mono"
+  "textFontFamily": "Inter,JetBrains Mono"
 }
