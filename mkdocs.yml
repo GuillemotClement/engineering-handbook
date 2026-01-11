@@ -65,6 +65,8 @@ nav:
           - Création et modification des tables: language/sql/16-creation-modification-table.md
           - Table temporaire: language/sql/17-table-temporaire.md
           - Clé étrangère et relations: language/sql/18-foreign-key-relation.md
+          - Insertion, update et supression des données: language/sql/19-insertion-update-delete.md
+          - Transaction: language/sql/20-transaction.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md
