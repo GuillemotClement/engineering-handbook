@@ -1,6 +1,6 @@
 {
   "autoConvertHtml": true,
-  "showLineNumber": true,
+  "showLineNumber": false,
   "attachmentFolderPath": "./",
   "showUnsupportedFiles": false
 }

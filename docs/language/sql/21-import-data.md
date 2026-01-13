@@ -347,3 +347,338 @@ COPY students
 FROM '/var/lib/postgresql/data/students.csv'
 WITH (FORMAT CSV, ENCODING 'WIN1251', HEADER TRUE);
 ```
+
+---
+
+
+## \COPY 
+
+Cette commande permet de charger des donnée dans PG directement depuis l'ordi. La commande fonctionne avec les fichiers directement accessible côté client.
+
+Cette commande est un peu plus limité :
+- elle n'est pas adapté pour des fichiers énormes, les données doit passer via le réseau.
+
+### Syntaxe 
+
+```sql
+\COPY table FROM 'chemin_du_fichier' [WITH] (options)
+```
+
+- `table`: le nom de la table où l'on souhaite charger les données
+- `chemin_du_fichier`: le path vers le fichier présent sur le pc 
+- `options`: paramètres optionnels pour customiser le comportement d'une commande 
+
+```sql
+\COPY students FROM 'C:/data/students.csv' DELIMITER ',' CSV HEADER;
+```
+
+### FORMAT
+
+Définit le format des données. Les plus utilisé sont `text` et `CSV`
+
+```sql
+\COPY users FROM 'users.csv' WITH (FORMAT csv)
+```
+
+Par défaut, PG utilise le format texte avec tabulation.
+
+### DELIMITER 
+
+Définit le caractère séparateur des champs. Par défaut `,` pour le CSV et tab pour TEXT
+
+```sql
+\COPY products FROM 'products.csv' WITH (FORMAT csv, DELIMITER ';')
+```
+
+### HEADER 
+
+Indique que la première ligne contient les noms des colonnes.
+
+```sql
+\COPY users FROM 'users.csv' WITH (FORMAT csv, HEADER)
+```
+
+### ENCODING 
+
+Indique l'encadage du fichier 
+
+```sql
+\COPY clients FROM 'clients.csv' WITH (FORMAT csv, HEADER, ENCODING 'WIN1251')
+```
+
+### NULL
+
+Définit quelle valeurs text dans le fichier est considéré comme NULL
+
+```sql
+\COPY orders FROM 'orders.csv' WITH (FORMAT csv, NULL 'NULL')
+```
+
+---
+
+## CONFIGURATION SEPARATEUR ET FORMAT DES DONNEES
+
+Lorsque les données proviennt de systèmes différents, leurs format peut varier. Un fichier peut utiliser des virgules comme séparateurs, un autre des points-virgule, et un autre des tabulation. 
+
+Une mauvaise configuration des séparateur peut provoquer des erreurs ou des mauvaises interprétation des données.
+
+### Définir les séparateurs
+
+Avec la commande `COPY`, on s'atttends à quel les colonnes dans un fichier CSV soient séparées par des virgules. On peut utiliser une option pour définir le séparateur 
+
+```sql
+COPY students FROM '/path/to/students.csv'
+DELIMITER ','
+CSV HEADER;
+
+-- séparateur ;
+COPY students FROM '/path/to/students.csv'
+DELIMITER ';'
+CSV HEADER;
+
+-- séparateur tab
+COPY students FROM '/path/to/students.tsv'
+DELIMITER E'\t'
+CSV HEADER;
+```
+
+### Ignorer les lignes vides et définir NULL
+
+Pour que les valeurs NULL soient interprété comme NULL, on peut utiliser le paramètre `NULL AS`.
+
+```sql
+COPY students(id, first_name, last_name, email)
+FROM '/path/to/students.csv'
+DELIMITER ','
+CSV HEADER
+NULL AS '';
+```
+
+### Ignorer les lignes vide
+
+Si le fichier contient des lignes vides que l'on ne souhaite pas importer, PG peut les ignorer automatiquement
+
+```sql
+COPY students(id, first_name, last_name, email)
+FROM '/path/to/students.csv'
+DELIMITER ','
+CSV HEADER
+NULL AS ''
+IGNORE_BLANK_LINES;
+```
+
+### Gérer des données non standard
+
+Il est parfois nécessaire d'importer des données en format texte.
+
+```sql
+COPY students(id, first_name, last_name, email)
+FROM '/path/to/students.txt'
+DELIMITER '|'
+NULL AS ''
+CSV;
+```
+
+---
+
+## VERIFICATION DE LA VALIDITE DES DONNEES IMPORTEES
+
+On peut venir ajouter une couche de validation avant de les charger, ou juste après.
+
+### Vérification de la structure des données 
+
+La première étape est de vérifier que les données sont bien importée selon la structure de la table. 
+
+On peut ensuite utiliser les fonction PG pour checker le contenu des colonnes :
+
+#### Vérification valeurs vide 
+
+```sql
+SELECT * FROM students WHERE first_name IS NULL OR last_name IS NULL;
+```
+
+#### Vérification des formats de données 
+
+```sql
+SELECT * FROM students WHERE birth_date::DATE IS NULL;
+```
+
+### Recherche d'erreurs 
+
+#### Recherche des doublons 
+
+```sql
+SELECT email, COUNT(*)
+FROM students
+GROUP BY email
+HAVING COUNT(*) > 1;
+```
+
+#### Vérification des données incorrecte 
+
+```sql
+SELECT * FROM students
+WHERE birth_date < '1900-01-01' OR birth_date > CURRENT_DATE;
+```
+
+### Gestion des données incorrectes 
+
+Une fois les lignes à problèmes trouvée, il faut venir les corrgier 
+
+#### Suppression des données incorrecte 
+
+```sql
+DELETE FROM students
+WHERE first_name IS NULL OR last_name IS NULL;
+```
+
+#### Mettre à jour des données 
+
+```sql
+UPDATE students
+SET email = 'unknown@example.com'
+WHERE email IS NULL;
+```
+
+### Visualisation des données pour l'analyse 
+
+#### Fonction d'agrégation 
+
+```sql
+SELECT EXTRACT(YEAR FROM birth_date) AS year, COUNT(*)
+FROM students
+GROUP BY year
+ORDER BY year;
+```
+
+#### Vérification unicité 
+
+```sql
+SELECT DISTINCT email
+FROM students;
+```
+
+#### Vérification des plages de valeurs 
+
+```sql
+SELECT * FROM students
+WHERE LENGTH(first_name) > 50 OR LENGTH(last_name) > 50;
+```
+
+---
+
+## OPTIMISATION DE CHARGEMENT MASSIF DE DONNEES
+
+L'optimisation des chargements permet d'éviter de surcharger le serveur, de réduire le temps d'attente et de minimiser les risques d'erreurs pendant le chargement.
+
+### Désactivation des index et triggers 
+
+Ils permettent de rendre les base de données intelligente et réactive. Pendant un chargement massifs, ils peuvent ralentir le process, parce que le serveur va essayer de mettre à jours et d'exécuter les triggers pour chaque ligne charger.
+
+Pour soulager le système, on peut venir les désactiver.
+
+```sql
+-- Désactiver les triggers pour la table
+ALTER TABLE students DISABLE TRIGGER ALL;
+
+-- Charger les données
+COPY students FROM '/path/to/students.csv' DELIMITER ',' CSV HEADER;
+
+-- Réactiver les triggers
+ALTER TABLE students ENABLE TRIGGER ALL;
+```
+
+### Utilisation des transactions 
+
+Avec les transactions, on peut éviter les problème en empêchant d'appliquer les changement en cas de problème.
+
+```sql
+-- Démarrer une transaction
+BEGIN;
+
+-- Charger les données
+COPY courses FROM '/path/to/courses.csv' DELIMITER ',' CSV HEADER;
+
+-- Valider les changements
+COMMIT;
+```
+
+Lorsque l'on charges des données sans transaction, le serveur valide les changement après chaque ligne. Avec une transaction, il le fait une seule fois à la fin du chargement.
+
+### Désactivation de la vérification d'intégrité
+
+Si la vérification des FK et de contrainte d'unicité n'est pas nécessaire pendant le chargement, on peut venir les désactiver. Sinon, la base va chercker chaque ligne, et cela ralentit le processus.
+
+```sql
+SET session_replication_role = 'replica';
+
+-- Charger les données
+COPY enrollments FROM '/path/to/enrollments.csv' DELIMITER ',' CSV HEADER;
+
+SET session_replication_role = 'origin';
+```
+
+### Augmenter la mémoire d’exécution
+
+On peut venir régler la mémoire de PG pour améliorer les perfs du chargement.
+
+```sql
+-- Augmenter la mémoire
+SET work_mem = '64MB';
+SET maintenance_work_mem = '256MB';
+
+-- Charger les données
+COPY teachers FROM '/path/to/teachers.csv' DELIMITER ',' CSV HEADER;
+```
+
+- `work_mem`: sert pour les opérations intermédiaire comme les tris et le hash 
+- `maintenance_work_mem`: impacte les opérations liées aux index, comme leur reconstructions
+
+### Préparer les données avant le chargement 
+
+Faire un premier traitement avant l'import permet d'optimiser. Une première étape de triage est faite permettant de réduire potentiellement le nombre de donnée à importer.
+
+### Partitionnement des données 
+
+Si le fichier est énorme, on peut venir le pétitionner en plusieurs petits fichier permettant à PG de traiter les données plus efficacement.
+
+```bash
+split -l 1000 large_data.csv chunk_
+```
+
+Cette commande permet de partionner le fichier. On peut ensuite venir les charger 
+
+```sql
+COPY students FROM 'chunk_aa' DELIMITER ',' CSV HEADER;
+COPY students FROM 'chunk_ab' DELIMITER ',' CSV HEADER;
+-- Et ainsi de suite
+```
+
+### Charger en arrière plan 
+
+Il est possible d'utiliser des process en arrière plan pour charger les données, pour ne pas saturer la base principale.
+
+Les outils comme `pg cron` permettent de lancer des jobs planifiés.
+
+```sql
+CREATE EXTENSION pg_cron;
+
+SELECT cron.schedule('*/5 * * * *', $$COPY students FROM '/path/to/data.csv' DELIMITER ',' CSV HEADER$$);
+```
+
+Toutes les 5 minutes, les données du fichiers seront chargées dans la table.
+
+### Mettre en place un système de log 
+
+Lorsque l'on charge des gros fichiers, il est essentiels de garder une trace des erreurs. Malheureusement la commande `COPY` ne propose pas de log par défaut.
+
+On peut utiliser cette commande pour log 
+
+```sql
+COPY students FROM '/path/to/file.csv'
+DELIMITER ','
+CSV HEADER
+LOG ERRORS INTO error_log
+REJECT LIMIT 100;
+```
+

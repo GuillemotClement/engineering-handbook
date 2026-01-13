@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/21-import-data.md",
+                "file": "language/sql/22-normalisation.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "21-import-data"
+              "title": "22-normalisation"
             }
           }
         ]
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/21-import-data.md",
+                "file": "language/sql/22-normalisation.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 21-import-data"
+              "title": "Outline of 22-normalisation"
             }
           }
         ],
@@ -185,12 +185,16 @@
   },
   "active": "901c68998a403c58",
   "lastOpenFiles": [
+    "language/sql/21-import-data.md",
+    "language/sql/22-normalisation.md",
+    "language/jest/index.md",
+    "Untitled.md",
+    "language/jest",
     "language/sql/20-transaction.md",
     "language/sql/06-selection-tri.md",
     "language/sql/02-instruction-base.md",
     "language/sql/05-formatage-des-donnees.md",
     "language/sql/05_formatage_des_donnees.md",
-    "language/sql/21-import-data.md",
     "language/sql/21-import_data.md",
     "language/sql/18-foreign-key-relation.md",
     "language/sql/17-table-temporaire.md",
@@ -211,10 +215,7 @@
     "language/css/02-style-formulaire.md",
     "language/HTML",
     "language/css/index.md",
-    "language/hono/index.md",
     "language/css",
-    "language/hono",
-    "language/sql/05_Formatage_des_donnees.md",
-    "language/sql/06_selection_tri.md"
+    "language/hono"
   ]
 }
