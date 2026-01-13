@@ -317,7 +317,7 @@ CREATE TABLE enrollments (
 
 On as deux utilisateurs qui souhaite modifier la même ligne en même temps. Sans isolation, on risque d'avoir des conflits.
 
-Pour éviter cela, on peut utiliser les transactions et les niveaux d'isolation pour empêcher les modifs simmulatanées
+Pour éviter cela, on peut utiliser les transactions et les niveaux d'isolation pour empêcher les modifs simultanées
 
 ```sql
 BEGIN;

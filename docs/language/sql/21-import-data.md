@@ -138,5 +138,212 @@ COMMIT;
 #### Cas pratique 
 On reçoit les données d'une API externe. On peut venir sauvegarder ces données en format CSV, puis on les charge dans PG. 
 
+---
+
+## PREPARATION DES TABLES 
+
+On commence par définir comment les données seront stockées dans la base. Cela signifie qu'il faut d'abord créer une table avec la bonne structure.
+
+On souhaite importer un fichier CSV `students.csv`.
+
+```csv
+id,name,age,email,major
+1,Alex,20,alex@example.com,Computer Science
+2,Maria,21,maria@example.com,Mathematics
+3,Otto,19,otto@example.com,Physics
+```
+
+On partir de ce fichier, on peut définir la table que l'on créer dans la base de données.
+
+```sql
+CREATE TABLE students (
+    id SERIAL PRIMARY KEY,       -- Identifiant unique de l'étudiant
+    name VARCHAR(100) NOT NULL,  -- Prénom de l'étudiant (chaîne jusqu'à 100 caractères)
+    age INT CHECK (age > 0),     -- Âge de l'étudiant (doit être supérieur à 0)
+    email VARCHAR(100) UNIQUE,   -- Email unique
+    major VARCHAR(100)           -- Spécialité principale
+);
+```
+
+### Vérification des données avant l'import 
+
+On vérifie la correspondance des colonnes et le type de données.
+
+On peut faire cette vérification depuis Excel, ou via la programmation avec Python et la lib `pandas` par exemple 
+
+```python
+import pandas as pd
+
+# On lit le CSV
+df = pd.read_csv('students.csv')
+
+# On vérifie les données
+print(df.dtypes)  # Affiche les types de données pour chaque colonne
+print(df.isnull().sum())  # Vérifie les valeurs manquantes
+```
+
+### Nettoyage des données avant import 
+
+#### Lignes ou colonnes vides 
+Si une valeur manque dans une colonne obligatoire, cela va planter. On viens donc remplacer ces valeurs absente par des valeurs `NULL`
+
+#### Espace en trop 
+Les espaces au début ou à la fin des chaînes peuvent poser problèmes. On peut utiliser Python pour enlever les espaces en trop 
+
+```python
+df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+```
+
+#### Caractères incorrects ou encodage 
+Si le fichiers contient des caractères spéciaux incompatible avec la base, l'import peut échouer
+L'outtil `iconv` permet de convertir l'encodage.
+```bash
+iconv -f WINDOWS-1251 -t UTF-8 students.csv > students_utf8.csv
+```
+
+#### Nettoyage avec Python 
+```python
+import pandas as pd
+
+# On lit le fichier
+df = pd.read_csv('students.csv')
+
+# On nettoie les données
+df['name'] = df['name'].str.strip()  # On enlève les espaces
+df['email'] = df['email'].str.lower()  # On met les emails en minuscules
+df['age'] = df['age'].fillna(0)  # On remplit les âges manquants avec 0
+df['age'] = df['age'].astype(int)  # On convertit l'âge en entier
+
+# On sauvegarde dans un nouveau fichier
+df.to_csv('cleaned_students.csv', index=False)
+```
+
+---
+
+## GESTION DES ERREURS DE CHARGEMENT
+
+Pendant les imports massifs, on peut tomber sur plusieurs problème classiques : 
+- **Doublons de données** : si la table à une contrainte `UNIQUE` et que le fichier de données possède des répétitions
+- **Conflits avec les contraintes**: On essaie d'importer une valeur vide dans une colonne avec la contrainte `NOT NULL`
+- **Info primaires dupliquée**: la table peut déjà contenir des données avec les même identifiants que le fichier CSV
+
+### ON CONFLICT 
+
+La commande `ON CONFLICT` permet de définir le comportement en cas de conflit avec une contrainte `UNIQUE` ou `PRIMARY KEY`.
+
+```sql
+INSERT INTO table_name (column1, column2, ...)
+VALUES (value1, value2, ...)
+ON CONFLICT (conflict_target)
+DO UPDATE SET column1 = new_value1, column2 = new_value2;
+```
+
+On remplace `DO UPDATE` par `DO NOTHING` si on veux ignorer le conflit
+
+### Mise à jour en cas de conflit 
+
+On veux importer de nouvelles données, mais certaines existent déjà dans la base 
+
+```sql
+INSERT INTO students (id, name, age)
+VALUES
+    (1, 'Peter', 22),  -- Cet étudiant existe déjà
+    (2, 'Anna', 20),  -- Nouvel étudiant
+    (3, 'Mal', 25) -- Nouvel étudiant
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    age = EXCLUDED.age;
+```
+
+Dans cette table, si un id d'étudiant existe déjà, ses données seront mis à jour.
+
+`EXCLUDED` indique "les valeurs que tu as essayé d'insérer mais qui ont été exclues à cause du conflit"
+
+- L'étudiant avec `id = 1` verra ses info mise à jour 
+- Les étudiants avec `id = 2` et `id = 3` seront ajoutées à la table
+
+### Ignorer les conflits 
+
+Si on ne souhaite pas mettre à jours les données, mais juste ignorer les lignes qui posent problèmes, on utilise `DO NOTHING`
+```sql
+INSERT INTO students (id, name, age)
+VALUES
+    (1, 'Peter', 22),  -- Cet étudiant existe déjà
+    (2, 'Anna', 20),  -- Nouvel étudiant
+    (3, 'Mal', 25) -- Nouvel étudiant
+ON CONFLICT (id) DO NOTHING;
+```
+
+Les lignes en conflits ne seront pas insérées, et les autres s'installeront dans la base.
+
+### Logge des erreurs 
+
+Parfois, ignorer ou update les données ne suffit pas. Par exemple, on veux enregistrer les conflits pour les analyser plus tard. On peut créer une table spéciale pour logguer les erreurs 
+```sql
+CREATE TABLE conflict_log (
+    conflict_time TIMESTAMP DEFAULT NOW(),
+    id INT,
+    name TEXT,
+    age INT,
+    conflict_reason TEXT
+);
+```
+
+On ajoute ensuite une gestion d'erreurs avec le logging 
+
+```sql
+INSERT INTO students (id, name, age)
+VALUES
+    (1, 'Peter', 22),
+    (2, 'Anna', 20),
+    (3, 'Mal', 25)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    age = EXCLUDED.age
+RETURNING EXCLUDED.id, EXCLUDED.name, EXCLUDED.age
+INTO conflict_log;
+```
+
+Cet exemple ne marque que dans les procédure stockées avec PL-SQL.
+
+---
+
+## CHARGEMENT DES DONNEES DEPUIS LE SERVEUR
+
+Lorsque les données sont déjà présente sur le serveur, on peut utiliser la commande `COPY` pour les charger dans des tables PG. 
+
+La commande est rapide car les fichiers sont déjà sur le serveur, donc pas de transferr via le réseau à réaliser. C'est également plus sécurisé car pas besoin de les copier depuis le pc local, et c'est simple d'intégrer le chargement dans des scripts ou des services en arrière plan.
+
+```sql
+COPY table_name
+FROM '/path/to/file.csv'
+WITH (FORMAT CSV, HEADER TRUE);
+```
 
 
+### Configuration des droits d'accès 
+
+PG doit avoir accès au fichier pour utiliser la commande. Pour vérifier :
+1. Le fichier doit être lisible par l'utilisateur PG
+2. Vérifier les droits sur le fichier ou le dossier se trouve 
+```bash
+ls -l /var/lib/postgresql/data/students.csv
+```
+
+Pour changer les droits 
+```bash
+chmod 644 /var/lib/postgresql/data/students.csv
+chown postgres:postgres /var/lib/postgresql/data/students.csv
+```
+
+### Limitation de COPY 
+
+Le chemin du fichier doit être en absolu.
+
+Si l'encodage n'est pas le même, il faut le préciser dans la commande 
+
+```sql
+COPY students
+FROM '/var/lib/postgresql/data/students.csv'
+WITH (FORMAT CSV, ENCODING 'WIN1251', HEADER TRUE);
+```

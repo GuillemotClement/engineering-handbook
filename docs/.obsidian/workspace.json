@@ -183,10 +183,15 @@
       "bases:Create new base": false
     }
   },
-  "active": "c0edf18b74818414",
+  "active": "901c68998a403c58",
   "lastOpenFiles": [
     "language/sql/20-transaction.md",
+    "language/sql/06-selection-tri.md",
+    "language/sql/02-instruction-base.md",
+    "language/sql/05-formatage-des-donnees.md",
+    "language/sql/05_formatage_des_donnees.md",
     "language/sql/21-import-data.md",
+    "language/sql/21-import_data.md",
     "language/sql/18-foreign-key-relation.md",
     "language/sql/17-table-temporaire.md",
     "language/sql/19-insertion-update-delete.md",
