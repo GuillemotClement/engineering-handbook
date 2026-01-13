@@ -47,11 +47,11 @@ nav:
           - Tanstack Query: language/react/tanstack/tanstack-query.md
       - Express: language/express/index.md
       - SQL:
-          - Introduction: language/sql/01-introduction
-          - Instruction de base: language/sql/02-instruction_base.md
+          - Introduction: language/sql/01-introduction.md
+          - Instruction de base: language/sql/02-instruction-base.md
           - Postgres: language/sql/03-postgres.md
-          - Formatage: language/sql/05_Formatage_des_donnees.md
-          - Selection et trie: language/sql/06_selection_tri.md
+          - Formatage: language/sql/05-formatage-des-donnees.md
+          - Selection et trie: language/sql/06-selection-tri.md
           - Fonction d'agrégat: language/sql/07-regroupement-agregat.md
           - GROUP BY - HAVING: language/sql/08-utilisation-avancee-agregat.md
           - Travailler avec le NULL: language/sql/09-null.md
