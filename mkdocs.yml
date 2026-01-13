@@ -68,6 +68,7 @@ nav:
           - Insertion, update et supression des données: language/sql/19-insertion-update-delete.md
           - Transaction: language/sql/20-transaction.md
           - Chargement de données en masse: language/sql/21-import-data.md
+          - Normalisation des données: language/sql/22-normalisation.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md
