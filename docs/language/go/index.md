@@ -1,3 +1,6 @@
+## Lint 
+
+https://golangci-lint.run/
 ## Projet 
 
 ### Créer un nouveau projet Go 
@@ -13,7 +16,6 @@ Le package principal est le `main`.
 ```go
 package main 
 ```
-
 
 ### Import de dépendance
 
@@ -187,5 +189,21 @@ return
 
 c.IndentedJSON(http.StatusNotFound, gin.H{"message": "task not found"})
 
+}
+```
+
+---
+## TEST 
+
+```go
+import "testing"
+
+func TestBonjour(t *testing.T){
+	result := Bonjour() // la fonction tester
+	want := "Hello";
+	
+	if result != attendu {
+		t.Errorf("reçu %q attendu %q", result, want)
+	}
 }
 ```

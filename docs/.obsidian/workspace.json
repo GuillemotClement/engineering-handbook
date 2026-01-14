@@ -185,8 +185,9 @@
   },
   "active": "901c68998a403c58",
   "lastOpenFiles": [
-    "language/sql/21-import-data.md",
+    "language/go/index.md",
     "language/sql/22-normalisation.md",
+    "language/sql/21-import-data.md",
     "language/jest/index.md",
     "Untitled.md",
     "language/jest",
@@ -214,7 +215,6 @@
     "01-base.md",
     "language/css/02-style-formulaire.md",
     "language/HTML",
-    "language/css/index.md",
     "language/css",
     "language/hono"
   ]
