@@ -24,7 +24,7 @@ print(maVariable)
 
 ---
 
-# Variables
+## Variables
 
 Les variables permettent de stocker de la donnée et permet de venir les utiliser dans un programme. La valeur d'une variable peut évoluer pendant l'exécution du script.
 
@@ -42,7 +42,7 @@ my_height = 175
 print(my_name)
 ```
 
-## Déclaration multiple 
+### Déclaration multiple 
 
 ```python 
 sword_name, sword_damage, sword_length = "Excalibur", 10, 200

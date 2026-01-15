@@ -13,15 +13,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/22-normalisation.md",
+                "file": "concept/workflow.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "22-normalisation"
+              "title": "workflow"
+            }
+          },
+          {
+            "id": "36991e8c5718d783",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "templates/Untitled.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -156,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/22-normalisation.md",
+                "file": "templates/Untitled.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 22-normalisation"
+              "title": "Outline of Untitled"
             }
           }
         ],
@@ -183,13 +198,23 @@
       "bases:Create new base": false
     }
   },
-  "active": "901c68998a403c58",
+  "active": "36991e8c5718d783",
   "lastOpenFiles": [
-    "language/go/index.md",
+    "concept/workflow.md",
+    "templates/Untitled.md",
+    "templates",
+    "language/sql/24-cte.md",
+    "language/java/03-types.md",
+    "language/java/01-programme-java.md",
+    "language/java/02-variables.md",
+    "language/python/02-fonctions.md",
+    "language/java",
+    "language/python/index.md",
+    "language/sql/23-modelisation-diagramme.md",
     "language/sql/22-normalisation.md",
+    "language/go/index.md",
     "language/sql/21-import-data.md",
     "language/jest/index.md",
-    "Untitled.md",
     "language/jest",
     "language/sql/20-transaction.md",
     "language/sql/06-selection-tri.md",
@@ -204,16 +229,7 @@
     "language/rust",
     "language/sql/19-creation-table.md",
     "language/sql/13-type-donnee.md",
-    "language/sql/16-creation-modification-table.md",
-    "language/sql/15-comparaison-et-conversion.md",
-    "language/sql/14-tableau-et-json.md",
-    "language/typescript/index.md",
-    "index.md",
     "language/typescript",
-    "language/svelte/index.md",
-    "language/HTML/01-base.md",
-    "01-base.md",
-    "language/css/02-style-formulaire.md",
     "language/HTML",
     "language/css",
     "language/hono"
