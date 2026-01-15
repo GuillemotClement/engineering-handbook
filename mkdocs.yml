@@ -34,7 +34,9 @@ nav:
       - C: language/c/index.md
       - Go: language/go/index.md
       - PHP: language/php/index.md
-      - Python: language/python/index.md
+      - Python: 
+          - Base: language/python/index.md
+          - Fonction: language/python/02-fonctions.md
       - JavaSscript:
           - JavaScript: language/javascript/index.md
           - Bun: language/bun/index.md
@@ -69,6 +71,12 @@ nav:
           - Transaction: language/sql/20-transaction.md
           - Chargement de données en masse: language/sql/21-import-data.md
           - Normalisation des données: language/sql/22-normalisation.md
+          - Modélisation des tables: language/sql/23-modelisation-diagramme.md
+          - CTE: language/sql/24-cte.md
+      - Java:
+        - Programme Java: language/java/01-programme-java.md
+        - Variables: language/java/02-variables.md
+        - Types: language/java/03-types.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md
@@ -82,6 +90,7 @@ nav:
       - Zod: tools/zod/index.md
   - Concept:
       - Gestion mémoire: concept/memory_managment.md
+      - Méthodologie de travil: concept/workflow.md
   - Evode:
       - Gestion des modales: evode/modale.md
       - Confirmation: evode/confirmation.md
