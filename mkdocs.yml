@@ -28,13 +28,13 @@ markdown_extensions:
 nav:
   - Language:
       - HTML: language/HTML/base.md
-      - CSS: language/css/index.md 
+      - CSS: language/css/index.md
       - Svelte: language/svelte/index.md
       - Hono: language/hono/index.md
       - C: language/c/index.md
       - Go: language/go/index.md
       - PHP: language/php/index.md
-      - Python: 
+      - Python:
           - Base: language/python/index.md
           - Fonction: language/python/02-fonctions.md
       - JavaSscript:
@@ -73,10 +73,11 @@ nav:
           - Normalisation des données: language/sql/22-normalisation.md
           - Modélisation des tables: language/sql/23-modelisation-diagramme.md
           - CTE: language/sql/24-cte.md
+          - Fonction Window: language/sql/25-windows.md
       - Java:
-        - Programme Java: language/java/01-programme-java.md
-        - Variables: language/java/02-variables.md
-        - Types: language/java/03-types.md
+          - Programme Java: language/java/01-programme-java.md
+          - Variables: language/java/02-variables.md
+          - Types: language/java/03-types.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md
@@ -94,3 +95,5 @@ nav:
   - Evode:
       - Gestion des modales: evode/modale.md
       - Confirmation: evode/confirmation.md
+  - DevOps:
+      - Github action: devops/github_action/index.md
