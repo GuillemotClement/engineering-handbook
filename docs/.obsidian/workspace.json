@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "templates/Untitled.md",
+                "file": "tools/git/index.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Untitled"
+              "title": "index"
             }
           }
         ],
@@ -59,7 +59,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Explorateur de fichiers"
             }
           },
           {
@@ -171,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "templates/Untitled.md",
+                "file": "tools/git/index.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Untitled"
+              "title": "Plan de index"
             }
           }
         ],
@@ -189,34 +189,36 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "templates:Insérer le modèle": false,
+      "command-palette:Ouvrir la palette de commandes": false,
       "bases:Create new base": false
     }
   },
   "active": "36991e8c5718d783",
   "lastOpenFiles": [
+    "language/typescript/index.md",
+    "language/typescript",
+    "language/sql/24-cte.md",
+    "language/sql/23-modelisation-diagramme.md",
+    "language/sql/22-normalisation.md",
+    "language/sql/21-import-data.md",
+    "language/sql/20-transaction.md",
     "concept/workflow.md",
     "templates/Untitled.md",
     "templates",
-    "language/sql/24-cte.md",
     "language/java/03-types.md",
     "language/java/01-programme-java.md",
     "language/java/02-variables.md",
     "language/python/02-fonctions.md",
     "language/java",
     "language/python/index.md",
-    "language/sql/23-modelisation-diagramme.md",
-    "language/sql/22-normalisation.md",
     "language/go/index.md",
-    "language/sql/21-import-data.md",
     "language/jest/index.md",
     "language/jest",
-    "language/sql/20-transaction.md",
     "language/sql/06-selection-tri.md",
     "language/sql/02-instruction-base.md",
     "language/sql/05-formatage-des-donnees.md",
@@ -229,7 +231,6 @@
     "language/rust",
     "language/sql/19-creation-table.md",
     "language/sql/13-type-donnee.md",
-    "language/typescript",
     "language/HTML",
     "language/css",
     "language/hono"
