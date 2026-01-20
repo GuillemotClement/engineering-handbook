@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "templates/Untitled.md",
+                "file": "tools/git/index.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Untitled"
+              "title": "index"
             }
           }
         ],
@@ -171,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "templates/Untitled.md",
+                "file": "tools/git/index.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Untitled"
+              "title": "Outline of index"
             }
           }
         ],
@@ -200,10 +200,16 @@
   },
   "active": "36991e8c5718d783",
   "lastOpenFiles": [
+    "language/sql/25-windows.md",
+    "language/sql/24-cte.md",
+    "language/sql/Untitled",
+    "devops/github_action/index.md",
+    "Untitled.md",
+    "devops/github_action",
     "concept/workflow.md",
+    "devops",
     "templates/Untitled.md",
     "templates",
-    "language/sql/24-cte.md",
     "language/java/03-types.md",
     "language/java/01-programme-java.md",
     "language/java/02-variables.md",
@@ -227,11 +233,8 @@
     "language/sql/19-insertion-update-delete.md",
     "language/rust/index.md",
     "language/rust",
-    "language/sql/19-creation-table.md",
-    "language/sql/13-type-donnee.md",
     "language/typescript",
     "language/HTML",
-    "language/css",
-    "language/hono"
+    "language/css"
   ]
 }
