@@ -33,10 +33,27 @@
               },
               "icon": "lucide-file",
               "title": "index"
+<<<<<<< HEAD
+=======
+            }
+          },
+          {
+            "id": "e6e6cf83de8f9ba8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "language/php/index.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "index"
+>>>>>>> fa5291d06061e3a2d4cb55e435504f558f172c81
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -59,7 +76,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Explorateur de fichiers"
             }
           },
           {
@@ -171,13 +188,21 @@
             "state": {
               "type": "outline",
               "state": {
+<<<<<<< HEAD
                 "file": "tools/git/index.md",
+=======
+                "file": "language/php/index.md",
+>>>>>>> fa5291d06061e3a2d4cb55e435504f558f172c81
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
+<<<<<<< HEAD
               "title": "Outline of index"
+=======
+              "title": "Plan de index"
+>>>>>>> fa5291d06061e3a2d4cb55e435504f558f172c81
             }
           }
         ],
@@ -189,23 +214,33 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "templates:Insérer le modèle": false,
+      "command-palette:Ouvrir la palette de commandes": false,
       "bases:Create new base": false
     }
   },
-  "active": "36991e8c5718d783",
+  "active": "e6e6cf83de8f9ba8",
   "lastOpenFiles": [
+<<<<<<< HEAD
     "language/sql/25-windows.md",
     "language/sql/24-cte.md",
     "language/sql/Untitled",
     "devops/github_action/index.md",
     "Untitled.md",
     "devops/github_action",
+=======
+    "language/typescript/index.md",
+    "language/typescript",
+    "language/sql/24-cte.md",
+    "language/sql/23-modelisation-diagramme.md",
+    "language/sql/22-normalisation.md",
+    "language/sql/21-import-data.md",
+    "language/sql/20-transaction.md",
+>>>>>>> fa5291d06061e3a2d4cb55e435504f558f172c81
     "concept/workflow.md",
     "devops",
     "templates/Untitled.md",
@@ -216,13 +251,9 @@
     "language/python/02-fonctions.md",
     "language/java",
     "language/python/index.md",
-    "language/sql/23-modelisation-diagramme.md",
-    "language/sql/22-normalisation.md",
     "language/go/index.md",
-    "language/sql/21-import-data.md",
     "language/jest/index.md",
     "language/jest",
-    "language/sql/20-transaction.md",
     "language/sql/06-selection-tri.md",
     "language/sql/02-instruction-base.md",
     "language/sql/05-formatage-des-donnees.md",
@@ -233,7 +264,12 @@
     "language/sql/19-insertion-update-delete.md",
     "language/rust/index.md",
     "language/rust",
+<<<<<<< HEAD
     "language/typescript",
+=======
+    "language/sql/19-creation-table.md",
+    "language/sql/13-type-donnee.md",
+>>>>>>> fa5291d06061e3a2d4cb55e435504f558f172c81
     "language/HTML",
     "language/css"
   ]

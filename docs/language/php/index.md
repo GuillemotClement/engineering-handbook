@@ -1,8 +1,20 @@
 # PHP 
 
-## Array 
 
-### array_unique 
+
+## NUMBER 
+
+### number_format()
+
+Cette fonction permet de définir le nombre de chiffre après la virgule d'un nombre.
+
+```php
+number_format(<$variable>, <nombre_de_chiffre_apres_virgule>);
+```
+
+## TABLEAU  
+
+### array_unique() 
 
 Cette fonction permet d'extraite d'un tableau les valeurs distincts et supprime tous les doublons.
 
