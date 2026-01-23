@@ -68,6 +68,14 @@ git branch -D <nameBranche>
 git push origin --delete <namebranche>
 ```
 
+#### Nettoyage des branches
+
+Pour nettoyé le repo distant, et effacer les anciennes branches on peut utiliser une la commande 
+
+```shell
+git fetch --prune 
+```
+
 ---
 ## Tag 
 

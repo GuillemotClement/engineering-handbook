@@ -227,6 +227,9 @@ Permet de conserver la date et l'heure et le fuseau horaire.
 |4|Literature|2023-10-17|11:00:00|12:30:00|2023-10-12 14:01:00|
 |5|Computer Science|2023-10-18|10:00:00|11:30:00|2023-10-12 14:02:00|
 
+
+
+
 ### Opération avec les dates et heures 
 
 Postgres fournit des fonctions pour manipuler les date et les heures.
