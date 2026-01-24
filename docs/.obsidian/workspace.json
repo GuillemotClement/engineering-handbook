@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/sql/26-gestion-temps.md",
+                "file": "tools/linux/index.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "26-gestion-temps"
+              "title": "index"
             }
           }
         ]
@@ -176,13 +176,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/sql/26-gestion-temps.md",
+                "file": "tools/linux/index.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 26-gestion-temps"
+              "title": "Outline of index"
             }
           }
         ],
@@ -205,16 +205,20 @@
   },
   "active": "3249adf4df549b9e",
   "lastOpenFiles": [
+    "tools/linux/Pasted image 20260124132628.png",
+    "tools/linux/Pasted image 20260124113329.png",
+    "tools/linux/Pasted image 20260124112543.png",
+    "devops/VPS/index.md",
+    "tools/linux/index.md",
+    "language/sql/26-gestion-temps.md",
     "language/sql/05-formatage-des-donnees.md",
     "language/sql/00-glossaire.md",
     "language/sql/03-postgres.md",
     "language/sql/02-instruction-base.md",
     "language/sql/01-introduction.md",
-    "language/sql/26-gestion-temps.md",
     "ChatGptApp/index.md",
     "ChatGptApp",
     "language/sql/13-type-donnee.md",
-    "devops/VPS/index.md",
     "devops/Untitled.md",
     "devops/VPS",
     "language/sql/25-windows.md",

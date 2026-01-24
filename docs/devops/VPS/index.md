@@ -66,3 +66,11 @@ Dans celui ci on viens y placer les repo du coup.
 Les fichiers build, sont à placer dans `var/www/<mon_projet>`
 
 Pour ajouter le fichier de configuration , on le place dans le dosier `/etc/nginx/sites-available/mon-app`
+
+Pour mettre à jour en copiant :
+```shell
+# Copiez le CONTENU de dist (notez le /* à la fin) 
+sudo cp -r ~/projects/Ubrun/front/dist/* /var/www/html/ubrun/ 
+# Vérifiez 
+ls -la /var/www/html/ubrun/
+```
