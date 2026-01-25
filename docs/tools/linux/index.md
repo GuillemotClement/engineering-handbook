@@ -1253,6 +1253,20 @@ else
 fi
 ```
 
+#### Opérateur de comparaison Bash 
+
+Pour les nombres :
+- `-eq` : égal
+- `-ne`: différent 
+- `-lt` : inférieur à
+- `-le` : inférieur ou égale
+- `-gt` : supérieur 
+- `-ge` : supérieur ou égale 
+
+Pour les chaîne :
+- `=` ou `==` : égale à
+- `!=`: différent de
+
 #### Vérification de l'existence d'un fichier 
 
 ```bash
@@ -1287,6 +1301,32 @@ fi
 
 - `ping -c 1`: envoie une requête au serveur. Si le serveur répond, la condition est vraie 
 - `&> /dev/null`: cache la sortie de la commande pour ne pas flood le terminal
+
+#### Condition sur la sortie d'une commande 
+
+```bash
+# on fais une commande
+git pull
+
+# on viens vérifie que la commande n'as pas retourné d'erreur 
+if [ $? -eq 0 ]; then 
+	echo "La commande à réussis"
+else 
+	echo "La commande à échouer"
+fi 
+```
+
+On peut également utiliser cette forme 
+
+```bash
+# on vérifie directement le retour de la commande 
+if git pull; then 
+	echo "La commande à réussis"
+else 
+	echo "La commande à échouer"
+fi 
+```
+
 
 ### Elif 
 
@@ -1882,3 +1922,143 @@ Une fois l'alias configurer, on peut se connecter au serveur via cette commande 
 ```bash
 ssh myserver
 ```
+
+---
+## NETCAT
+
+### nc 
+
+`nc` ou `netcat` permet de diagnostiquer les connexions, de vérifier la disponibilité des ports ou d'envoyer des message via `TCP/UDP`.
+
+Ces principales fonctions sont : 
+- Vérification de la disponibilité des ports 
+- L'établissement de connexions entre deux hôtes
+- Le diagnostic des problèmes réseau
+- Le lancement de serveur de test pour échanger des données
+
+#### Vérification des connexions 
+Chaque service écoute sur un port spécifique. Le serveur web par défaut sur le port 80 ou 443, SSH sur le port 22.
+
+La vérification de port permet de savoir si le service est disponible et si le client peut y accéder.
+
+#### Tester une connexion avec un serveur distant et un port 
+```bash
+nc -zv <ip> <port>
+# exemple
+nc -zv 192.168.1.100 22
+
+# retour si succes 
+Connection to 192.168.1.100 22 port [tcp/ssh] succeeded!
+
+# retour si echec 
+nc: connect to 192.168.1.100 port 22 (tcp) failed: Connection refused
+```
+
+- `-z` : indique que l'on veux tester le port 
+- `-v` : affiche les détails 
+
+#### Tester une plage de ports 
+```bash
+nc -zv <ip> <port_start-post_end>
+
+nc -zv 192.168.1.100 20-30
+```
+
+#### Lancer un serveur pour recevoir des données 
+On peut utiliser `netcat` pour créer un mini serveur. 
+```bash
+nc -l <port>
+
+nc -l 12345
+```
+Ce test attends que les connexions entrantes sur ce sport, et tout ce qui est reçus s'affiche dans le terminal
+
+#### Envoyer des données via des connexions TCP/UDP 
+On peux envoyer des message 
+```bash
+echo "Salut, monde !" | nc <ip> <port>
+
+echo "Salut, monde !" | nc 192.168.1.100 12345
+```
+
+Si sur la machine cible, le port est ouvert, et que `nc -l <port>` tourne, alors le client reçoit le message.
+
+---
+
+## SÉCURITÉ LINUX
+
+La sécurité sous Linux, c'est d'abord une stratégie de minimisation des privilèges et un contrôle d'accès fiable. On peut imaginer Linux comme une forteresse à plusieurs couches : plus on avance, et plus il y a une vérification. 
+
+### Division des droits d'accès 
+
+- **Utilisateur (user)**: compte individuel
+- **Groupes (groups)**: ensemble d'utilisateurs
+- **Root** : super utilisateur avec tous les droits.
+
+### Minimisation des privilèges 
+
+On accorde aux utilisateurs uniquement les droits nécessaires pour accomplir leur tâches.
+
+### Prévention des menaces 
+
+- **Mise à jour régulière du systèmes**: la mise à jour du système permet une "mise à jour" de l'antivirus.
+- **Contrôle d'accès aux fichiers importants**
+- **Restriction de l'accès root**: privilégier un utilisateur pour travailler sur le serveur.
+
+### Configuration de la politique de mot de passe 
+
+La longueur minimal et la complexité d'un mot de passe peuvent être configurées avec PAM
+```bash
+sudo nano /etc/security/pwquality.conf
+```
+
+### ufw
+
+Uncomplicated Firewall. est un outil qui permet de configurer les règles de pare feu. 
+
+```bash
+# installation 
+sudo apt update
+sudo apt install ufw
+
+# aciver
+sudo ufw enable
+
+# vérifier son statut 
+sudo ufw status
+
+# autoriser un port 
+sudo ufw allow 22
+
+# bloquer un port 
+sudo ufw deny 8080
+
+# afficher le numéro d'une règle
+sudo ufw status numbered
+
+# supprimer une règle
+sudo ufw delete 1
+```
+
+### iptables 
+
+Permet de contrôler le trafic, routage, filtrage et modification des paquets 
+
+On retrouve quelques concepts de base :
+
+1. Tables 
+Ce sont les ensembles des fonction pour gérer les paquets réseau.
+- `filtrer`: gestion et filtrage des paquets 
+- `nat`: transformation des adresses/ports
+
+2. Chaînes 
+Ce sont les règles appliqués aux paquets 
+- `INPUT`: autoriser le trafic entrant 
+- `OUTPUT`: pour le trafic sortant
+- `FORWARD`: pour le trafic redirigé 
+
+2. Cibles 
+Ce sont les actions exécutées sur un paquet 
+- `ACCEPT`: autoriser le paquet
+- `DROP`: jeter le paquet 
+- `REJECT`: jeter le paquet tout en envoyant une notification 

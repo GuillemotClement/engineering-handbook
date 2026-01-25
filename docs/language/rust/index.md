@@ -27,6 +27,68 @@ $ cd projet_quelconque
 $ cargo build
 ```
 
+
+## Variables et mutabilité
+
+Par défaut, les variables rust sont immuables. Cela signifie qu'une fois déclaré, la valeur ne peut pas changer.
+
+```rust
+
+let x = 5;
+
+```
+
+Il est possible de rendre une variable mutable avec `mut`
+
+```rust
+
+let mut x = 5;
+
+```
+
+### Constante
+
+On ne peut pas utiliser `mut` avec la constante. On utilise `const` au lieu de `let` et le type de la valeur doit être indiqué.
+
+Elles peuvent être déclarées n'importe où dans le code, même dans la portée globale.
+
+Il n'est pas possible d'y stocker une valeur issue du calcul d'une express, elle doit être issue d'une expression constante.
+
+```rust
+const TROIS_HEURES_EN_SECONDES: u32 = 60 * 60 * 3;
+```
+
+Les constantes sont valables pendant toutes la durée d'exécution du programme au sein de la portée dans laquelles elles sont déclarées.
+
+### Masquage 
+
+Il est possible de déclarer une variable avec le même nom qu'une variable précédente. On dit alors que la première variable est masquée par la seconde. La valeur de la seconde variable sera alors ce que le programme verras lorsque l'on utilise cette variable.
+
+```rust
+fn main() {
+    let x = 5;
+
+    let x = x + 1; // masquage => la variable contient 6
+
+    {
+        let x = x * 2; // récupère 6 et *2 dessus 
+        println!("La valeur de x dans la portée interne est : {}", x); // 12
+    }
+
+    println!("La valeur de x est : {}", x); // 6, on récupère la seconde valeur
+}
+
+```
+
+Le masquage permet également de changer le type de la valeur.
+```rust
+ let espaces = "   "; // contient une string
+let espaces = espaces.len(); // contient un valeur numérique
+```
+
+
+
+
 ## FONCTION
 
 ### main()

@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "index"
             }
+          },
+          {
+            "id": "1ed9f7876dbf6290",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "tools/linux/index.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "index"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -78,7 +93,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "97f4ba43b0126014",
@@ -183,7 +199,7 @@
       "bases:Create new base": false
     }
   },
-  "active": "3249adf4df549b9e",
+  "active": "1ed9f7876dbf6290",
   "lastOpenFiles": [
     "language/rust/index.md",
     "tools/linux/index.md",
