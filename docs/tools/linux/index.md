@@ -119,8 +119,84 @@ $ cd ..
 $ cd /
 ```
 
+### Lien symbolique
+
+Les liens symbolique permettent de lier deux dossier. L'un contient les fichier, et le second est synchroniser avec le premier.
+
+De cette manière, on place le projet dans le folder des projets. On viens `pull` les updates, et on viens build le projet.
+
+Le symlink fera la syncronisation automatique, et le folder qui est fournis par Nginx aura la mise à jour.
+
+```shell
+ln -s <path_projet_parent> <path_esclave>
+
+# exemple
+sudo ln -s /home/debian/projects/Ubrun/front/dist /var/www/html/ubrun
+```
+
+Une fois le lien symbolique créer, on peut lancer la commande pour vérifier si le lien est bien créer 
+
+```shell
+ls -la <folder_esclave>
+
+# exemple 
+ls -la /var/www/html
+
+# result 
+mon-site -> /home/user/mon-app/dist
+```
+
+Pour supprimer, on utilise la commande 
+
+```shell
+sudo rm -rf /var/www/html/ubrun
+```
+
+
+
+---
+## PIPE 
+
+Les pipes `|` sont un mécanisme qui permet de passer la sortie d'une commande (stdout) comme entrée (stdin) pour une autre commande.
+
+Cet outil permet de combiner des commandes en créant des pipelines pour le traitement des données.
+
+Lorsque l'on utilise un pipe entre des commandes, Linux redirige la sortie standard de la première commande vers l'entrée standard de la suivante.
+Cela permet de traiter efficacement de gros volumes de données sans fichier temporaires.
+
+```bash
+commande1 | commande2 | commande3
+```
+
+- `commande1` : génère des données 
+- `commande2` : traite les données reçues
+- `commande3`: effectue un traitement supplémentaire ou enregistre le résultat
+
+#### Afficher la liste des fichiers et filtrer par modèle
+
+```bash
+ls -l | grep ".txt"
+```
+
+Ici `ls -l` affiche la liste des fichiers, et `grep` filtre uniquement les fichiers avec l'extension `.txt`
+
+#### Compter les lignes contenant un mot spécifique 
+```bash
+cat file.txt | grep "Linux" | wc -l
+```
+
+On affiche le contenu du fichier, on cherche les lignes contenant "Linux" et on compte leur nombre 
+
 ---
 
+## GREP 
+
+`grep` (Global Regular Expression Print) est un utilitaire en ligne de commande pour rechercher les lignes dans des fichiers qui correspondent à un modèle spécifié. Il est utilisé pour filtrer et rechercher des données grâce au support des expression régulières et à ses paramètres flexibles.
+
+- `grep` prend en entrée un fichier texte ou une `stdout`, recherche les lignes qui correspondent au modèle spécifié et les affiche.
+- Si la modèle n'est pas trouvé, la commande de produit aucune sortie.
+
+---
 ## OPERATIONS FICHIERS
 
 ### mkdir 
@@ -841,103 +917,968 @@ systemctl is-enabled <service>
 systemctl is-enabled nginx
 ```
 
-
-
-
-
-
-## PIPE 
-
-Les pipes `|` sont un mécanisme qui permet de passer la sortie d'une commande (stdout) comme entrée (stdin) pour une autre commande.
-
-Cet outil permet de combiner des commandes en créant des pipelines pour le traitement des données.
-
-Lorsque l'on utilise un pipe entre des commandes, Linux redirige la sortie standard de la première commande vers l'entrée standard de la suivante.
-Cela permet de traiter efficacement de gros volumes de données sans fichier temporaires.
-
+#### Retourner les service en erreur 
 ```bash
-commande1 | commande2 | commande3
+systemctl --failed
 ```
 
-- `commande1` : génère des données 
-- `commande2` : traite les données reçues
-- `commande3`: effectue un traitement supplémentaire ou enregistre le résultat
+#### Erreur typique 
 
-#### Afficher la liste des fichiers et filtrer par modèle
+Le service nécessaire n'est pas installé, ou que son nom est incorrect 
+```text
+Failed to start nginx.service: Unit nginx.service not found.
 
-```bash
-ls -l | grep ".txt"
+# pour vérifier le nom 
+systemctl list-unit-files | grep nginx
 ```
-
-Ici `ls -l` affiche la liste des fichiers, et `grep` filtre uniquement les fichiers avec l'extension `.txt`
-
-#### Compter les lignes contenant un mot spécifique 
-```bash
-cat file.txt | grep "Linux" | wc -l
-```
-
-On affiche le contenu du fichier, on cherche les lignes contenant "Linux" et on compte leur nombre 
 
 ---
 
-## GREP 
+## JOURNALISATION 
 
-`grep` (Global Regular Expression Print) est un utilitaire en ligne de commande pour rechercher les lignes dans des fichiers qui correspondent à un modèle spécifié. Il est utilisé pour filtrer et rechercher des données grâce au support des expression régulières et à ses paramètres flexibles.
+Les journaux ou logs enregistre chaque opération importante dans le système. Ils consignent les actions du kernel, des applications, des services et d'autres composants du système. 
 
-- `grep` prend en entrée un fichier texte ou une `stdout`, recherche les lignes qui correspondent au modèle spécifié et les affiche.
-- Si la modèle n'est pas trouvé, la commande de produit aucune sortie.
+Ils permettent de diagnostiquer les problèmes et surveiller le fonctionnement du système.
 
+### journalctl
 
+Cette commande permet de consulter et filtrer les logs. 
 
+Elle affiche tous les logs systèmes, triés par ordre chronologique. 
 
+```bash
+journalctl
+```
 
+#### Filtrage par intervalle de temps 
+Consulter les logs de la dernière heure
+```bash
+journalctl --since "1 hour ago"
+```
 
+Consulter les logs d'un jour spécifique
+```bash
+journalctl --since "2023-10-31"
+```
 
+Indiquer une page de temps spécifique, par exemple les event de 8h à 9h
+```bash
+journalctl --since "2023-10-31 08:00:00" --until "2023-10-31 09:00:00"
+```
 
+#### Filtrage par service 
+On peut venir spécifier le service pour afficher ces logs 
+```bash
+journalctl -u <service>
+journalctl -u nginx
 
+# afficher les logs depuis 1 heures 
+journalctl -u nginx --since "1 hour ago"
+```
 
+#### Logs temps réel 
+```bash
+journalctl -f
+```
 
+#### Rechercher une erreur 
+```bash
+journalctl | grep "ERROR"
+```
 
+Avec cette commande, seule les logs avec le mot `ERROR` seront affichées.
 
+#### Voir les entrée uniquement après redémarrage 
+Permet de voir les logs après le dernier démarrage du système
+```bash
+journalctl -b
 
+# voir avant dernier démarrage 
+journalctl -b -1
+```
 
+#### Filtrer par utilisateur ou PID 
+```bash
+journalctl _UID=<id_user>
+journalctl _UID=1000
 
+journalctl _PID=<PID>
+journalctl _PID=1234
+```
 
+---
 
+## GESTION TEMPS 
 
+La configuration est très importante dans un journal système, pour le fonctionnement du système, la synchronisation des fichiers, le maintien de la sécurité (certificat SSL) et la coordination des tâches de travails.
 
+Dans Linux, le temps pour être représenté sous deux formes :
+- **Temps système (System Time)**: le temps que le système d'exploitation utilise pour ces tâches
+- **Temps matériel (Hardware Time)** : stocké au niveau du matériel (BIOS/UEFI)
 
+### timedatectl 
 
+Utilitaire CLI qui fournit une interface pratique pour gérer l'heure. Il permet de :
+- Vérifier les paramètres actuel de l'heure et du fuseau horaire 
+- Configurer l'heure système et matériel 
+- Paramétrer les fuseaux horaire
+- Activer et désactiver la synchro de l'heure aec NTP
 
-## LIEN SYMBOLIQUE
+Pour vérifier l'heure actuel, on utilise cette la commande 
 
-Les liens symbolique permettent de lier deux dossier. L'un contient les fichier, et le second est synchroniser avec le premier.
+```bash
+timedatectl
+```
 
-De cette manière, on place le projet dans le folder des projets. On viens `pull` les updates, et on viens build le projet.
+On obtient cette sortie 
 
-Le symlink fera la syncronisation automatique, et le folder qui est fournis par Nginx aura la mise à jour.
+```text
+Local time: Tue 2023-10-31 12:34:56 MSK
+Universal time: Tue 2023-10-31 09:34:56 UTC
+RTC time: Tue 2023-10-31 09:34:56
+Time zone: Europe/Moscow (MSK, +0300)
+System clock synchronized: yes
+NTP service: active
+RTC in local TZ: no
+```
 
-```shell
-ln -s <path_projet_parent> <path_esclave>
+- `Local time`: heure locale (système)
+- `Universal time`: heure au format UTC 
+- `RTC time`: heure matérielle 
+- `Time zone`: fuseau horaire actuel 
+- `System clock synchronized`: si l'horloge est syncronisée via NTP 
+- `NTP service`: si le service de synchro de l'heure est actif 
+- `RTC in local TZ`: si l'heure matérielle correspond au fuseau d'horaire local 
+
+#### Lister les fuseaux horaire disponible 
+
+Les fuseau horaire sont listé dans le répertoire `/usr/share/zoneinfo`.
+
+Pour lister les fuseaux 
+```bash
+timedatectl list-timezones
+```
+
+#### Définir un nouveau fuseau 
+```bash
+sudo timedatectl set-timezone Europe/Moscow
+```
+
+### Configuration manuelle de l'heure 
+
+Il est parfois nécessaire de régler manuellement l'heure. C'est utile dans le cas où le serveur se trouve sur un réseau isolé sans accès à internet.
+
+#### Afficher l'heure du système 
+
+```bash#
+date
+```
+
+#### Définir une nouvelle heure 
+```bash
+sudo timedatectl set-time "YYYY-MM-DD HH:MM:SS"
 
 # exemple
-sudo ln -s /home/debian/projects/Ubrun/front/dist /var/www/html/ubrun
+sudo timedatectl set-time "2023-11-01 12:00:00"
 ```
 
-Une fois le lien symbolique créer, on peut lancer la commande pour vérifier si le lien est bien créer 
+### Configuration de l'horloge matérielle 
+L'horloge matériel (RTC) est géré au niveau du BIOS. Si l'horloge matériel n'est pas synchronisée avec l'heure système, cela peut provoquer des problèmes lors du redémarrage.
 
+#### Synchronisation des horloges 
+Cette commande vient définir l'horloge matérielle en fonction de l'heure système.
+```bash
+sudo hwclock --systohc
+```
+
+Pour synchroniser l'heure système avec l'horloge matérielle : 
+```bash
+sudo hwclock --hctosys
+```
+
+### Synchronisation du temps avec NTP 
+Cette synchronisation du temps avec NTP est une méthode pour garder automatiquement l'heure à jour en utilisant des serveurs distants. Généralement activée par défaut.
+
+```bash
+# affiche la configuration
+timedatectl status
+
+# activer la synchro
+sudo timedatectl set-ntp true
+
+# désactiver 
+sudo timedatectl set-ntp false
+
+# vérifier si le système est actif (en cas d'erreur )
+sudo systemctl status systemd-timesyncd
+```
+
+---
+
+## SCRIPT BASH 
+Les scripts bash sont utilisé pour automatiser le travail en écrivant une séquence de commande dans un seul fichier. 
+
+Il permet de créer des routines, des commandes personalisées pour les sauvegardes, la surveillance des ressources ou la gestion des fichiers.
+
+### Création d'un script bash 
+
+Un script bash est un fichier de texte avec une liste de commande. Pour que Linux comprenne que c'est un script, il faut respecter certaines règles.
+
+Les scripts Bash utilise généralement une extension `.sh`. 
+
+Ils doivent obligatoirement commencer par une ligne d'en tête, qui s'appelle le `shebang` et qui indique au système qu'il doit utiliser l'interpréteur `/bin/bash` pour exécuter le script.
+
+```bash
+#!/bin/bash
+```
+
+Pour définir un nouveau script, on commence par écrire le shebang, puis on ajoute ensuite les commandes.
+
+```bash 
+# hello_world.sh
+-------------------
+#!/bin/bash
+echo "Hello world"
+```
+
+Une fois le script écrit, on doit ensuite le rendre exécutable avec cette commande : 
 ```shell
-ls -la <folder_esclave>
+chmod +x hello_world.sh
+```
+
+On peut ensuite lancer le script avec cette commande : 
+```shell
+./hello_world.sh
+```
+Avec cette commande, on lance l'exécution du script.
+
+### Utilisation des variables 
+Pour déclarer une variable 
+```bash
+NOM_DE_VARIABLE="valeur"
 
 # exemple 
-ls -la /var/www/html
-
-# result 
-mon-site -> /home/user/mon-app/dist
+NAME="Linux"
+echo "Bienvenue à $NAME!"
 ```
 
-Pour supprimer, on utilise la commande 
+### Variable intégrées
+- `$USER` : utilisateur actuel 
+- `$HOME`: répertoire personnel 
+- `$PWD` : répertoire de travail actuel 
 
+```bash
+`#!/bin/bash 
+echo "Salut, $USER!" 
+echo "Ton répertoire personnel : $HOME" 
+echo "Tu travailles ici en ce moment : $PWD"`
+```
+
+### Récupérer une saisis utilisateur 
+Pour récupérer une saisie utilisateur, on utilise `read`
+```bash
+#!/bin/bash
+echo "Comment tu t'appelles ?"
+read NAME
+echo "Salut, $NAME !"
+```
+Lorsque l'on lance le script, cela viens ajouter un prompt permettant de récupérer la saisie utilisateur.
+
+### Utiliser des commandes dans un script 
+Bash permet d'exécuter des commandes comme si on les tapais dans un terminal
+```bash
+#!/bin/bash
+echo "Date et heure actuelles :"
+date
+```
+
+### Enregistrer le résultat d'une commande dans une variable 
+Il est possible d'enregistrer la sortie d'une commande dans une variable en utilisant `$()`.
+```bash
+#!/bin/bash
+CURRENT_DATE=$(date)
+echo "Maintenant : $CURRENT_DATE"
+```
+
+### Commentaire 
+Le caractère `#` permet d'ajouter un commentaire dans un script 
+```bash
+#!/bin/bash
+# Ceci est un script de bienvenue
+echo "Bienvenue dans le monde de Bash !"
+```
+
+#### Exemple d'un script qui vérifie si un fichier existe 
+Dans un nouveau fichier `file_checker.sh`
+```bash
+#!/bin/bash
+
+# Demande du nom de fichier
+echo "Entrez le nom du fichier :"
+read FILE_NAME
+
+# Vérifie si le fichier existe
+if [ -f "$FILE_NAME" ]; then
+    echo "Le fichier $FILE_NAME existe."
+else
+    echo "Le fichier $FILE_NAME est introuvable."
+fi
+```
+
+On rend ensuite le script exécutable et on le lance 
+```bash
+chmod +x file_checker.sh
+./file_checker.sh
+```
+
+On obtient cette sortie dans le terminal :
+```text
+Entrez le nom du fichier :
+test.txt
+Le fichier test.txt existe.
+```
+
+### Condition 
+
+Permet de prendre des décision en se basant sur des données entrantes, des variables ou des résultats d'exécution de commande. 
+Par exemple, vérifier si un fichier existe ou s'assure qu'un serveur est accessible avant de passer à l'action suivante.
+
+```bash
+if [ condition ]; then
+    # Ici, le code s'exécute si la condition est vraie
+    echo "La condition est remplie !"
+else
+    # Ici, le code s'exécute si la condition est fausse
+    echo "La condition n'est pas remplie !"
+fi
+```
+
+#### Vérification de l'existence d'un fichier 
+
+```bash
+#!/bin/bash
+
+FILE="/etc/passwd" # on passe dans une variable le fichier rechercher
+
+# si le fichier existe
+if [ -f $FILE ]; then
+    echo "Le fichier $FILE existe."
+else
+    echo "Le fichier $FILE est introuvable."
+fi
+```
+
+- `-f` : vérifie si le fichier existe 
+
+#### Condition avec des commandes 
+
+On peut utiliser le résultat d'exécution d'une commande comme condition.
+
+Dans ce script, on viens vérifier la disponibilité d'un site web
+```bash
+#!/bin/bash
+
+if ping -c 1 example.com &> /dev/null; then
+    echo "Le site est accessible."
+else
+    echo "Le site est inaccessible."
+fi
+```
+
+- `ping -c 1`: envoie une requête au serveur. Si le serveur répond, la condition est vraie 
+- `&> /dev/null`: cache la sortie de la commande pour ne pas flood le terminal
+
+### Elif 
+
+Permet de vérifier plusieurs condition à la suite.
+
+Dans ce script, on viens déterminer le moment de la journée
+```bash
+#!/bin/bash
+
+HOUR=$(date +%H)
+
+if [ $HOUR -lt 12 ]; then
+    echo "Bonjour !"
+elif [ $HOUR -lt 18 ]; then
+    echo "Bon après-midi !"
+else
+    echo "Bonsoir !"
+fi
+```
+
+- `date +%H` : retourne l'heure actuelle au format 24h
+- on compare l'heure actuel avec des valeurs fixe
+
+### WHILE 
+
+Permet d'exécuter des actions tant qu'une condition est valider
+```bash
+#!/bin/bash
+
+SECRET=5
+GUESS=0
+
+while [ $GUESS -ne $SECRET ]; do
+    echo "Saisis ton estimation (nombre de 1 à 10) :"
+    read GUESS
+done
+
+echo "Tu as deviné !"
+```
+
+- La boucle continue tant que le nombre saisie `GUESS` n'est pas égale au nombre secret 
+
+### Combiner des combinaison et des boucles 
+Dans ce script, on veux venir vérifier plusieurs site web 
+```bash
+#!/bin/bash
+
+SITES=("example.com" "google.com" "nonexistent.website")
+
+for SITE in ${SITES[@]}; do
+    if ping -c 1 $SITE &> /dev/null; then
+        echo "$SITE est accessible."
+    else
+        echo "$SITE est inaccessible."
+    fi
+done
+```
+
+- Le tableau `SITES` contient une liste de site web
+- `for` parcourt chaque site du tableau 
+- `if` vérifie l'accessibilité du site avec `ping`
+
+#### Vérification de domaine 
+Le script prends un nom de domaine comme argument et vérifie sa disponibilité 
+```bash
+if ping -c 1 $1 &> /dev/null; then
+    echo "Domaine disponible."
+else
+    echo "Domaine indisponible."
+fi
+```
+
+#### Travail avec des fichiers 
+Un script qui vérifie l'existence de plusieurs fichiers et on affiche le résultat pour chacun d'eux 
+```bash
+FILES=("file1.txt" "file2.txt" "/etc/passwd")
+for FILE in ${FILES[@]}; do
+    if [ -f $FILE ]; then
+        echo "$FILE existe."
+    else
+        echo "$FILE pas trouvé."
+    fi
+done
+```
+
+#### Table de multiplication 
+Un script avec des boucles imbriquées qui affiche une table de multiplication pour les nombres de 1 à 10
+```bash
+for i in {1..10}; do
+    for j in {1..10}; do
+        echo -n "$((i * j)) "
+    done
+    echo ""
+done
+```
+
+---
+
+## AUTOMATISATION 
+
+### cron
+
+Demon qui fonctionne en arrière plan et exécute des tâches programmées à des moments spécifiques. 
+Les horaire de ces tâches sont stockés dans un `crontab` qui sont des fichiers texte.
+
+Chaque utilisateur du système peut avoir son propre `crontab`.
+
+```bash
+crontab -e
+```
+
+Cette commande ouvre le `crontab` de l'utilisateur actuel pour modification. On peut ajouter des tâches en indiquant le format de l'horaire.
+
+Une ligne dans `crontab` se compose de 6 champs
+```bash
+* * * * * COMMANDE
+- - - - -
+| | | | └─ Jour de la semaine (0–7, où 0 et 7 représentent dimanche)
+| | | └── Mois (1–12)
+| | └─── Jour du mois (1–31)
+| └──── Heures (0–23)
+└───── Minutes (0–59)
+```
+
+Par exemple, exécuter la commande chaque jour à midi : 
+```bash
+0 12 * * * echo "Hello, Linux"
+```
+
+Dans un autre exemple, on ajoute une nouvelle ligne de log toutes les 5 minutes :
+```bash
+*/5 * * * * echo "Hello, world! The time is $(date)" >> ~/cron_test.log
+```
+
+Pour vérifier que la tâche à démarré :
+```bash
+tail -f ~/cron_test.log
+```
+
+Pour vérifier les tâches planifiées 
+```bash
+crontab -l
+```
+
+Pour supprimer des tâches 
+```bash
+crontab -r
+```
+
+#### Archivage des fichiers
+On souhaite archiver des fichiers du répertoire `/var/logs` chaque nuit à 3 heures:
+```bash
+#!/bin/bash
+tar -czf /backup/logs_$(date +\%Y-\%m-\%d).tar.gz /var/logs
+```
+On définit ensuite un horaire dans le `crontab`
+```bash
+0 3 * * * /path/to/script.sh
+```
+
+#### Notification de charge système
+On souhaite recevoir une notification si la charge CPU dépasse 80%
+```bash
+#!/bin/bash
+LOAD=$(uptime | awk '{print $10}' | sed 's/,//')
+if (( $(echo "$LOAD > 0.80" | bc -l) )); then
+    echo "Charge CPU élevée : $LOAD" | mail -s "Alerte CPU" you@example.com
+fi
+```
+On configure le cron
+```bash
+*/10 * * * * /path/to/cpu_check.sh
+```
+
+### at 
+
+Utilitaire pour des tâches uniques qui doivent être exécutées à un moment précis. Les tâches ne se répètent pas.
+
+```bash
+echo "echo 'Hello, Linux!'" | at now + 1 minute
+```
+Cette commande exécute la commande dans une minute.
+
+Il est possible de spécifier une heure et une date précise :
+```bash
+echo "echo 'Backup completed!'" | at 10:30 AM tomorrow
+```
+
+#### Gestion des tâches
+Après avoir ajouté une tâches, on peut voir la liste :
+```bash
+atq
+```
+
+Pour supprimer une tâche
+```bash
+atrm <job_id>
+```
+
+### Script bash pour automatiser des tâches avec cron 
+
+On souhaite écrire un script qui vérifie la disponibilité d'un site web et enregistre le résultat dans un fichier log puis on automatise son exécution avec cron.
+
+On commence par écrire un script bash.
+```bash
+#!/bin/bash
+
+# Définir l'adresse du site web
+WEBSITE="example.com"
+
+# Fichier pour enregistrer les résultats
+LOG_FILE="/var/log/site_status.log"
+
+# Vérification de la disponibilité du site avec ping
+if ping -c 1 $WEBSITE &> /dev/null; then
+    # Si le site est disponible
+    echo "$(date): $WEBSITE est joignable" >> $LOG_FILE
+else
+    # Si le site est indisponible
+    echo "$(date): $WEBSITE est non joignable" >> $LOG_FILE
+fi
+```
+
+On vient ensuite créer une tâche planifié avec cron 
+```bash
+*/5 * * * * /path/to/site_check.sh
+```
+
+- `*/5`: indique que la tâche doit s'effectuer toutes les 5 minutes 
+- `/path/to/site_check.sh`: chemin complet vers le script.
+
+---
+
+## TRAVAIL RESEAU
+
+Un réseau est un ensemble d'ordinateurs connectés pour échanger des données. 
+- **Adresse IP**: identifiant unique d'un appareil dans le réseau
+- **Sous-Réseau**: regroupement logique d'appareil dans un réseau. 
+- **Passerelle**: c'est la sortie vers le monde, par laquelles toutes les appareils du réseau local peuvent accéder à internet ou se connecter à d'autre sous-réseaux
+
+### ping 
+
+Utilitaire qui permet de vérifier si un noeu du réseau est accessible. Il envoie une requête `ICMP` et attends une réponse.
+
+```bash
+ping 8.8.8.8
+```
+
+Cette commande envoie un ping vers le serveur, et retourne le résultat :
+```plaintext
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=117 time=10.4 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=117 time=10.2 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=117 time=10.3 ms
+```
+
+- `icmp_seq`: le numéro de la requête envoyée
+- `ttl` : le time to live du paquet (combien de saut il peut effectuer)
+- `time`: le temps en ms pour envoyer et recevoir la réponse
+
+On peut limiter le nombre de requête avec `-c`
+
+```bash
+ping -c 4 8.8.8.8
+```
+
+Cette commande enverra 4 requêtes.
+
+### id addr 
+
+L'interface réseau est ce qui permet à un ordinateur de parler avec le réseau. Cela peut être une interface pour Ethernet ou WLAN, ou des interfaces virtuelles créées pour des tâches spécifiques.
+
+Cette commande affiche la configuration actuelle des interfaces : 
+```bash
+ip addr
+```
+
+Elle retourne ce type de résultats : 
+
+```text
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    inet 192.168.1.100/24 brd 192.168.1.255 scope global dynamic enp0s3
+    inet6 fe80::1a2b:3c4d:5e6f:f7g8/64 scope link
+```
+
+- `lo`: interface local (localhost).
+- `enp0s3`: nom de l'interface réseau de l'adaptateur Ethernet 
+- `inet`: adresse IPV4
+- `inet6`: adresse IPV6
+
+#### Configurer une adresse IP temporaire 
+```bash
+sudo ip addr add 192.168.1.101/24 dev enp0s3
+```
+
+L'adresse sera valable jusqu'au prochaine redémarrage 
+
+---
+
+### ifconfig 
+C'est l'ancienne commande, qui est progressivement remplacer par `ip addr`. Il permet également de gérer les interfaces réseau.
+
+Pour vérifier l'interface:
+```bash
+ifconfig
+```
+
+On obtient un résultat similaire.
+
+#### Désactiver ou activer une interface 
+```bash
+sudo ifconfig enp0s3 down
+sudo ifconfig enp0s3 up
+```
+
+---
+
+## CONFIGURATION DES ROUTES
+
+Le routage est ce qui permet de diriger les requêtes. Chaque appareil sur le réseau à besoin de savor comment atteindre les autres appareils. 
+
+Si un ordinateur veut envoyer une requête au site `example.com`, il doit connaitre :
+- L'adresse de destinations 
+- Par quelle passerelles ou quelle interface le faire 
+
+Il existe deux types de routes :
+- **Routes locales**: indications pour l'appareil du sous réseau 
+- **Routes externes**: indications pour les appareils en dehors du sous réseau 
+
+### ip route 
+La table de routage est une table avec des règles qui définissent où envoyer les paquets en fonction des adresse IP.
+
+Pour afficher la table de routage : 
+```bash
+ip route show
+```
+
+La commande retourne : 
+```text
+default via 192.168.1.1 dev eth0 proto dhcp metric 100
+192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100 metric 100
+```
+
+- `default via 192.168.1.1`: si un paquet n'as pas de destination précise, envoie le via le gateway avec l'adresse `192.168.1.1`
+- `dev eth0`: on utilise l'interface `eth0`
+- `192.168.1.0/24`: route pour tout le sous réseau. 
+- `proto` et `metric`: paramètre supplémentaire 
+
+#### Voir les routes 
+
+Pour visualiser la table de routage, on utilise la commande, mais on peut également utiliser des filtres, pour identifier une route via le réseau local : 
+```bash
+ip route show match 192.168.1.0/24
+```
+
+#### Ajouter des routes 
+Il est possible d'ajouter une route statique, pour par exemple rediriger toutes les requêtes vers un sous réseau spécfique via une certain passerelle, lorsque le routage automatique ne connaît pas certain réseau, qu'on souhaite préciser quel chemin doit utiliser le trafic, on as plusieurs passerelles
+```bash
+sudo ip route add 10.0.0.0/24 via 192.168.1.1 dev eth0
+```
+
+- `10.0.0.0/24` : le sous réseau de destination
+- `via 192.168.1.1` : la passerelle par laquelle les paquets sont envoyés
+- `dev eth0`: interface par laquelle les paquets sortent 
+
+#### Supprimer des routes 
+```bash
+sudo ip route del 10.0.0.0/24
+```
+
+### netstat 
+Cette commande permet d'analyser les connexions courante.
+
+#### Vérifier les connexions actives 
+```bash
+netstat -tun
+```
+
+- `-t` : affiche les connexions TCP 
+- `-u` : affiche les connexions UDP 
+- `-n`: utiliser les adresse numérique au lieu des nom d'hôtes
+
+```text
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 192.168.1.100:22        192.168.1.50:50240      ESTABLISHED
+```
+
+Avec ce retour : 
+- L'adresse `192.168.1.100:22` c'est l'ordinateur qui écoute sur le port 22
+- L'adresse distante `192.168.1.50:50254` est l'hôte distant connecté au port 
+- `ETABLISHED` : connexion active, les données sont en cours de transmission 
+
+#### Ports en écoute
+Pour voir quels ports écoutent sur la machine 
+```bash
+netstat -ltn
+```
+
+- `-l` : affiche uniquement les ports en écoute
+
+### ss
+
+Evolution de `netstat`. Il permet d'affiche plus d'informations, et plus rapidement 
+```bash
+ss -tln
+```
+
+---
+
+## DNS 
+Le DNS s'occupe de convertir une adresse IP en nom de domaine.
+
+Enregistrements DNS : 
+- **Enregistrement A (Adress Record)**: associe un nom de domaine à une adresse IPV4
+- **Enregistrement AAAA** : associe un nom de domaine à une adresse IPV6 
+- **Enregistrement CNAME (Canonical Name)**: indique un alias pour le domaine 
+- **Enregistrement MX (Mail Exchange)**: pointe vers les serveurs de messagerie 
+
+La résolutions de noms c'est lorsque l'on tate le nom d'un domaine dans le navigateur, il envoie une requête au DNS pour obtenir l'adresse IP.
+
+### nslookup 
+
+Utilitaire qui permet de vérifier le fonctionnement du DNS. 
+```bash
+nslookup [options] [domaine ou adresse IP]
+
+# exemple 
+nslookup google.com
+```
+
+On obtient ce type de retour : 
+```txt
+Server:         8.8.8.8 
+Address:        8.8.8.8#53  
+Non-authoritative answer: 
+Name:   google.com 
+Address: 142.250.74.206
+```
+
+- `Server`: le serveur DNS qui traite la demande
+- `Non-authoritative answer`: signifie que l'information a été otenue non pas à partir du serveur DNS racine mais via le cache d'un autre serveur 
+
+#### Vérification du serveur DNS 
+On peut utiliser un serveur DNS spécifique en le précisant dans la commande 
+```bash
+nslookup google.com 8.8.8.8
+```
+
+#### Trouver l'adresse IP d'un site 
+```bash
+nslookup <nom_domaine>
+```
+
+### dig 
+
+Domain Information Groper - outil plus avancée pour travailler avec DNS. Il fournit des informations détaillées sur les requêtes et réponse DNS 
+```bash
+dig [domaine] [options]
+
+# exemple 
+dig google.com
+```
+
+Il retourne ce type de réponse : 
+```bash
+;; Question section:
+;google.com.			IN	A
+
+;; ANSWER SECTION:
+google.com.		300	IN	A	142.250.74.206
+
+;; Query time: 35 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Thu Oct 19 10:00:00 UTC 2023
+;; MSG SIZE  rcvd: 68
+```
+
+- `ANSWER SECTION`: adresse IP associées au domaine 
+- `Query Time`: temps de traitement de la requête 
+- `SERVER`: serveur DNS qui a traité la requête 
+
+#### Vérfifier les enregistrement DNS 
+
+##### Enregistrement A (IPV4)
+```bash
+dig linux.org A
+```
+Retourne les adresse IPV4 pour le domaine 
+
+##### Enregistrement AAAA (IPV6)
+```bash
+dig linux.org AAAA
+```
+Retourne les adresse IPV6
+
+##### Enregistrement MX (mail)
+```bash
+dig linux.org MX
+```
+Permet de vérifier quels serveurs gèrent le courrier pour le domaine 
+
+---
+
+## SSH 
+
+Le SSH (Secure Shell) est un outil qui permet de gérer les serveurs à distance. 
+
+C'est un protocole réseau qui permet de se connecter en sécurité à des ordinateurs distants. La connexion se fait à l'aide d'un chiffrement, de cette manière les données sont protégées. 
+
+### Connexion via SSH 
+```bash
+ssh <username>@<hostname>
+```
+
+- `username` : nom d'utilisateur sur le serveur 
+- `hostname`: adresse IP ou nom de domaine du serveur 
+
+### Installation du serveur SSH 
+
+Sur le serveur, il faut venir l'installer si il n'est pas présent.
 ```shell
-sudo rm -rf /var/www/html/ubrun
+sudo apt update 
+sudo apt install openssh-server
+```
+
+On vérifie ensuite le statut du service SSH 
+```shell
+sudo systemctl status ssh
+```
+
+On obtient un message qui affiche sur le service est lancer.
+
+Si le serveur n'est pas démarré, on utilise :
+```sh
+sudo systemctl start ssh 
+sudo systemctl enable ssh 
+```
+
+### Configuration 
+
+Le fichier de configuration se trouve dans `etc/ssh/sshd_config`. 
+
+Il contient plusieurs paramètres :
+- `Port 22`: le port sur lequel fonctionne SSH 
+- `PermitRootLogin no`: interdiction de connexion pour root
+- `PasswordAuthentication yes` : autorisation de connexion par mot de passe 
+
+Une fois les paramètre modifiés, il faut redémarrer SSH :
+```sh
+sudo systemctl restart ssh
+```
+
+### Authentification par clé
+Pour se connecter au serveur, il est plus sécurisé d'utiliser une clé SSH.
+
+#### Générer une clé SSH 
+Sur la machine client, on utilise la commande :
+```sh
+ssh-keygen
+```
+
+Le script demande où sauvegarde la clé (par défaut `~/.ssh/id_rsa`).
+
+Une fois la commande exécutée, les fichiers de clés seront crées:
+- `id_rsa`: clé prévié => à ne surtout pas rendre publique !
+- `id_rsa.pub`: clé publique, celle que l"on utilise pour se connecter 
+
+#### Transférer la clé sur le serveur 
+Une fois la clé généré, on peut venir l'envoyer sur le serveur. c'est la clé publique qui doit être envoyé ! 
+```sh
+ssh-copy-id username@hostname
+```
+
+Cette commande ajoute la clé publique dans le fichier `~/.ssh/authorized_keys` sur le serveur. 
+
+On peut ensuite se connecter sur le serveur sans mot de passe.
+
+### Alias SSH 
+Lorsque l'on se connecte souvent sur des serveurs, on peut utiliser des alias pour simplifier la connexions au serveur.
+
+Les alias sont ajouter dans le fichier `~/.ssh/config` : 
+```bash
+Host myserver # alias 
+    HostName 192.168.1.10 # ip du serveur 
+    User student # nom d'utilisateur sur le serveur 
+    IdentityFile ~/.ssh/id_rsa # clé privé associé 
+```
+
+Une fois l'alias configurer, on peut se connecter au serveur via cette commande :
+```bash
+ssh myserver
 ```

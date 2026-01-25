@@ -1,3 +1,70 @@
+## CARGO 
+
+```shell
+# nouveau projet
+cargo new <name_project>
+
+# build 
+cargo build 
+
+# lancer le script
+./target/debug/<project_name>
+
+# lancer le script
+cargo run 
+
+# check script 
+cargo check 
+
+# compiler et diffuser -> target/reale est placer le binaire  + optimisation
+cargo build --release
+```
+
+### Récupérer un projet 
+```shell
+$ git clone example.org/projet_quelconque
+$ cd projet_quelconque
+$ cargo build
+```
+
+## FONCTION
+
+### main()
+
+C'est la fonction point d'entrée d'un programme rust 
+
+```rust 
+fn main() {
+    println!("Hello, world!");
+}
+```
+
+- `fn` : permet de déclarer une fonction 
+
+## LIB 
+
+En haut du fichier, on définis les lib que l'on souhaite importer dans le fichier.
+
+```rust
+use std::io; // ici on importe la lib pour traiter in/out
+```
+
+## AFFICHAGE 
+
+```rust
+println!() // affiche une chaîne à l'écran
+```
+
+## VARIABLE 
+
+```rust
+let mut supposition = String::new(); // déclare une variable mutable
+
+let pommes = 5; // déclare une variable => immuables 
+```
+
+- `String::new()` : fonction qui retourne une instance de String. `String` est un type de chaîne fournis par la lib standard qui est une portion de texte encodé en UTF8 et dont la longueur peut augmenter
+- `::` : indique que `new` st une fonction associé au type `String`. Une fonction associée est une fontion qui est
 # Variable
 
 ```rust

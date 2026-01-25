@@ -22,26 +22,6 @@
             }
           }
         ]
-      },
-      {
-        "id": "1f24864390a2cb84",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "0757f8dcedbb3f6d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "language/sql/00-glossaire.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "00-glossaire"
-            }
-          }
-        ]
       }
     ],
     "direction": "vertical"
@@ -205,11 +185,12 @@
   },
   "active": "3249adf4df549b9e",
   "lastOpenFiles": [
+    "language/rust/index.md",
+    "tools/linux/index.md",
     "tools/linux/Pasted image 20260124132628.png",
     "tools/linux/Pasted image 20260124113329.png",
     "tools/linux/Pasted image 20260124112543.png",
     "devops/VPS/index.md",
-    "tools/linux/index.md",
     "language/sql/26-gestion-temps.md",
     "language/sql/05-formatage-des-donnees.md",
     "language/sql/00-glossaire.md",
