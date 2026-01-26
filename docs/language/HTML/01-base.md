@@ -306,3 +306,91 @@ On peut utiliser des lib comme **Prism.js** ou **Highlight.js** pour mettre en v
   <body>
 </html>
 ```
+
+---
+
+## BLOC 
+
+Les éléments de type bloc sont utilisées pour créer la structure et organiser le contenu d'une page web. Ils aident à diviser le contenu en bloc, segments logique.
+
+Ces éléments commencent une nouvelle ligne et occupent toutes la largueur disponible.
+
+- **Elément bloc**: se place sur une nouvelle ligne et occupe toute la largeur 
+- **Marge automatique**: les navigateur ajoutent des marges avant et après 
+### p
+
+La balise `<p>` permet de créer des paragraphes de texte. C'est un élément bloc, ce qui signifie que chaque paragraphe commence  sur une nouvelle ligne, et possède des marges en haut et en bas.
+```html
+<p>
+  Ceci est le premier paragraphe de texte. Les paragraphes sont utilisés pour diviser le texte en blocs logiques,
+  améliorant ainsi sa lisibilité.
+</p>
+<p>Ceci est le second paragraphe de texte. Chaque paragraphe commence sur une nouvelle ligne.</p>
+```
+
+### div 
+Conteneur bloc universel utilisé pour regroupé des éléments et appliquer des styles à ceux ci. 
+
+Elle ne possède pas de style intégrés et est utilisée uniquement pour structurer le contenu.
+```html
+<div class="container">
+  <h2>Titre du bloc</h2>
+  <p>Un peu de texte à l'intérieur du bloc div.</p>
+</div>
+```
+
+### span 
+Eléments inline utilisés pour mettre mettre en évidence une partie de texte ou un autre contenu à l'intérieur d'éléments bloc. 
+
+Elle n'as pas de styles intégrés et sert à appliquer des style CSS et des script Js à des parties spécifiques de texte.
+```html
+<p>Ce texte contient un <span class="highlight"> mot</span> surligné, qui est différent du reste du texte.</p>
+```
+
+- **Elément inline**: ne créer pas de nouvelle ligne, et occupe seulement la largeur nécessaire 
+- **Fléxiblité** utilisé pour appliquer des styles à des parties spécifiques du texte ou d'autres éléments
+- **Souvent utilisé avec CSS ou Js**
+
+---
+
+## BLOC DE CITATION 
+
+### blockquote 
+Cette balise est utilisée pour mettre en évidence de gros blocs de texte cité. Les navigateurs généralement ces citations avec un retrait à gauche pour les distinguer du texte principal.
+```html
+<blockquote>
+  "The only limit to our realization of tomorrow is our doubts of today."
+</blockquote>
+```
+
+- Elément bloc 
+- S'affiche souvent avec un retrait à gauche 
+- Peut contenir d'autres éléments bloc et inline 
+- Peut utiliser l'attribut cite pour spécifier l'URL de la source de la citation 
+
+#### cite 
+
+L'attribut `cite` est utilisé pour spécifier la source de la citation. L'attribut ne s'affiche pas visuellement, il aide à conserver l'information sur l'origine de la citation, ce qui est utile pour les moteurs de recherche et d'autres systèmes automatisés de traitement de texte 
+```html
+<blockquote cite="https://example.com/quote-source">
+  "The only limit to our realization of tomorrow is our doubts of today."
+</blockquote>
+```
+
+### cite 
+La balise `<cite>` est utilisée pour indiquer la source d'une citation ou le titre d'une œuvre, comme un livre, un article, un file. 
+
+Le texte est généralement affiché en italique.
+```html
+<p>Source de la citation : <cite>Franklin D. Roosevelt</cite></p>
+```
+
+- Elément inline 
+- S'affiche en italique 
+- Utilisé pour indiquer les sources de citations ou les titres d'oeuvres
+```html
+<blockquote  cite="https://example.com/quote-source">
+  "The only limit to our realization of tomorrow is our doubts of today."
+  <cite>— Franklin D. Roosevelt</cite>
+</blockquote>
+```
