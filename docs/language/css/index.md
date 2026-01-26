@@ -1,5 +1,66 @@
 # CSS 
 
+| Nom de la propriété CSS | Explication              | Exemple                       |
+| ----------------------- | ------------------------ | ----------------------------- |
+| `color`                 | Couleur                  | color: red                    |
+| `height`                | Hauteur                  | height: 400px                 |
+| `width`                 | Largeur                  | width: 100%                   |
+| `background-color`      | Couleur de fond          | background-color: rgb(ffccdd) |
+| `border`                | Bordure de l'élément     | border: 1 px solid black      |
+| `font-size`             | Taille de la police      | font-size: 2em                |
+| `border-radius`         | Rayon des coins arrondis | border-radius: 4px            |
+## SELECTEUR 
+
+Permet de cibler des éléments HTML pour leur appliquer du style.
+
+### Sélecteur de balise
+Applique le style à tous toutes les éléments ciblé
+```css
+tagname {
+    // styles
+}
+```
+
+### Sélecteur de classe 
+On peut appliquer un style CSS à un élément avec une classe
+```html
+</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        p.important {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<p class="important">Ceci est un texte important.</p>
+<p>Ceci est un texte ordinaire.</p>
+</body>
+</html>
+```
+
+
+## LISTE 
+
+### list-style-type 
+Cette propriété permet de changer les puces de la liste.
+```css
+ul.custom-list {
+  list-style-type: katakana; /* Syllabaire japonais */
+  color: blue; /* Couleur du texte */
+}
+
+ol.custom-list {
+  list-style-type: hiragana-iroha; /* Système de classement japonais */
+  color: green; /* Couleur du texte */
+}
+```
+
+
+
+
 ## Commentaire 
 
 ```css

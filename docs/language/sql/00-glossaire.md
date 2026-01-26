@@ -149,6 +149,22 @@ ORDER BY colonne ASC
 LIMIT nombre_de_lignes;
 ```
 
+Pour limiter le nombre de résultat avec une requête dans `SQL Server`, on utilise `TOP`
+
+```sql
+$sql = "SELECT TOP 5
+          Annee,
+          Mois
+	      FROM FacturesCloture
+	      ORDER BY IdFactureCloture DESC";
+```
+
+Dans cette requête, on aura les 5 dernière lignes ajoutée.
+
+
+
+
+
 ---
 
 ### OFFSET 
