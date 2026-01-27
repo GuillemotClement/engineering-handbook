@@ -254,6 +254,15 @@ Ils doit toujours être imbriqué dans une liste.
 
 ## TEXTE 
 
+- `<b>` : texte en gras sans signification particulière 
+- `<strong>` : texte en gras avec importance
+- `<i>` : texte en italique 
+- `<em>` : text italique avec importance 
+
+
+
+
+
 ### pre 
 Utilisé pour afficher du texte en HTML tel qu'il est écrit en conservant tous les espaces, saut de ligne et tabulation.
 
@@ -462,4 +471,142 @@ On peut également insérer des emoji :
 
 ---
 
-## TABLE 
+## TABLEAU  
+
+Les tableaux sont utilisées pour organiser les données. 
+
+- `<table>` : conteneur exterieur du tableau 
+- `<caption>`: permet d'ajouter un titre au tableau 
+- `<tr>` : définit une ligne du tableau 
+- `<th>` : définit une cellule de header 
+- `<td>`: définit une cellule 
+- `<thead>` : header du tableau 
+- `<tbody>`: body du tableau 
+- `<tfoot>` : footer du tableau 
+
+```html
+<table>
+  <caption>Résultats de l'examen</caption>
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ivan</td>
+      <td>91</td>
+    </tr>
+    <tr>
+      <td>Maria</td>
+      <td>94</td>
+    </tr>
+    <tr>
+      <td>Nina</td>
+      <td>89</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Moyenne</td>
+      <td>91.33</td>
+    </tr>
+  </tfoot>
+</table>
+```
+
+### Fusions des cellules 
+
+- `colspan`: permet de fusionner les cellules horizontalement; indique combien de colonne la cellule doit couvrir.
+
+```html
+<table border="1">
+  <tr>
+    <th>Nom</th>
+    <th>Âge</th>
+    <th>Ville</th>
+  </tr>
+  <tr>
+    <td>Alice</td>
+    <td>25</td>
+    <td>Londres</td>
+  </tr>
+  <tr>
+    <td colspan="2">Total</td> # fusion sur 2 cellules
+    <td>2 enregistrements</td>
+  </tr>
+</table>
+```
+
+- `rowspan`: fusion verticale.
+```html
+<table border="1">
+  <tr>
+    <th>Nom</th>
+    <th>Projet</th>
+    <th>Ville</th>
+  </tr>
+  <tr>
+    <td rowspan="2">Alice</td>
+    <td>Projet A</td>
+    <td>Londres</td>
+  </tr>
+  <tr>
+
+    <td>Projet B</td>
+    <td>Batoumi</td>
+  </tr>
+</table>
+```
+
+### Styliser un tableau 
+
+#### Attribut de table
+
+- `border`: l'attribut permet de définir l'épaisseur de la bordure du tableau.
+- `cellpadding`: définit le padding des cellules 
+- `cellspacing`: définit la distance entre les cellules
+- `height`: définit la hauteur.
+- `width`: définit la largeur
+- `align` : définit l'alignement du tableau sur la page
+- `bgcolor`: définir la couleur de fond du tableau ou des cellules
+
+```html
+```html
+<table border="1" cellpadding="10" cellspacing="5" width="80%" align="center" bgcolor="#e0e0e0">
+  <caption>Liste des étudiants et leurs notes</caption>
+  <thead bgcolor="#c0c0c0">
+    <tr>
+      <th align="left">Nom</th>
+      <th align="center">Âge</th>
+      <th align="right">Ville</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ivan</td>
+      <td align="center">30</td>
+      <td align="right">Londres</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center">Marie et Pierre</td>
+      <td align="right">Liverpool</td>
+    </tr>
+    <tr>
+      <td rowspan="2" valign="middle">Anna</td>
+      <td>25</td>
+      <td>Manchester</td>
+    </tr>
+    <tr>
+      <td>27</td>
+      <td>Leeds</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <td colspan="3" align="center">Fin du tableau</td>
+  </tfoot>
+</table>
+```
+
+

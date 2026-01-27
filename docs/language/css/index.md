@@ -58,7 +58,44 @@ ol.custom-list {
 }
 ```
 
+---
 
+## TABLEAU 
+### Style de base pour un tableau 
+```css
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: left;
+}
+
+caption {
+  caption-side: top;
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+th, td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+thead th {
+  background-color: #f2f2f2;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tfoot td {
+  font-weight: bold;
+  background-color: #f2f2f2;
+}
+```
 
 
 ## Commentaire 
