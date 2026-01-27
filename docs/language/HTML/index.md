@@ -609,4 +609,129 @@ Les tableaux sont utilisées pour organiser les données.
 </table>
 ```
 
+---
 
+## FORMATAGE DE TEXTE 
+
+- `<b>` : texte en gras sans signification
+- `<string>` : texte en gras avec accent sur l'importance 
+- `<i>` : texte en italique 
+- `<em>` : texte en italique avec emphase logique o sémantique 
+- `<ul>` : texte souligné 
+- `<ins>` : souligne et indique un texte inséré
+- `<small>` : texte en petit pour des information secondaire 
+- `<s>` : barre le texte 
+- `<del>` : barre et indique une suppression de texte
+- `<mark>` : met en surbrillance le texte 
+- `<sub>` et `<sup>` : créer un texte en indice ou exposant 
+
+```html
+<p>Ce texte est <b>gras</b>, et ce texte est <strong>très important et gras</strong>.</p>
+
+<p>Ce texte est <i>italique</i>, et ce texte est <em>très important et italique</em>.</p>
+
+<p>Ce texte est <u>souligné</u>, et ce texte est <ins>inséré et souligné</ins>.</p>
+
+<p>Ce texte est <s>barré</s>, et ce texte est <del>supprimé et barré</del>.</p>
+
+<p>Ce texte est <mark>en surbrillance</mark> pour attirer l'attention.</p>
+
+<p>Ceci est le texte principal, et ceci est du <small>texte petit</small>.</p>
+
+<p>Ceci est un texte avec un indice H<sub>2</sub>O et un exposant x<sup>2</sup>.</p>
+```
+
+- `<br>`: saut de ligne 
+- `<hr>` : insère une ligne horizontale 
+- 
+```html
+<p>Ceci est un texte avec un saut de ligne<br>à l'intérieur d'un seul paragraphe.</p>
+
+<p>Texte au-dessus de la ligne.</p>
+<hr>
+<p>Texte en dessous de la ligne.</p>
+```
+
+--- 
+
+## IMAGE 
+
+La balise `<img>` permet d'insérer une image dans un document HTML.
+
+```html
+<img src="images/photo.jpg" alt="Description de l'image" width="500" height="300">
+```
+
+- `src` : spécifie le chemin du fichier d'image qui doit être affiché sur la page 
+- `alt` : fournit une description textuelle de l'image
+- `width` : définit la largeur de l'image en pixel. Si l'attribut `heigt` n'est pas spécifié, l'image conserve ses proportions lors du changement de largeur
+- `heigth` : définit la hauteur fixe 
+
+### Optimisation des images 
+
+L'optimisation des images est un processus qui vise à réduire la taille des images sans perte de qualité. Cela permet d'accélérer le chargement des pages web, d'améliorer le confort d'utilisation et bootse le classement du site dans les moteurs de recherche.
+
+#### Choisir le bon format 
+
+Chaque format a ses propres avantages et domaines d'applications : 
+
+**JPEG**
+- Application: photo et image avec beaucoup de couleur 
+- Avantage: haute compression avec perte, ce qui permet de réduire considérablement la taille de fichier 
+- Inconvénient : perte de qualité lors d'une sauvegarde répétée 
+
+**PNG**
+- Application: images avec transparence et graphiques avec lignes nettes, texte
+-  Avantage: compression sans perte, conserve une haute qualité d'image 
+- Inconvénient : taille de fichier plus grand 
+
+**GIF**
+- Application: animations et images avec palette de couleur limitées
+- Avantage: support de l'animation et de la transparence 
+- Inconvénient: palette de couleur limitée
+
+**WebP**
+- Application: format moderne pour différents types d'images 
+- Avantage: support de la compression avec et sans pertes, animations et transparence, haute compression 
+- Inconvénients: support pas encore universel dans tous les navigateurs 
+
+**SVG**
+- Application: images vectorielles, logos et icônes 
+- Avantage: mise à l'échelle sans perte de qualité, petite taille de fichier 
+- Inconvénients: convient uniquement pour les graphiques vectoriels 
+
+#### Compression des images 
+
+La compression permet de réduire la taille du fichier tout en maintenant une qualité d'image acceptable 
+
+**Compression avec perte**
+Cette méthode supprime une partie des données de l'image, ce qui réduit la taille du fichier avec une perte de qualité minime. Utilisé par le JPEG et Webp
+
+- **TinyPNG/TinyJPG**: outils en ligne pour compresser les images. 
+- **ImageOptim** : application Mac 
+- **Squoosh**: outil de google 
+
+**Compression sans perte** : Cette méthode réduit la taille du fichier sans supprimer les données, conservant la qualité d'origine de l'image. Utilisé par PNG et WebP.
+
+- **PNGGauntlet** window
+- **OptiPNG**: utilitaire CLI 
+
+#### Redimensionner les images 
+
+Redimensionner les images à la taille nécessaire avant de les télécharger sur le site aide à réduire leur taille et accélère le chargement de la page.
+- **Adobe Photoshop**
+- **GIMP**
+- **Online Image Resizer** 
+
+Spécifier les attributs `width` et `height` dans les balise `img` permet au navigateur de réserver de l'espace pour les images avant leur chargement, évitant ainsi le décalage lors du chargement de la page.
+
+#### Recommandation 
+
+**Lazy Loading**
+Le chargement différé permet de charger les images uniquement lorsqu'elle apparaissent dans la zone visible de l'écran.
+```html
+<img src="example.jpg" alt="Description de l'image" loading="lazy">
+```
+
+**Mise en cache**
+Configurer la mise en cache serveurs pour les images permet de charger à nouveau les images réutilisées depuis le cache du navigateur.
