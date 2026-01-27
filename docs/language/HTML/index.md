@@ -394,3 +394,72 @@ Le texte est généralement affiché en italique.
   <cite>— Franklin D. Roosevelt</cite>
 </blockquote>
 ```
+
+### q 
+La balise `<q>` est utilisée pour encadrer de courte citation intégrées dans le texte. Les navigateurs ajoutent automatiquement des guillemets autour du texte inclus dans la balise `<q>`.
+```html
+<p>Comme Albert Einstein l'a dit, <q>L'imagination est plus importante que la connaissance</q>.</p>
+```
+
+- Elément inline 
+- Ajoute des guillemets autour de la citation 
+
+On peut également ajouter l'attribut `cite` pour spécifier l'url de la source de la citation 
+```html
+<p>Comme Albert Einstein l'a dit, <q cite="https://example.com/einstein-quote">L'imagination est plus importante que la connaissance</q>.</p>
+```
+
+---
+
+### SYMBOLES SPECIAUX 
+
+### Echappement des caractères 
+En HTML, les caractères spéciaux sont également connus sous le nom de "character entities", sont utilisés pour représenter des caractères qui sinon seraient interprétés comme faisant partie de la syntaxe HTML.
+
+```html
+<p>Utilisez &lt; et &gt; pour indiquer des chevrons, et &amp; pour l'esperluette.</p>
+```
+
+| Nom du caractère   | Caractère | Écriture HTML |
+| ------------------ | --------- | ------------- |
+| Guillemets doubles | "         | `&quot;`      |
+| Esperluette        | &         | `&amp;`       |
+| Symbole inférieur  | <         | `&lt;`        |
+| Symbole supérieur  | >         | `&gt;`        |
+| Espace             |           | `&nbsp;`      |
+| Guillemet simple   | '         | `&#39;`       |
+
+- © : &copy;
+- ® : &reg;
+- ™ : &trade;
+- € : &euro;
+- £ : &pound;
+- ± : &plusmn;
+- × : &times;
+- ÷: &divide;
+- ≤ : &le;
+- ≥: &ge;
+- ∞ : &infin;
+- √ : &radic;
+-  " : &quot;
+- ' : &apos;
+- ← : &larr;
+- ↑ : &uarr;
+- → : &rarr;
+- ↓ : &darr;
+- ↔ : &harr;
+- ♠ : &spades;
+- ♣ : &clubs;
+- ♥ : &hearts;
+- ♦ : &diams;
+
+On peut également insérer des emoji : 
+```html
+<p>Visage souriant : &#x1F600;</p> 
+<p>Cœur : &#x2764;&#xFE0F;</p> 
+<p>Pouce levé : &#x1F44D;</p>
+```
+
+---
+
+## TABLE 
