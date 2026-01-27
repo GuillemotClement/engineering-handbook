@@ -48,9 +48,21 @@
               "icon": "lucide-file",
               "title": "index"
             }
+          },
+          {
+            "id": "0d66a30fc1399991",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.11.5"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.11.5"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -212,7 +224,7 @@
       "bases:Create new base": false
     }
   },
-  "active": "e6e6cf83de8f9ba8",
+  "active": "0d66a30fc1399991",
   "lastOpenFiles": [
     "language/typescript/index.md",
     "language/typescript",
