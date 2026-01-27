@@ -1,4 +1,13 @@
 # JavaScript 
+Technologie permettant d'ajouter des élément dynamique sur une page web. Il permet de réagir aux actions utilisateurs, de modifier le contenu d'une page web, d'intéragir avec des serveurs, etc 
+
+
+
+
+
+
+
+
 
 ## Objet
 

@@ -1,5 +1,7 @@
 # PHP 
+[https://aymeric-auberton.fr/academie/php/chapitre-4-les-tableaux](https://aymeric-auberton.fr/academie/php/chapitre-4-les-tableaux)
 
+a copier dans le site de doc
 
 
 ## NUMBER 

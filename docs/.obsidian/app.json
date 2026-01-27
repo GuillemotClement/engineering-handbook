@@ -2,5 +2,6 @@
   "autoConvertHtml": true,
   "showLineNumber": false,
   "attachmentFolderPath": "./",
-  "showUnsupportedFiles": false
+  "showUnsupportedFiles": false,
+  "promptDelete": false
 }

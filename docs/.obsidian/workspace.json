@@ -1,47 +1,47 @@
 {
   "main": {
-    "id": "0d77cbe6197c0a5b",
+    "id": "437f22594a8a66cf",
     "type": "split",
     "children": [
       {
-        "id": "4f0e658d142a4767",
+        "id": "e9afa0ff350daf5c",
         "type": "tabs",
         "children": [
           {
-            "id": "901c68998a403c58",
+            "id": "bde1d4a086febe54",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "concept/workflow.md",
+                "file": "language/HTML/01-base.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "workflow"
+              "title": "01-base"
             }
           },
           {
-            "id": "36991e8c5718d783",
+            "id": "828f396342e0566c",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tools/git/index.md",
+                "file": "language/HTML/01-base.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "01-base"
             }
           },
           {
-            "id": "e6e6cf83de8f9ba8",
+            "id": "9e5f2d640e57db35",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "language/php/index.md",
+                "file": "language/javascript/index.md",
                 "mode": "source",
                 "source": false
               },
@@ -62,21 +62,21 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
   },
   "left": {
-    "id": "2fb0c87ef9522b0d",
+    "id": "6e4cfb5ef7987f29",
     "type": "split",
     "children": [
       {
-        "id": "d3601ed8559a2654",
+        "id": "bb0346b470650285",
         "type": "tabs",
         "children": [
           {
-            "id": "c0edf18b74818414",
+            "id": "9020a29b2e72b8c6",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -85,11 +85,11 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Explorateur de fichiers"
+              "title": "Files"
             }
           },
           {
-            "id": "aca62aeb6a8cf2ee",
+            "id": "177128f6bbbace45",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -106,7 +106,7 @@
             }
           },
           {
-            "id": "bad73ccd9345b0ca",
+            "id": "0c72910d0165dcef",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -122,21 +122,21 @@
     "width": 300
   },
   "right": {
-    "id": "027eabd77fd3de50",
+    "id": "97f4ba43b0126014",
     "type": "split",
     "children": [
       {
-        "id": "362e5f9a3fc79f71",
+        "id": "496d1551be558519",
         "type": "tabs",
         "children": [
           {
-            "id": "b7b92b4df1a19ef8",
+            "id": "eb306b4041a21233",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "language/hono/index.md",
-                "collapseAll": false,
+                "file": "language/sql/26-gestion-temps.md",
+                "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
@@ -145,25 +145,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for index"
+              "title": "Backlinks for 26-gestion-temps"
             }
           },
           {
-            "id": "19eaecc58eb68f15",
+            "id": "0acc3be17f70f7ee",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "language/hono/index.md",
+                "file": "language/sql/25-windows.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from index"
+              "title": "Outgoing links from 25-windows"
             }
           },
           {
-            "id": "26e42ee3f62707a1",
+            "id": "bd62dc5e2df5bbcb",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -178,7 +178,7 @@
             }
           },
           {
-            "id": "b677724e01463b92",
+            "id": "2603fdc6eaa6d517",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -192,18 +192,18 @@
             }
           },
           {
-            "id": "98f88725eb196e64",
+            "id": "23e776238023f889",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "language/php/index.md",
+                "file": "language/HTML/01-base.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Plan de index"
+              "title": "Outline of 01-base"
             }
           }
         ],
@@ -215,50 +215,41 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Ouvrir le sélecteur rapide": false,
-      "graph:Ouvrir la vue graphique": false,
-      "canvas:Créer une nouvelle toile": false,
-      "daily-notes:Ouvrir la note quotidienne": false,
-      "templates:Insérer le modèle": false,
-      "command-palette:Ouvrir la palette de commandes": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
       "bases:Create new base": false
     }
   },
-  "active": "0d66a30fc1399991",
+  "active": "e6e6cf83de8f9ba8",
   "lastOpenFiles": [
-    "language/typescript/index.md",
-    "language/typescript",
-    "language/sql/24-cte.md",
-    "language/sql/23-modelisation-diagramme.md",
-    "language/sql/22-normalisation.md",
-    "language/sql/21-import-data.md",
-    "language/sql/20-transaction.md",
-    "concept/workflow.md",
-    "templates/Untitled.md",
-    "templates",
-    "language/java/03-types.md",
-    "language/java/01-programme-java.md",
-    "language/java/02-variables.md",
-    "language/python/02-fonctions.md",
-    "language/java",
-    "language/python/index.md",
-    "language/go/index.md",
-    "language/jest/index.md",
-    "language/jest",
-    "language/sql/06-selection-tri.md",
+    "language/css/index.md",
+    "language/HTML/01-base.md",
+    "language/javascript/index.md",
+    "language/sql/00-glossaire.md",
     "language/sql/02-instruction-base.md",
-    "language/sql/05-formatage-des-donnees.md",
-    "language/sql/05_formatage_des_donnees.md",
-    "language/sql/21-import_data.md",
-    "language/sql/18-foreign-key-relation.md",
-    "language/sql/17-table-temporaire.md",
-    "language/sql/19-insertion-update-delete.md",
+    "language/php/index.md",
+    "tools/linux/index.md",
+    "language/Untitled",
+    "language/html/Untitled.md",
+    "language/html",
     "language/rust/index.md",
-    "language/rust",
-    "language/sql/19-creation-table.md",
+    "tools/linux/Pasted image 20260124132628.png",
+    "tools/linux/Pasted image 20260124113329.png",
+    "tools/linux/Pasted image 20260124112543.png",
+    "devops/VPS/index.md",
+    "language/sql/26-gestion-temps.md",
+    "language/sql/05-formatage-des-donnees.md",
+    "language/sql/03-postgres.md",
+    "language/sql/01-introduction.md",
+    "ChatGptApp/index.md",
+    "ChatGptApp",
     "language/sql/13-type-donnee.md",
-    "language/HTML",
-    "language/css",
-    "language/hono"
+    "devops/Untitled.md",
+    "devops/VPS",
+    "language/sql/25-windows.md"
   ]
 }

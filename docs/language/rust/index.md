@@ -1,3 +1,132 @@
+## CARGO 
+
+```shell
+# nouveau projet
+cargo new <name_project>
+
+# build 
+cargo build 
+
+# lancer le script
+./target/debug/<project_name>
+
+# lancer le script
+cargo run 
+
+# check script 
+cargo check 
+
+# compiler et diffuser -> target/reale est placer le binaire  + optimisation
+cargo build --release
+```
+
+### Récupérer un projet 
+```shell
+$ git clone example.org/projet_quelconque
+$ cd projet_quelconque
+$ cargo build
+```
+
+
+## Variables et mutabilité
+
+Par défaut, les variables rust sont immuables. Cela signifie qu'une fois déclaré, la valeur ne peut pas changer.
+
+```rust
+
+let x = 5;
+
+```
+
+Il est possible de rendre une variable mutable avec `mut`
+
+```rust
+
+let mut x = 5;
+
+```
+
+### Constante
+
+On ne peut pas utiliser `mut` avec la constante. On utilise `const` au lieu de `let` et le type de la valeur doit être indiqué.
+
+Elles peuvent être déclarées n'importe où dans le code, même dans la portée globale.
+
+Il n'est pas possible d'y stocker une valeur issue du calcul d'une express, elle doit être issue d'une expression constante.
+
+```rust
+const TROIS_HEURES_EN_SECONDES: u32 = 60 * 60 * 3;
+```
+
+Les constantes sont valables pendant toutes la durée d'exécution du programme au sein de la portée dans laquelles elles sont déclarées.
+
+### Masquage 
+
+Il est possible de déclarer une variable avec le même nom qu'une variable précédente. On dit alors que la première variable est masquée par la seconde. La valeur de la seconde variable sera alors ce que le programme verras lorsque l'on utilise cette variable.
+
+```rust
+fn main() {
+    let x = 5;
+
+    let x = x + 1; // masquage => la variable contient 6
+
+    {
+        let x = x * 2; // récupère 6 et *2 dessus 
+        println!("La valeur de x dans la portée interne est : {}", x); // 12
+    }
+
+    println!("La valeur de x est : {}", x); // 6, on récupère la seconde valeur
+}
+
+```
+
+Le masquage permet également de changer le type de la valeur.
+```rust
+ let espaces = "   "; // contient une string
+let espaces = espaces.len(); // contient un valeur numérique
+```
+
+
+
+
+## FONCTION
+
+### main()
+
+C'est la fonction point d'entrée d'un programme rust 
+
+```rust 
+fn main() {
+    println!("Hello, world!");
+}
+```
+
+- `fn` : permet de déclarer une fonction 
+
+## LIB 
+
+En haut du fichier, on définis les lib que l'on souhaite importer dans le fichier.
+
+```rust
+use std::io; // ici on importe la lib pour traiter in/out
+```
+
+## AFFICHAGE 
+
+```rust
+println!() // affiche une chaîne à l'écran
+```
+
+## VARIABLE 
+
+```rust
+let mut supposition = String::new(); // déclare une variable mutable
+
+let pommes = 5; // déclare une variable => immuables 
+```
+
+- `String::new()` : fonction qui retourne une instance de String. `String` est un type de chaîne fournis par la lib standard qui est une portion de texte encodé en UTF8 et dont la longueur peut augmenter
+- `::` : indique que `new` st une fonction associé au type `String`. Une fonction associée est une fontion qui est
 # Variable
 
 ```rust

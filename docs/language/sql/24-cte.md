@@ -161,3 +161,110 @@ SELECT cc.course_id, cc.student_count, cag.avg_grade
 FROM course_counts cc
 JOIN course_avg_grades cag ON cc.course_id = cag.course_id;
 ```
+
+---
+
+## CTE RECURSIFS 
+
+Les CTE récursive permettent de gérer les structures de donnée hiérarchique ou en arbre, comme les organigramme entreprise, les arbres généalogique ou les arborescence de fichier.
+
+Ce sont des expressions qui peuvent s'appeler elle même pour parcourir, et traiter tous les niveaux de données petit à petit.
+
+Une CTE recursive et composé du mot clé `WITH RECURSIVE` ainsi que de deux parties : 
+- **La requête de base**: elle définit le point de départ de la récursivité 
+- **La requête récursive**: elle traite le reste des données en utilisant le résultat de l'étape précédente.
+
+```sql
+WITH RECURSIVE cte_name AS (
+    -- Requête de base
+    SELECT column1, column2
+    FROM table_name
+    WHERE condition_pour_le_cas_de_base
+
+    UNION ALL
+
+    -- Requête récursive
+    SELECT column1, column2
+    FROM table_name
+    JOIN cte_name ON some_condition
+    WHERE condition_arret
+)
+SELECT * FROM cte_name;
+```
+
+### UNION || UNION ALL
+
+Chaque CTE récursive doit utiliser les opérateurs `UNION` ou `UNION ALL` entre la partie de base et la partie récursive
+
+- `UNION`: fusionne les résultats des deux requêtes et supprime les doublons de lignes
+- `UNION ALL`: fusionne et garde toutes les lignes, même les répétées
+
+Par défaut, on prends `UNION ALL` car c'est le plus rapide. Il fusionne juste les résultats sans vérification des doublons.
+
+On utilise `UNION` seulement dans les cas ou on sait que les doublons sont gênants et qu'il faut les retirer.
+
+```sql
+-- UNION : les doublons sont exclus
+SELECT 'A'
+UNION
+SELECT 'A';     -- Résultat : une seule ligne 'A'
+
+-- UNION ALL : les doublons sont gardés
+SELECT 'A'
+UNION ALL
+SELECT 'A';     -- Résultat : deux lignes 'A'
+```
+
+On as une table employees avec les colonnes `employee_id` et `manager_id` et `name`. On veut construire la hiérachie en partant du directeur (la personne sans chef `manager_id = NULL).
+
+|employee_id|name|manager_id|
+|---|---|---|
+|1|Eva Lang|NULL|
+|2|Alex Lin|1|
+|3|Maria Chi|1|
+|4|Otto Mart|2|
+|5|Anna Song|2|
+|6|Eva Lang|3|
+
+On souhaite savoir qui dépend de qui, et connaître le niveau de chaque employé dans la structure. 
+
+```sql
+WITH RECURSIVE employee_hierarchy AS (
+    -- On commence par ceux qui n'ont pas de chef
+    SELECT
+        employee_id,
+        name,
+        manager_id,
+        1 AS level
+    FROM employees
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    -- On ajoute les subordonnés et on augmente le niveau
+    SELECT
+        e.employee_id,
+        e.name,
+        e.manager_id,
+        eh.level + 1
+    FROM employees e
+    INNER JOIN employee_hierarchy eh
+    ON e.manager_id = eh.employee_id
+)
+SELECT * FROM employee_hierarchy;
+```
+
+On obtiens ce genre de résultat : 
+
+|employee_id|name|manager_id|level|
+|---|---|---|---|
+|1|Eva Lang|NULL|1|
+|2|Alex Lin|1|2|
+|3|Maria Chi|1|2|
+|4|Otto Mart|2|3|
+|5|Anna Song|2|3|
+|6|Eva Lang|3|3|
+Cette requête permet de parcourir la hiérarchie des employés. Le champ level est utile pour formater ou visualiser l'arbre.
+
+---
+

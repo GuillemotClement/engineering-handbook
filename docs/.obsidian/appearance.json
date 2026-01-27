@@ -1,6 +1,6 @@
 {
-  "cssTheme": "Things",
-  "theme": "moonstone",
+  "cssTheme": "Catppuccin",
+  "theme": "obsidian",
   "interfaceFontFamily": "JetBrains Mono",
   "textFontFamily": "Inter,JetBrains Mono"
 }
