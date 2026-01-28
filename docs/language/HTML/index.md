@@ -735,3 +735,30 @@ Le chargement différé permet de charger les images uniquement lorsqu'elle appa
 
 **Mise en cache**
 Configurer la mise en cache serveurs pour les images permet de charger à nouveau les images réutilisées depuis le cache du navigateur.
+
+--- 
+
+## AUDIO 
+
+```html
+<audio src="audiofile.mp3" controls></audio>
+```
+
+- `<audio>` : permet d'insérer un fichier audio. 
+- `src` : indique le chemin vers le fichier 
+- `controls`: permet d'afficher les contrôles standards (lecture, pause, etc)
+- `loop`: répète la lecture de l'audio à la fin 
+- `autoplay`: lit automatiquement l'audio au chargement de la page
+- `muted` : coupe le son lors du chargement 
+- `preload`: indique comment le navigateur doit charger l'auto 
+
+### Source multiple 
+Il est possible de renseigner plusieurs sources avec la balise `<source>`pour permettre au navigateur de choisir le format audio supporté 
+
+```html
+<audio controls> 
+	<source src="audiofile.mp3" type="audio/mpeg"> 
+	<source src="audiofile.ogg" type="audio/ogg"> 
+	Votre navigateur ne supporte pas l'élément audio. 
+</audio>
+```
