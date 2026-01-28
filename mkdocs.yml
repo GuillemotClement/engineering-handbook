@@ -29,25 +29,10 @@ nav:
   - Language:
       - HTML: language/HTML/index.md
       - CSS: language/css/index.md
-      - Svelte: language/svelte/index.md
-      - Hono: language/hono/index.md
-      - C: language/c/index.md
-      - Go: language/go/index.md
-      - PHP: language/php/index.md
-      - Python:
-          - Base: language/python/index.md
-          - Fonction: language/python/02-fonctions.md
       - JavaSscript:
           - JavaScript: language/javascript/index.md
           - Bun: language/bun/index.md
           - Elysia: language/elysia/index.md
-      - React:
-          - React: language/react/index.md
-          - Tanstack Router: language/react/tanstack/tanstack-router.md
-          - Tanstack Form: language/react/tanstack/tanstack-form.md
-          - Tanstack Table: language/react/tanstack/tanstack-table.md
-          - Tanstack Query: language/react/tanstack/tanstack-query.md
-      - Express: language/express/index.md
       - SQL:
           - Glossaire: language/sql/00-glossaire.md
           - Introduction: language/sql/01-introduction.md
@@ -76,10 +61,26 @@ nav:
           - CTE: language/sql/24-cte.md
           - Fonction Window: language/sql/25-windows.md
           - Gestion du temps: language/sql/26-gestion-temps.md
+      - PHP: language/php/index.md
+      - Go: language/go/index.md
+      - Python:
+          - Base: language/python/index.md
+          - Fonction: language/python/02-fonctions.md
+      - Svelte: language/svelte/index.md
+      - Hono: language/hono/index.md
+      - C: language/c/index.md
+      - React:
+          - React: language/react/index.md
+          - Tanstack Router: language/react/tanstack/tanstack-router.md
+          - Tanstack Form: language/react/tanstack/tanstack-form.md
+          - Tanstack Table: language/react/tanstack/tanstack-table.md
+          - Tanstack Query: language/react/tanstack/tanstack-query.md
+      - Express: language/express/index.md
       - Java:
           - Programme Java: language/java/01-programme-java.md
           - Variables: language/java/02-variables.md
           - Types: language/java/03-types.md
+      - Rust: language/rust/index.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md
