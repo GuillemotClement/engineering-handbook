@@ -1,10 +1,59 @@
 # JavaScript 
 Technologie permettant d'ajouter des élément dynamique sur une page web. Il permet de réagir aux actions utilisateurs, de modifier le contenu d'une page web, d'intéragir avec des serveurs, etc 
 
+## MULTIMEDIA
 
+Les éléments `<audio>` et `<video>` fournissent une API pour gérer la lecture via JS. 
 
+```html
+<video id="myVideo" src="videofile.mp4" controls></video>
+<button onclick="playVideo()">Play</button>
+<button onclick="pauseVideo()">Pause</button>
+<button onclick="stopVideo()">Stop</button>
+```
 
+```js
+const video = document.getElementById("myVideo");
 
+function playVideo() {
+  video.play();
+}
+
+function pauseVideo() {
+  video.pause();
+}
+
+function stopVideo() {
+  video.pause();
+  video.currentTime = 0;
+}
+```
+
+L'API fournis plusieurs type d'event :
+- `play`: se produit lorsque la lecture commence
+- `pause` : se produit lorsque la lecture se met en pause 
+- `ended`: se produit lorsque la lecture se termine
+- `timeupdate`: se produit périodiquement au fur et à me sure que le temps de lecture change
+
+```js
+const video = document.getElementById("myVideo");
+
+video.addEventListener('play', function() {
+  console.log('Vidéo en cours de lecture');
+});
+
+video.addEventListener('pause', function() {
+  console.log('Vidéo en pause');
+});
+
+video.addEventListener('ended', function() {
+  console.log('Vidéo terminée');
+});
+
+video.addEventListener('timeupdate', function() {
+  console.log('Temps actuel : ' + video.currentTime);
+});
+```
 
 
 

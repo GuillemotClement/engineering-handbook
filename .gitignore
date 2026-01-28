@@ -1,3 +1,4 @@
 .venv/database
 ./docs/.obsidian/*
 todo.md
+docs/.obsidian/workspace.json

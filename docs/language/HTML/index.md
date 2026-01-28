@@ -747,7 +747,7 @@ Configurer la mise en cache serveurs pour les images permet de charger à nouvea
 - `<audio>` : permet d'insérer un fichier audio. 
 - `src` : indique le chemin vers le fichier 
 - `controls`: permet d'afficher les contrôles standards (lecture, pause, etc)
-- `loop`: répète la lecture de l'audio à la fin 
+- `loop`: répète la lecture de l'audio en boucle
 - `autoplay`: lit automatiquement l'audio au chargement de la page
 - `muted` : coupe le son lors du chargement 
 - `preload`: indique comment le navigateur doit charger l'auto 
@@ -759,6 +759,204 @@ Il est possible de renseigner plusieurs sources avec la balise `<source>`pour pe
 <audio controls> 
 	<source src="audiofile.mp3" type="audio/mpeg"> 
 	<source src="audiofile.ogg" type="audio/ogg"> 
+	<source src="audiofile.wav" type="audio/wav">
 	Votre navigateur ne supporte pas l'élément audio. 
 </audio>
 ```
+
+### Format supportés 
+
+- **MP3**: format audio le plus populaire. Il est supporté par tous les navigateurs. Il utilise une compression avec perte, ce qui permet de réduire la taille du fichier tout en maintenant une qualité sonore élevé.
+```html
+<audio src="audiofile.mp3" type="audio/mpeg"></audio>
+```
+
+- **OGG**: format de compression audio ouvert avec perte, supporté par la plupart des navigateurs. Il offre une bonne qualité sonore et est souvent utilisé comme alternative au MP3
+```html
+<audio src="audiofile.ogg" type="audio/ogg"></audio>
+```
+
+- **WAV**: format audio non compressé qui offre une haute qualité sonore. Le fichier est plus lourd que les format précédents.
+```html
+<audio src="audiofile.wav" type="audio/wav"></audio>
+```
+
+---
+
+## VIDEO 
+```html
+<video controls>
+  <source src="videofile.mp4" type="video/mp4">
+  <source src="videofile.webm" type="video/webm">
+  <source src="videofile.ogv" type="video/ogg">
+  Votre navigateur ne supporte pas l'élément vidéo.
+</video>
+```
+
+- `src`: permet de définir la source du fichier vidéo 
+- `controls`: permet d'ajouter les contrôles de lecture
+- `autoplay`: lit automatiquement la vidéo au chargement de la page
+- `loop`: répète la lecture de la vidéo à la fin 
+- `muted`: désactive le son de la vidéo 
+- `preload`: indique comment le navigateur doit charger la vidéo
+- `width` & `heigt`: permet de définir la taille de l'emplacement 
+- `poster`: indique une image de prévisualisation qui s'affiche avant le début de la lecture de la vidéo 
+
+L'attribut `preload` peut prendre trois valeurs : 
+- `none` : le navigateur ne précharge pas
+- `metadata`: le navigateur doit charger uniquement les métadonnées 
+- `auto`: charge complètement la vidéo 
+```html
+<video src="videofile.mp4" preload="auto"></video>
+```
+
+### Format supportés 
+
+- **MP4**: format vidéo le plus populaire. Il utilise une compression avec perte et offre une bonne qualité vidéo avec une taille de fichier relativement petite.
+```html
+<video src="videofile.mp4" type="video/mp4"></video>
+```
+
+- **WebM**: format de compression moderne
+```html
+<video src="videofile.webm" type="video/webm"></video>
+```
+
+- **OGG** : offre une bonne qualité et est souvent utilisé comme alternative 
+```html
+<video src="videofile.ogv" type="video/ogg"></video>
+```
+
+---
+## ATTRIBUT MULTIMEDIA 
+
+Les éléments `<audio>` et `<video>` fournissent de nombreux attributs pour gérer la lecture de contenu. 
+
+### crossorigin 
+
+Cet attribut indique comment le navigateur doit gérer les requêtes pour les fichiers multimédia situé sur d'autre domaines.
+- `anoymous`: la requête est effectuée sans inclusion des informations d'identifications (cookie, en-tête d'autorisation)
+- `use-credentials`: la requête est effectuée avec l'inclusion des informations d'identification 
+```html
+<audio src="https://example.com/audiofile.mp3" controls crossorigin="anonymous"></audio> 
+<video src="https://example.com/videofile.mp4" controls crossorigin="use-credentials" width="800" height="450"></video>
+```
+
+### track 
+Permet d'ajouter des sous-titres, piste textuelle et description. 
+```html
+<video controls width="600">
+  <source src="videofile.mp4" type="video/mp4">
+  <track src="subtitles_en.vtt" kind="subtitles" srclang="en" label="English">
+  <track src="subtitles_es.vtt" kind="subtitles" srclang="es" label="Spanish">
+  Your browser does not support the video element.
+</video>
+```
+
+---
+
+## FIGURE & FIGCAPTION
+
+Ces balises offrent un moyen sémantique d'ajouter des images et éléments multimédia avec des légendes.
+Ces balises permettent d'améliorer la structure du contenu, le rendant plus accessible et compréhensible pour les utilisateurs et moteurs de recherche.
+
+### figure 
+
+Permet de désigner un contenu autonome qui illuste ou explique le reste du document. 
+Il peut contenir une image, un diagramme, un audio, un tableau ou un bloc de code.
+
+Il est généralement utiliser avec l'élément `<figcaption>` qui permet d'ajouter une légende.
+
+Image avec une légende : 
+
+```html
+<figure>
+  <img src="example.jpg" alt="Exemple d'image">
+  <figcaption>Légende de l'image expliquant son contenu</figcaption>
+</figure>
+```
+
+Tableau avec une légende : 
+```html
+<figure>
+  <table>
+    <tr>
+      <th>Titre 1</th>
+      <th>Titre 2</th>
+    </tr>
+    <tr>
+      <td>Donnée 1</td>
+      <td>Donnée 2</td>
+    </tr>
+  </table>
+  <figcaption>Légende du tableau</figcaption>
+</figure>
+```
+
+### figcaption
+
+Cet élément permet d'ajouter une légende au contenu `<figure>`. Il peut être placé avant ou après le contenu.
+
+```html
+<figure>
+  <img src="landscape.jpg" alt="Paysage">
+  <figcaption>Beau paysage avec des montagnes et un lac</figcaption>
+</figure>
+
+<figure>
+  <figcaption>Beau paysage avec des montagnes et un lac</figcaption>
+  <img src="landscape.jpg" alt="Paysage">
+</figure>
+```
+
+### Accessibilité et SEO 
+
+L'utilise des balises permet d'améliorer l'accessibilité et le SEO du site. 
+
+Les logiciels de lecture d'écran comprennent mieux le contexte de l'image avec la balise `<figcaption>`. Les moteur de recherche prennent également en compte la structure du document HTML ce qui permet d'améliorer l’indexation et le classement de la page.
+
+---
+
+## MODELE DE BOITE 
+
+Concept qui décrit la structure et l'affichage des éléments HTML. 
+Le modèle en boite est constitué de deux principaux types d'élément : **bloc** et **inline** . 
+
+### Bloc 
+
+`<div>`	Le conteneur principal pour regrouper d'autres éléments.
+`<p>`	Un paragraphe de texte.
+`<h1> – <h6>`	Titres de différents niveaux.
+`<ul>, <ol>`	Listes non numérotées et numérotées.
+`<li>`	Élément de liste.
+`<section>`	Conteneur sémantique pour une section du document.
+`<article>`	Bloc de contenu indépendant.
+`<aside>`	Contenu lié au contenu principal (barre latérale).
+`<header>`	Partie introductive ou de navigation de la page ou de la section.
+`<footer>`	La partie inférieure de la page ou de la section.
+`<nav>`	Liens de navigation.
+`<main>`	Contenu principal du document.
+
+
+### Inline
+
+Ils occupent uniquement la largeur nécessaire pour leur contenu et ne commencent par sur une nouvelle ligne. 
+
+|Tag HTML|Description|
+|---|---|
+|`<span>`|Conteneur principal pour regrouper du contenu en ligne.|
+|`<a>`|Lien hypertexte.|
+|`<strong>`, `<b>`|Texte en gras.|
+|`<em>`, `<i>`|Texte en italique.|
+|`<img>`|Insertion d'images.|
+|`<code>`|Texte de code.|
+|`<label>`|Association entre une étiquette et un élément de formulaire.|
+|`<input>`, `<select>`, `<textarea>`|Éléments de formulaires.|
+
+### Composant du modèle de boite 
+![[Pasted image 20260128205843.png]]
+
+- **Content**: le contenu interne de l'élément
+- **Padding** : espace entre le contenu et la bordure 
+- **Border**: ligne de la boite 
+- **Margin**: espace entre la boite et les autre boite 
