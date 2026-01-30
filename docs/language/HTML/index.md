@@ -960,3 +960,180 @@ Ils occupent uniquement la largeur nécessaire pour leur contenu et ne commencen
 - **Padding** : espace entre le contenu et la bordure 
 - **Border**: ligne de la boite 
 - **Margin**: espace entre la boite et les autre boite 
+
+---
+
+## PSEUDO-CLASSE ET PSEUDO-ELEMENTS
+
+Elément permettant de styliser les éléments en fonction de leur état ou de leur contenu sans avoir besoin d'ajouter des classes ou de modifier la structure du document HTML.
+
+### Pseudo-classes
+
+S'appliquent aux éléments en fonction de leur état ou de leur position dans la structure du document.
+Elles aident à styliser les éléments, au survole, au focus, ou à la sélection des éléments par exemple.
+Les pseudo-classe comment par `:`.
+
+- `:focus`: applique le style lorsque l'élément obtient le focus, par exemple, au clique sur un champ de saisie
+- `:hover`: applique le style lorsque l'élément est survoler par le curseur 
+- `:active`: applique un style lorsque celui ci est actif (clic sur un client, ou bouton)
+- `:visited`: applique un style 
+
+### Pseudo-éléments 
+Permettent de styliser des parties d'éléments qui ne sont pas des éléments HTML distinct. 
+Ils commencent par `::`.
+
+Ils sont utilisés pour créer et styliser du contenu avant ou après un élément, mettre en evidence la première ligne ou première lettre d'un élément, etc 
+
+#### ::before
+insère du contenu avant le contenu de l'élément 
+```html
+<p>Je m'appelle Stepane.</p>
+```
+
+```css
+p::before {
+  content: "Salut! ";
+  color: blue;
+}
+```
+Avec ce CSS, on avant "Salut!" en bleu avant le paragraphe HTML.
+
+#### ::after
+insère du contenu après le contenu de l'élément 
+```html
+<p>Attention!</p>
+```
+
+```css
+p::after {
+  content: " Merci pour votre attention!";
+  color: red;
+}
+```
+
+![[Pasted image 20260129100215.png]]
+
+#### ::first-line
+S'applique à la première ligne d'un élément. Il permet de styliser uniquement la première ligne du texte 
+```html
+<p>
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+  irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+  cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
+```
+
+```css
+p::first-line {
+  font-weight: bold;
+  color: green;
+}
+```
+
+![[Pasted image 20260129100410.png]]
+
+#### ::selection 
+S'applique au texte sélectionné par l'utilisateur
+```html
+<p>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+</p>
+```
+```css
+::selection {
+  background-color: blue;
+  color: yellow;
+}
+```
+
+Avec ce code, le style s'applique lorsque l'on sélectionne du texte.
+
+#### Insertion d'îcone avant un lien 
+```html
+<html>
+  <head>
+    <style>
+      a::before {
+        content: "🔗";
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+     <a href="#">Ceci est un lien avec une icône</a>
+  </body>
+</html>
+```
+
+---
+
+## FORMULAIRE
+```html
+<form action="/submit" method="post">
+  <label for="username">Nom d'utilisateur:</label>
+  <input type="text" id="username" name="username" required>
+  <br>
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required>
+  <br>
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+### form 
+Cette balise permet de créer un formulaire sur une page web. Elle sert de conteneur pour les éléments du formulaire.
+Toutes les données peuvent être envoyées au serveur pour le traitement.
+
+- `action`: permet de spécifier l'URL à laquelle les données du formulaire seront envoyées après avoir cliqué sur le bouton d'envoi.
+- `method`: permet de spécifier la méthode d'envoie des données `GET` ou `POST`.
+
+### Méthode d'envoie
+
+#### GET 
+Envoie les données du formulaire sous forme de paramètre d'URL. Utilisé par défaut 
+- Les données sont visible dans l'URL
+- Limitation de la taille de l'url 
+- Donnée peuvent être mise en cache
+
+#### POST 
+Envoie les données du formulaire dans la requête HTTP.  Permet de transmettre les données de manière sécurisée.
+- Les données ne sont pas visible dans l'URL
+- Pas de limitation des données 
+
+
+### enctype 
+
+Cet attribut permet de spécifier la manière dont les données du formulaire sont encodées lors de la l'envoie avec `POST`.
+Généralement, `multipart/form-data` est utilisé, et est nécessaire pour le téléchargement de fichier 
+
+```html
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <label for="file">Télécharger le fichier:</label>
+  <input type="file" id="file" name="file">
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+### target 
+Spécifie où la réponse du serveur sera affichée après l'envoi du formulaire :
+- `_self`: par défaut, dans la même fenêtre
+- `_blank`: dans une nouvelle fenêtre
+- `_parent`: dans le cadre parent 
+- `_top`: dans le cadre supérieur 
+```html
+<form action="/submit" method="post" target="_blank">
+  <!-- éléments du formulaire -->
+</form>
+```
+
+### novalidate 
+Désactive la validation intégrée du formulaire par le navigateur 
+```html
+<form action="/submit" method="post" novalidate>
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required>
+  <button type="submit">Envoyer</button>
+</form>
+```
