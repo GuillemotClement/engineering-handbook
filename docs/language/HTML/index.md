@@ -1137,3 +1137,308 @@ Désactive la validation intégrée du formulaire par le navigateur
   <button type="submit">Envoyer</button>
 </form>
 ```
+
+### Envoie de données
+
+L'envoie des données du formulaire s'effectue à l'aide du bouton `submit`. Lorsque l'utilisateur clique sur ce bouton, le navigateur envoie les données du formulaire au serveur, en utilisant la méthode et l'URL spécifiées
+
+```html
+<button type="submit">Submit</button>
+```
+
+Le formulaire peut également être envoyer via JavaScript.
+
+```html
+<form id="myForm" action="/submit" method="post">
+  <label for="username">Nom d'utilisateur:</label>
+  <input type="text" id="username" name="username">
+  <br>
+  <label for="password">Mot de passe:</label>
+  <input type="password" id="password" name="password">
+  <br>
+  <button type="button" onclick="submitForm()">Envoyer</button>
+</form>
+```
+
+On retrouve ensuite le JavaScript 
+
+```js
+function submitForm() {
+  document.getElementById('myForm').submit();
+}
+```
+
+### Input
+
+L'élément `<input>` permet de récupérer les saisie utilisateurs.
+
+```html
+<input type="type" name="name" id="id" value="value" placeholder="placeholder" required>
+```
+
+- `type` : définit le type d'entrée
+- `name` : nom de l'élément du formulaire, il permet d'identifier les données sur le serveur 
+- `id` : identifiant unique de l'élément 
+- `value` : valeur initiale de l'élément 
+- `placeholder` : texte d'indication affiché à l'intérieur de l'élément avant l'entrée des données
+- `required` : indique que l'élément doit être rempli
+
+### textarea 
+
+Utilisé pour entré du texte multiligne. 
+
+```html
+<label for="comments">Commentaires :</label>
+<textarea name="comments"
+  id="comments"
+  rows="5"
+  cols="40"
+  placeholder="Entrez vos commentaires ici..."
+  required>
+</textarea>
+```
+
+- `name` : nom de l'élément du formulaire, il permet d'identifier la donnée sur le serveur 
+- `id` : identifiant unique de l'élément 
+- `rows` : nombre de lignes de texte
+- `cols` : nombre de caractères dans une ligne 
+- `placeholder` : texte d'indication affiché à l'intérieur de l'élément avant l'entrée des données
+- `required` : indique que l'élément doit être rempli 
+
+On peut lui appliquer ce CSS pour améliorer son aspect 
+
+```css
+textarea {
+  width: 75%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical; /* resize sera possible uniquement verticalement */
+}
+```
+
+### button 
+
+Permet de créer un bouton lié au formulaire. 
+
+```html
+<button type="submit">Envoyer</button>
+
+<button type="reset">Réinitialiser</button>
+
+<button type="button" onclick="alert('Bouton cliqué!')">Cliquez-moi</button>
+
+<button type="type" name="name" id="id" value="value">
+  <img src="submit_icon.png" alt="Envoyer">
+  Envoyer
+</button>
+```
+
+- `submit` : soumet le formulaire. C'est la valeur par défaut 
+- `reset` : renit du formulaire 
+- `button` : aucune action par défaut
+- `name` : nom de l'élément 
+- `id` : identifiant unique 
+- `value` : valeur envoyé au serveur à la validation du formulaire
+
+On peut utiliser ce css pour styliser le bouton 
+
+```css
+button {
+  background-color: #4CAF50; /* Fond vert */
+  color: white; /* Texte blanc */
+  padding: 15px 20px; /* Espacement interne */
+  border: none; /* Pas de bordure */
+  border-radius: 4px; /* Coins arrondis */
+  cursor: pointer; /* Curseur pointeur */
+}
+
+button:hover {
+  background-color: #45a049; /* Fond vert foncé au survol */
+}
+```
+
+### checkbox 
+
+Les checkbox permettent de créer des cases à cocher qui permettent aux utilisateurs de sélectionner une ou plusieurs options parmis celle proposées. La case peut être coché ou non.
+
+```html
+<p>Select your interests:</p>
+<input type="checkbox" name="interest" value="sports" checked>Sports<br>
+<input type="checkbox" name="interest" value="music">Music<br>
+<input type="checkbox" name="interest" value="movies">Movies<br>
+```
+
+- `name` : définit le nom de l'input pour le serveur 
+- `value` : définit la valeur qui sera envoyé au serveur 
+- `checked` : détermine si la case doit être coché par défaut 
+
+### radio 
+
+Permet de créer des boutons radio qui permettent aux utilisateurs de sélectionner une seule option parmis un groupe.
+Les radio sont groupés par le même attribut `name`
+
+```html
+<p>Choose your gender:</p>
+<input type="radio" id="male" name="gender" value="male">
+<label for="male">Male</label><br>
+<input type="radio" id="female" name="gender" value="female">
+<label for="female">Female</label><br>
+```
+
+### fieldset 
+
+Permet de regrouper des éléments de formulaire. Visuellement, cet élément est affiché comme un cadre autour des éléments groupé.
+
+```html
+<form>
+  <fieldset>
+    <legend>Personal Information</legend>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email">
+  </fieldset>
+  
+  <fieldset>
+    <legend>Account Details</legend>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+  </fieldset>
+  <input type="submit" value="Submit">
+</form>
+```
+
+- `disabled` : rend tous les éléments à l'intérieur inaccessible (ils en seront pas modifiable, et pas envoyé au serveur)
+```html
+<fieldset disabled>
+  <legend>Disabled Group</legend>
+  <label for="disabled-field">This field is disabled:</label>
+  <input type="text" id="disabled-field" name="disabled-field">
+</fieldset>
+```
+
+### legend 
+
+Permet d'ajouter un titre à un groupe d'élément. 
+```html
+<fieldset>
+  <legend>Contact Information</legend>
+  <label for="phone">Phone Number:</label>
+  <input type="tel" id="phone" name="phone">
+  <label for="address">Address:</label>
+  <input type="text" id="address" name="address">
+</fieldset>
+```
+
+### select 
+
+Utilisé pour créer des listes déroulante. Il contient plusieurs élémens avec la balise `<option>` qui permet de définir une options.
+
+```html
+<label for="country">Choose a country:</label>
+<select id="country" name="country">
+  <option value="us">United States</option>
+  <option value="ca">Canada</option>
+  <option value="mx">Mexico</option>
+</select>
+```
+
+- `name` : définir le nom de l'élément qui sera envoyé au serveur et selectionné 
+- `id` : identifiant unique pour l'élément 
+- `multiple` : permet à l'utilisateur de sélectionner plusieurs options.
+- `size` : définit le nombre de ligne visibles dans la liste déroulante.
+
+### option 
+
+Permet de définir une option d'une liste déroulante.
+
+```html
+<select name="color">
+  <option value="red">Red</option>
+  <option value="green">Green</option>
+  <option value="blue">Blue</option>
+</select>
+```
+
+- `value` : définit la valeur envoyé au serveur si l'option est sélectionnée
+- `selected` : détermine si l'option doit être sélectionnée par défaut 
+- `disabled` : rend l'option indisponible 
+
+### optgroup 
+
+Permet de regrouper des options liées dans une liste. 
+```html
+<select name="car">
+  <optgroup label="German Cars">
+    <option value="mercedes">Mercedes</option>
+    <option value="audi">Audi</option>
+    <option value="bmw">BMW</option>
+  </optgroup>
+  <optgroup label="Japanese Cars">
+    <option value="toyota">Toyota</option>
+    <option value="honda">Honda</option>
+    <option value="nissan">Nissan</option>
+  </optgroup>
+</select>
+```
+
+- `label` : définit le titre du groupe d'options 
+- `disabled` : rend toutes les options dans le groupe indisponible 
+
+### Validation des données 
+
+#### required 
+
+Indique qu'un champs doit être saisie. Le navigateur ne permet pas l'envoie du formulaire si l'input est pas complété.
+```html
+<form action="/" method="post">
+  <label for="username">Nom d'utilisateur :</label>
+  <input type="text" id="username" name="username" required>
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+#### pattern 
+Permet de définir une regex pour vérifier la saisie des données. 
+```html
+<form action="/" method="post">
+  <label for="username">Nom d'utilisateur (lettres seulement, au moins 3 caractères) :</label>
+  <input type="text" id="username" name="username" pattern="[A-Za-z]{3,}" required>
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+#### min & max
+Définis les valeurs min et max acceptable pour un champs numérique et datés
+ ```html
+ <input type="number" name="age" min="18" max="99">
+ 
+ <form action="/" method="post">
+  <label for="birthday">Date de naissance (de 1900-01-01 à 2024-12-31) :</label>
+  <input type="date" id="birthday" name="birthday" min="1900-01-01" max="2024-12-31" required>
+  <button type="submit">Envoyer</button>
+</form>
+ ```
+
+#### placeholder 
+Permet d'afficher du texte avant saisie. Celle ci disparait lorsque l'utilisateur saisis de la donnée dans l'input 
+```html
+<form action="/" method="post">
+  <label for="username">Nom d'utilisateur :</label>
+  <input type="text" id="username" name="username" placeholder="Entrez le nom d'utilisateur" required>
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+#### value 
+Définit la valeur initial de l'input. 
+```html
+<form action="/" method="post">
+  <label for="username">Nom d'utilisateur :</label>
+  <input type="text" id="username" name="username" value="default user" required>
+  <button type="submit">Envoyer</button>
+</form>
+```
