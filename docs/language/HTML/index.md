@@ -978,6 +978,46 @@ Les pseudo-classe comment par `:`.
 - `:active`: applique un style lorsque celui ci est actif (clic sur un client, ou bouton)
 - `:visited`: applique un style 
 
+#### :focus 
+S'applique à un élément du formulaire qui reçoit le focus. Par exemple, lorsque l'utilisateur clic sur un élément, ou en naviguant avec Tab.
+```css
+input:focus {
+  border-color: #4A90E2;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  outline: none;
+}
+```
+
+#### :hover 
+S'applique à un élément lorsque l"user passe le curseur dessus.
+```css
+input:hover {
+  border-color: #50E3C2;
+  background-color: #F0F8FF;
+}
+```
+
+#### :disabled 
+S'applique aux éléments du formulaire qui sont désativées 
+```css
+input:disabled {
+  background-color: #E0E0E0;
+  color: #A0A0A0;
+  cursor: not-allowed;
+}
+```
+
+#### :checked 
+S'applique aux élément `checkbox` et `radio` qui sont sélectionné
+```css
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  background-color: #4A90E2;
+  border-color: #4A90E2;
+}
+```
+
+
 ### Pseudo-éléments 
 Permettent de styliser des parties d'éléments qui ne sont pas des éléments HTML distinct. 
 Ils commencent par `::`.
@@ -1168,7 +1208,7 @@ function submitForm() {
 }
 ```
 
-### Input
+### input
 
 L'élément `<input>` permet de récupérer les saisie utilisateurs.
 
@@ -1182,6 +1222,182 @@ L'élément `<input>` permet de récupérer les saisie utilisateurs.
 - `value` : valeur initiale de l'élément 
 - `placeholder` : texte d'indication affiché à l'intérieur de l'élément avant l'entrée des données
 - `required` : indique que l'élément doit être rempli
+
+#### Type input 
+
+##### text 
+Permet de saisir du texte sur une seule ligne.
+
+```html
+<label for="name">Nom :</label>
+<input type="text" id="name" name="name">
+```
+
+- `maxlength`: limite le nombre maximum de caractères
+- `placeholder`: texte indicatif à l'intérieur de l'input 
+- `required`:  indique que le champ est obligatoire 
+
+##### number 
+Permet la saisie de champs numérique. 
+```html
+<label for="quantity">Quantité :</label>
+<input type="number" id="quantity" name="quantity" min="1" max="10" step="1" value="1">
+```
+- `min` : définit la valeur min
+- `max` : définit la valeur max
+- `step` : détermine le pas de changement de valeur avec les flèches 
+- `value` : valeur initial
+
+##### email 
+Permet la saisis d'émail. Il vérifie si la saisie correspond à une email 
+```html
+<label for="email">Email :</label>
+<input type="email" id="emails" name="emails" multiple placeholder="example1@example.com, example2@example.com">
+```
+- `multiple` : permet de saisir plusieurs adresse email 
+- `pattern` : définit une regex pour une vérification supplémentaire 
+
+##### tel 
+Permet la saisis d'un numéro de téléphone. Il ne vérifie pas le numéro de téléphone, mai permet de configurer un masque d'entrée via l'attribut pattern 
+
+```html
+<label for="phone">Téléphone :</label>
+<input type="tel" id="phone" name="phone" pattern="[+][0-9]{1,3} [0-9]{1,4} [0-9]{3,4} [0-9]{4}" placeholder="+1 123 456 7890">
+```
+
+- `pattern`: permet de définir une regex 
+
+##### date 
+Permet de saisir une date.
+```html
+<label for="birthday">Date de naissance :</label>
+<input type="date" id="birthday" name="birthday">
+```
+- `min` : date minimal 
+- `max` : date maximal 
+
+##### time 
+Utilisé pour rentrer une horaire.
+```html
+<label for="meeting_time">Heure de la réunion :</label>
+<input type="time" id="meeting_time" name="meeting_time">
+```
+
+- `min` : définit l'heure min 
+- `max` : définit l'heure max
+- `step` : détermine le pas du changement d'heure 
+
+##### url 
+Utilisé pour rentrer des adresse web. Il vérifie si le texte correspond au format d'une URL 
+```html
+<label for="website">Site web :</label>
+<input type="url" id="website" name="website" placeholder="https://example.com">
+```
+
+##### password
+Permet de saisir un mot de passe. Les données saisie sont masquées, remplacées par des symboles 
+```html
+<label for="password">Mot de passe :</label>
+<input type="password" id="password" name="password">
+```
+- `maxlength`: limite le nombre max de caractères 
+- `placeholder` : texte indicatif 
+- `required` : indique que le champ est obligatoire
+
+##### range 
+Permet de saisir une plage de valeur. Affiche sous la forme d'un curseur 
+```html
+<label for="volume">Volume :</label>
+<input type="range" id="volume" name="volume">
+```
+- `min`: définit la valeur min
+- `max` : définit la valeur max 
+- `step`: détermine le pas de chamgement de la valeur
+- `value` : définit la valeur initiale 
+
+##### color 
+Utilisé pour sélectionner une couleur. 
+```html
+<label for="favcolor">Choisissez votre couleur préférée :</label>
+<input type="color" id="favcolor" name="favcolor" value="#ff0000">
+```
+
+##### search 
+Utilisé pour entrer des requêtes de recherches 
+```html
+<label for="search">Recherche :</label>
+<input type="search" id="search" name="search" placeholder="Entrez la requête de recherche">
+```
+
+#### datalist 
+
+Cette balise est utilisé pour fournis une liste d'options prédéfinies pour les éléments `<input>`. Permet aux utilisateurs de choisir parmi une liste d'options proposées, facilitant la saisie des données et assurant une saisie plus précise et prévisible.
+```html
+<form>
+  <label for="browser">Choisis un navigateur :</label>
+  <input list="browsers" id="browser" name="browser">
+  <datalist id="browsers">
+    <option value="Chrome">
+    <option value="Firefox">
+    <option value="Safari">
+    <option value="Opera">
+    <option value="Edge">
+  </datalist>
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+L'input doit être lié avec `list`.
+
+### output 
+
+Utilisé pour afficher le résultat des calculs et actions effectuées via JS. Cette balise permet d'afficher un contenu qui change de manière dynamique comme un résultat de calculs, des données de formulaire ou autre valeurs qui peuvent changer en temps réel.
+
+```html
+<output name="result" for="input-id-1 input-id-2">Résultat</output>
+
+```
+
+- `name` : définit le nom de l'élément 
+- `for`: contient la liste des identifiants de l'élément avec laquelle la valeur de l'input est lié. 
+
+```html
+<form oninput="calculateSum()">
+  <label for="num1">Nombre 1:</label>
+  <input type="number" id="num1" name="num1">
+  <br>
+  <label for="num2">Nombre 2:</label>
+  <input type="number" id="num2" name="num2">
+  <br>
+  <output id="result" name="result" for="num1 num2">0</output>
+</form>
+```
+
+```js
+function calculateSum() {
+  const num1 = parseFloat(document.getElementById('num1').value) || 0;
+  const num2 = parseFloat(document.getElementById('num2').value) || 0;
+  const sum = num1 + num2;
+  document.getElementById('result').value = sum;
+}
+```
+
+### label 
+
+Utilisé pour créer une étiquette de texte pour un élément du formulaire. Elle peut être lié à un élément de formulaire de deux manière : via l'attribut `for` ou en imbriquant l'élément du formulaire dans les balises.
+```html
+<label for="username">Nom d'utilisateur :</label>
+<input type="text" id="username" name="username">
+
+<label>Nom d'utilisateur :
+  <input type="text" name="username">
+</label>
+```
+
+
+
+
+
 
 ### textarea 
 
@@ -1441,4 +1657,446 @@ Définit la valeur initial de l'input.
   <input type="text" id="username" name="username" value="default user" required>
   <button type="submit">Envoyer</button>
 </form>
+```
+
+### Evènement de formulaire
+Les formulaires produisent des événements spécifique lié à leur fonctionnement
+
+#### submit 
+Se produit lorsque le formulaire est envoyé. Le traitement de cet évènement permet d'effectuer une validation des données avant de les envoyer au serveur
+
+```html
+<form id="my-form" action="/submit" method="post">
+  <label for="username">Nom d'utilisateur:</label>
+  <input type="text" id="username" name="username">
+  <button type="submit">Envoyer</button>
+</form>
+```
+
+```js
+const form = document.getElementById('my-form');
+
+form.addEventListener('submit', function(event) {
+  const username = document.getElementById('username').value;
+  if (username === '') {
+    alert('Veuillez entrer un nom d\'utilisateur.');
+    event.preventDefault(); // empêchant l'envoi du formulaire
+  }
+});
+```
+
+#### reset 
+Se produit lors de la réinitialisation du formulaire. Cela se produit lorsque l'user clique sur le bouton reset.
+
+```html
+<form id="my-form">
+  <label for="name">Name:</label>
+  <br>
+  <input type="text" id="name" name="name">
+  <br><br>
+  <label for="email">Email:</label>
+  <br>
+  <input type="email" id="email" name="email">
+  <br><br>
+  <label for="password">Password:</label>
+  <br>
+  <input type="password" id="password" name="password">
+  <div style="margin-top: 10px">
+    <button type="reset">Réinitialiser</button>
+  </div>
+</form>
+<p id="log"></p>
+```
+
+```js
+const form = document.getElementById('my-form');
+const log = document.getElementById('log');
+
+form.addEventListener('reset', function () {
+  log.textContent = 'Le formulaire a été réinitialisé !';
+});
+```
+
+#### focus et blur 
+
+Ces event se produisent lorsque les élément du formulaire reçoivent et perde le focus respectivement.
+Ces events sont utilisés pour améliorer l'interaction de l'utilisateur avec le formulaire
+
+```html
+<form id="my-form">
+  <label for="username">Nom d'utilisateur:</label>
+  <input type="text" id="username" name="username">
+  <div id="username-hint" style="display: none;">
+    Vous verrez cette astuce au moment du focus sur le champ.
+    Elle sera visible même après le changement de focus.
+  </div>
+</form>
+```
+
+```js
+const usernameInput = document.getElementById('username');
+const hint = document.getElementById('username-hint');
+
+usernameInput.addEventListener('focus', function () {
+  hint.style.display = 'block';
+});
+```
+
+```html
+<form id="my-form">
+  <label for="username">Nom d'utilisateur:</label>
+  <input type="text" id="username" name="username">
+  <div id="username-error" style="display: none; color: red;">
+    L'erreur apparaîtra seulement si le champ est vide après le changement de focus
+  </div>
+</form>
+```
+
+```js
+const usernameInput = document.getElementById('username');
+const error = document.getElementById('username-error');
+
+usernameInput.addEventListener('blur', function () {
+  error.style.display = usernameInput.value === '' ? 'block' : 'none';
+});
+```
+
+#### input 
+Cet event se produit lorsque la valeur d'un élément du formulaire change. 
+```html
+<html lang="fr">
+  <head>
+    <style>
+      input {
+        outline: none;
+      }
+
+      .valid {
+        border-color: green;
+      }
+
+      .invalid {
+        border-color: red;
+      }
+
+      .wrapper-valid::after {
+        content: "Email valide";
+        margin-left: 5px;
+        color: green;
+      }
+
+      .wrapper-invalid::after {
+        content: "Email non valide";
+        margin-left: 5px;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="my-form">
+      <label for="email">Email:</label>
+      <div id="wrapper">
+        <input type="email" id="email" name="email">
+      </div>
+    </form>
+  </body>
+</html>
+```
+
+```js
+const emailInput = document.getElementById('email');
+const inputWrapper = document.getElementById('wrapper');
+
+emailInput.addEventListener('input', function () {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (emailPattern.test(emailInput.value)) {
+    emailInput.classList.add('valid');
+    emailInput.classList.remove('invalid');
+  } else {
+    emailInput.classList.add('invalid');
+    emailInput.classList.remove('valid');
+  }
+});
+```
+
+#### select 
+
+Se produit lorsque l'utilisateur sélectionne du texte dans un élément du formulaire comme un champ de saisie ou une zone de texte. 
+```html
+<form id="my-form">
+  <label for="text-input">Entrez du texte:</label>
+  <input type="text" id="text" name="text">
+  <div id="select-message"></div>
+</form>
+```
+
+```js
+document.addEventListener('DOMContentLoaded', function () {
+  const textInput = document.getElementById('text');
+  const selectMessage = document.getElementById('select-message');
+
+  textInput.addEventListener('select', function () {
+    selectMessage.textContent = 'Vous avez sélectionné du texte!';
+  });
+});
+```
+
+#### change 
+Se produit lorsque la valeur d'un élément du formulaire change et que l'user quitte l'élément
+```html
+<form id="my-form">
+  <label for="color-select">Choisissez une couleur:</label>
+  <select id="color-select" name="color">
+    <option value="red">Rouge</option>
+    <option value="green">Vert</option>
+    <option value="blue">Bleu</option>
+  </select>
+</form>
+```
+
+```js
+document.addEventListener('DOMContentLoaded', function () {
+  const selectElement = document.getElementById('color-select');
+
+  selectElement.addEventListener('change', function () {
+    alert('Vous avez choisi la couleur : ' + selectElement.value);
+  });
+});
+```
+
+### Téléchargement de fichiers 
+
+HTML permet aux utilisateurs de télécharger des fichiers sur le serveur avec un input de type `file`.
+
+```html
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <label for="file">Choisissez un fichier :</label>
+  <input type="file" id="file" name="file">
+  <button type="submit">Télécharger</button>
+</form>
+```
+
+- `multiple` : permet aux utilisateurs de sélectionner plusieurs fichiers à télécharger. 
+```html
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <label for="files">Choisissez des fichiers :</label>
+  <input type="file" id="files" name="files" multiple>
+  <button type="submit">Télécharger</button>
+</form>
+```
+
+- `accept` : permet de limiter les types de fichiers qui peuvent être sélectionnés par l"utilisateur. 
+```html
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <label for="image">Choisissez une image :</label>
+  <input type="file" id="image" name="image" accept="image/*">
+  <button type="submit">Télécharger</button>
+</form>
+```
+
+ - `image/*` : tout type d'image
+ - `video/*`: tout type de vidéo 
+ - `audio/*`: tout type d'audio
+ - `.jpg/ .jpeg/ .png` : permet de limiter le format 
+
+#### Traitement des fichier côté client 
+Il est parfois nécessaire d'effectuer un traitement préalable des fichiers côté clients avant de les envoyer au serveur. Par exemple, afficher un aperçus des images ou vérifier la taille du fichier 
+```html
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <label for="image">Choisissez une image :</label>
+  <input type="file" id="image" name="image" accept="image/*">
+  <div id="preview"></div>
+  <button type="submit">Télécharger</button>
+</form>
+```
+
+```js
+document.getElementById('image').addEventListener('change', function(event) {
+  const preview = document.getElementById('preview');
+  preview.innerHTML = '';
+
+  const files = event.target.files;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.maxWidth = '200px';
+      preview.appendChild(img);
+    }
+    reader.readAsDataURL(file);
+  }
+});
+```
+
+- `FileReader` : permet de lire le contenu des fichiers côté client
+- `reader.onload`: event déclenché lorsque le fichier est complètement lu
+- `reader.readAsDataURL(file)`: méthode qui lit le fichier et encore l'URL de donnée permettant d’afficher dans la balise `<img>`
+---
+
+## BALISE SEMANTIQUE 
+
+Les balises sémantiques permette de créer du HTML structurés et lisible, en améliorant l'accessibilité et le SEO.
+
+Ces balises offrent une description claire de la structure de la page et de son contenu.
+
+### header
+
+Permet de représenter l'en tête d'un contenu ou d'une section. Cet élément contient généralement des informations introductives, des liens de navigations, des logs, des titres et d'autres éléments liées à la partie supérieur du contenu 
+```html
+<header>
+  <h1>Website Title</h1>
+  <nav>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+### footer 
+
+Utilisé pour représenter le bas du contenu ou d'une section. Contient généralement des informations sur l'auteur, des liens vers des documents, des politiques de confidentialité, des informations de contact et d'autres élément lié à la partie inférieur du contenu 
+
+```html
+<footer>
+  <p>&copy; 2024 My Website</p>
+  <nav>
+    <ul>
+      <li><a href="#privacy">Privacy Policy</a></li>
+      <li><a href="#terms">Terms of Service</a></li>
+    </ul>
+  </nav>
+</footer>
+```
+
+### article 
+
+Représente un bloc de contenu indépendant, qui peut être distribué et réutilisé. Par exemple un article de bloc, article de presse, un commentaire ...
+
+```html
+<article>
+  <header>
+    <h2>Blog Post Title</h2>
+    <p>Published on July 6, 2024</p>
+  </header>
+  <p>This is the content of the blog post. It can include text, images, and other media.</p>
+  <footer>
+    <p>Author: John Doe</p>
+  </footer>
+</article>
+```
+
+### section 
+
+Permet de définir des groupes de contenu thémtiquement liés. Il peut s'agit de chapitres, de sections ou d'autres grandes parties du contenu.
+
+```html
+<section>
+  <header>
+    <h2>About Us</h2>
+  </header>
+  <p>This section provides information about our company and its history.</p>
+</section>
+```
+
+### nav 
+Permet de définir une section de pages contenant des liens de navigation. 
+```html
+<header>
+  <h1>Mon site</h1>
+  <nav>
+    <ul>
+      <li><a href="#home">Accueil</a></li>
+      <li><a href="#about">À propos</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#contact">Contacts</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+### main 
+Désigne le contenu principal du document. Elle est utilisé pour placer le contenu unique et clé pour cette page. 
+Le contenu doit être unique pour chaque page, et ne pas contenir d'éléments qui se répètent sur toutes les pages.
+
+```html
+<body>
+  <header>
+    <h1>Website Header</h1>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h2>Article Title</h2>
+      <p>This is the main content of the article.</p>
+    </article>
+  </main>
+  <footer>
+    <p>&copy; 2024 Example Website</p>
+  </footer>
+</body>
+```
+
+### aside 
+
+Utilisé pour désigner le contenu supplémentaitre lié au contenu principal mais qui ne fait pas partie du flux principal du document. Utilisé généralement pour les panneaux latéraux contenant de la pub, des liens vers des articles connexes, des bio d'auteurs
+
+```html
+<main>
+  <article>
+    <h2>Article Title</h2>
+    <p>This is the main content of the article.</p>
+  </article>
+  <aside>
+    <h3>Related Articles</h3>
+    <ul>
+      <li><a href="#related1">Related Article 1</a></li>
+      <li><a href="#related2">Related Article 2</a></li>
+    </ul>
+    <h3>About the Author</h3>
+    <p>Short bio of the author.</p>
+  </aside>
+</main>
+```
+
+### template
+
+Cette balise permet de définir des fragments de code HTML qui ne seront pas affcihés lors du chargement de la page, mais qui peuvent être utilisé plus tard via le JS.
+
+```html
+<button id="addButton">Add Item</button>
+<ul id="itemList"></ul>
+<template id="itemTemplate">
+  <li class="item">This is a new item</li>
+</template>
+```
+
+```js
+
+// On récupère des références aux éléments du DOM que nous allons utiliser
+const addButton = document.getElementById('addButton'); // Le bouton "Ajouter"
+const itemList = document.getElementById('itemList'); // La liste où ajouter les éléments
+const itemTemplate = document.getElementById('itemTemplate'); // Le template de l'élément de liste
+
+// Ajoutons un gestionnaire d'événement au bouton "Ajouter"
+addButton.addEventListener('click', () => {
+  // On clone le contenu du template d'un élément de liste
+  const newItem = itemTemplate.content.cloneNode(true); // true signifie un clonage profond (inclut tous les éléments enfants)
+
+  // On ajoute le nouvel élément à la liste
+  itemList.appendChild(newItem);
+});
 ```
