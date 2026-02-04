@@ -2062,3 +2062,285 @@ Ce sont les actions exécutées sur un paquet
 - `ACCEPT`: autoriser le paquet
 - `DROP`: jeter le paquet 
 - `REJECT`: jeter le paquet tout en envoyant une notification 
+
+### SELinux 
+
+Module de sécurité qui permet de renforcer la gestion des droits d'accès en ajoutant le concept de contrôle obligatoire. 
+Il permet à un admin de configurer des restrictions plus strictes pour les users et les processus, afin de minimiser les dégâts potentiels en cas d'attaques.
+
+Il peut fonctionne dans trois modes : 
+- **Enforcing** : actif, applique la politique de sécurité et bloque les processus qui ne respectent pas les règles
+- **Permissive**: enregistre les violations dans les logs, mais ne bloque pas les actions 
+- **Disabled**: désactivé 
+
+#### Vérification du status
+##### getenforce 
+
+Retourne le mode actuel 
+```shell
+getenforce
+```
+
+##### setstatus 
+Permet d'obtenir un rapport plus détaillé sur le statut. Elle indique l'état actuel, le mode actif et la politique utilisée.
+```shell
+$ sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+```
+
+#### Changer les modes 
+
+Pour passer en mode permissive 
+```shell
+$ sudo setenforce 0
+```
+
+Pour réactiver le contrôle strict 
+```shell
+$ sudo setenforce 1
+```
+
+a finir 
+
+### ACL 
+
+### Surveillance des users 
+
+### Configuration pare feu, SELinux et ACL de base 
+
+---
+
+## SYSTEME DE FICHIERS
+
+Le système de fichier organise et gère l'accès aux données sur les supports. Il définit comment les données sont stockées, lues et écrites.
+
+Il existe plusieurs systèmes de fichiers :
+- **ext4**: système standard pour les distributions Linux
+- **NTFS**: système utilisé par Windows
+- **FAT32**: populaire pour les supports externes et clé USB 
+- **XFS, btrfs** : alternative plus avancées pour Linux avec des fonctionnalités comme les snapshots
+
+Lorsque l'on branche un disque ou une clé USB sous Linux, le système de fichier doit être monté pour que le système puisse commencer à travailler avec.
+
+### lsblk - Lister les périphériques
+Cette commande permet de lister les périphériques de bloc. Elle affiche un tableau de tous les périphériques de bloc du système, incluant les disque durs, SSD, clé USB et partitions.
+
+```shell
+lsblk
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  500G  0 disk
+├─sda1   8:1    0   50G  0 part /
+├─sda2   8:2    0  200G  0 part /home
+└─sda3   8:3    0  250G  0 part
+sdb      8:16   1   16G  0 disk
+└─sdb1   8:17   1   16G  0 part /media/usb
+
+# affiche le type du systeme file et UUID
+lsblk -f 
+
+# affiche uniquement les colonnes 
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT
+```
+
+- **NAME**: nom du périphérique. 
+- **SIZE**: taille du périphérique 
+- **TYPE**: type de périphérique. `disk` correspond à un disque physique, et `part` une partition
+- **MOUNTPOINT** : chemin où le périphérique est monté dans le système de fichier 
+
+
+### blkid - Identifier les périphériques
+
+Cette commande permet d'identifier les périphériques en fonction de leur système de fichier et de leur UUID.
+
+```shell
+$ blkid
+
+/dev/sda1: UUID="1111-2222-3333-4444" TYPE="ext4"
+/dev/sda2: UUID="5555-6666-7777-8888" TYPE="ext4"
+/dev/sda3: UUID="9999-AAAA-BBBB-CCCC" TYPE="swap"
+/dev/sdb1: UUID="AAAA-BBBB" TYPE="vfat" LABEL="USB_DISK"
+```
+
+- **UUID**: identifiant unique de la partition
+- **TYPE**: type du system file 
+- **LABEL**: étiquette de la partition
+
+Les UUID sont important sur Linux car les périphérique peuvent changer dynamiquement de nom au démarrage. 
+Avec cet id, on peut utiliser une identification stables pour monter les périphérique.
+
+### Travailler avec des périphérique non montés
+
+Parfois, lorsque l'on branches un disque ou une clé, elle n’apparaît pas comme montée. Cela peut arriver si le system file n'est pas actif.
+
+On connecte une clé USB, et le résultat de la commande est : 
+
+```shell
+$ lsblk
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sdb      8:16   1   16G  0 disk
+```
+
+Cela signifie que le périphérique `sdb` n'a pas de partition active. Il faut utiliser la seconde commande pour savoir si un system file est dessus 
+
+```shell
+blkid /dev/sdb
+```
+
+Si rien ne s'affiche, le périphérique n'est pas encore formaté.
+
+### Formatage 
+
+Lorsque l'on formate une partition, on créer une "page blanche" pour les données. Il supprime tout le contenu de la partition et créer un nouveau système de fichiers qui détermine comment les fichiers seront organisées et comment y accéder.
+
+On vient faire un formatage :
+- **Préparer un nouvel appareil**
+- **Changer le system file**
+- **Effacer les anciennes données**
+
+#### mkfs
+
+L'outil `mkfs` permet de formater des partitions.
+
+```shell
+mkfs.<type_de_système_de_fichiers> <dispositif>
+
+# exemple 
+mkfs.ext4 /dev/sdb1
+```
+
+Dans cet exemple, on formate la partition `/dev/sdb1` en `ext4`.
+
+Le tool fonctionne avec la plupart des types de systèmes de fichiers courant : 
+
+| Système de fichiers | Commande    | Application                                                                                         |
+| ------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| **ext4**            | `mkfs.ext4` | Le système de fichiers principal pour Linux, prenant en charge de grands fichiers et disques.       |
+| **xfs**             | `mkfs.xfs`  | Haute performance, adapté aux grands fichiers et aux charges serveur.                               |
+| **vfat** (FAT32)    | `mkfs.vfat` | Idéal pour l'échange de données entre Linux, Windows et MacOS.                                      |
+| **ntfs**            | `mkfs.ntfs` | Pour la compatibilité avec Windows (bien que l'édition depuis Linux puisse parfois poser problème). |
+
+Pour obtenir la liste complète des systèmes pris en charge :
+```shell
+mkfs -t help
+```
+
+#### Formatage d'une partition en ext4
+
+On commence par vérifier le périphérique
+
+```shell
+lsblk
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  100G  0 disk
+├─sda1   8:1    0   50G  0 part /
+├─sda2   8:2    0   45G  0 part /home
+└─sda3   8:3    0    5G  0 part [SWAP]
+sdb      8:16   0  200G  0 disk
+└─sdb1   8:17   0  200G  0 part
+```
+
+On souhaite formater la partition `/dev/sdb1`
+
+Avant de formater, le périphérique ne doit pas être monté. 
+```shell
+sudo umount /dev/sdb1
+```
+
+On vient ensuite lancer le formatage.
+```shell
+sudo mkfs.ext4 /dev/sdb1
+
+mke2fs 1.45.7 (28-Jan-2021)
+Creating filesystem with 52428800 4k blocks and 13107200 inodes
+Filesystem UUID: 5634f623-7b2d-4d6b-b8f5-abcdef123456
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, ...
+```
+
+On vient ensuite vérifier que le system file à bien été créer : 
+```shell
+sudo blkid /dev/sdb1
+
+# sortie 
+/dev/sdb1: UUID="5634f623-7b2d-4d6b-b8f5-abcdef123456" TYPE="ext4"
+```
+
+La sortie de la commande vient montrer que `ext4` est bien installé sur le périphérique 
+
+### Choix du système de fichiers 
+
+Selon les besoins, il est conseillé d'utiliser un format plutôt qu'un autre : 
+- **ext4**: choix universel pour Linux
+- **XFS**: pour les besoin de haute performance avec de gros fichiers ou sur des serveurs 
+- **FAT32**: si on doit utiliser un périphérique à la fois sur Windows et Mac. La taille max du fichier est limié à 4Go 
+- **NTFS**: pour la compatibilité avec Windows, mais les perf peuvent être inférieur à `ext4` sous Linux
+
+### Vérification et correction du system file 
+
+Le system file peut subit des dommages qui provoque des pertes de données ou d'autres types de problèmes.
+Ces problèmes peuvent apparaître à la suite de :
+- **Coupure d'alimentation soudaine**: l'appareil s'éteint sans terminer l'écriture des données
+- **Erreur de stockage**: une défaillance matériel d'un disque 
+- **Erreurs logicielle**: un bug dans un driver
+
+Après ce type d'évènement, le system file peut se retrouver dans un état dégradé, et le system peut demander de vérifier son état.
+
+#### fsck 
+Tool qui permet de vérifier l'intégrité du system file et corriger les erreurs détectées. Il peut être utilisé :
+- En cas de défaillance des fichiers 
+- Si le système ne démarre plus 
+- Prévention régulière 
+
+```shell
+fsck [options] <périphérique>
+```
+
+- `-y`: confirmer automatiquement les corrections.
+- `-n`: vérification sans correction
+- `-t`: indique le type de system file 
+- `-r`: active le mode intéractif
+
+Après avoir exécuté la commande, les fichiers perdu sont placés dans le dossier `lost+found` à la racine du system file.
+#### Vérification du system file 
+
+```shell
+# vérification sans correction 
+fsck -n /dev/sdb1
+
+# exemple de sortie 
+#Inodes qui faisaient partie d'une liste orpheline corrompue détectés. Erreurs du système de fichiers détectées. Exécute fsck pour réparer.
+
+#correction automatiue 
+fsck -y /dev/sdb1 
+```
+
+#### Utilisation sur un system file utilisé
+
+Si on essaie d'utiliser l'outil sur une partition déjà montée, on reçoit un avertissement `fsck: cannot check a mounted filesystem.`.
+
+Cela arrive car la vérification peut entraîner des corruptions de données. Il existe plusieurs manière de résoudre ce problème
+
+- Monté le périphérique en lecture seule
+```shell
+mount -o remount,ro /dev/sdb1
+```
+- Utiliser un live CD: on démarre le système depuis un disque ou une clé USB pour effectuer la vérification sur un périph déjà monté
+- Utiliser le mode recovery: on redémarre le système en mode recovery 
+
+#### Vérification du fichier racine /
+
+Pour exécuter une vérification sur une partition `/` :
+```shell
+# passer en mode user unique 
+systemctl isolate rescue.target
+
+# lancement fsck
+fsck -y /
+```
