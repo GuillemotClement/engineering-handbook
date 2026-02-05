@@ -1,3 +1,131 @@
+# Golang 
+
+
+## Commande 
+
+```shell
+# exécuter un programme => pour tester le programme
+go run <name>.go 
+
+# build => une fois terminé, pour distribuer le programme
+go build <name>.go 
+
+# build et renommer l'executable
+go build -o <new_name> <name>.go
+
+# lancer l'exécutable 
+./<name>
+```
+Le build d'un programme Go viens builder le programme, et créer un exécutable.
+
+### Formatage 
+
+Go fournit `gofmt` pour formater le code. 
+
+
+
+
+### Documentation 
+
+La documentation Go est disponible sur [pkg.go.dev](https://pkg.go.dev/).
+
+La commande `pkgsite` permet d'afficher la documentation du projet en local.
+
+```shell 
+pkgsite -http=:6060
+```
+
+`godoc` n'est pas installer par défaut. Pour l'installer, on utilise la commande `go install golang.
+org/x/tools/cmd/godoc@latest`.
+
+Le binaire `godoc` est installer dans `~/go/bin` et on peut l'exécuter avec la commande `~/go/bin/godoc`.
+
+Cette commande lance un server local et permet d'afficher la documentation Go.
+
+```shell
+~/go/bin/godoc -http=:8001
+
+# syntaxe courte 
+~/go/bin/godoc -http :8001
+```
+
+On peut ensuite accéder à la documentation en accédant à l'url `http://localhost:8001/`.
+
+
+## Fonction 
+
+Tous les programmes Go possèdent une fonction `main()` qui est le point d'entrée du programme.
+
+```go 
+func main(){
+    // code exécuter par la fonction
+}
+```
+
+Les autres fonctions peuvent avoir n'importe quel nom qui permettent de comprendre ce que réalise cette fonction.
+
+Tout ce qui commence par une minuscule est considéré comme `private`, et sera accessible que dans la portée du package. Avec une majuscule, l'élément est `public` et accessible depuis l'exterieur du package.
+
+## Package 
+
+Les programmes Go sont organisés en package. 
+
+Le mot clé `package` permet de définir un nom pour un nouveau package.
+
+Le nom d'un package qui est exécutable doit être `main`.
+
+Le mot clé `import` est utilisé pour importer d'autre package dans un programme et permettre d'utiliser ces méthodes.
+
+### Import de package
+
+Pour installer une nouvelle dépendance, on utilise la commande 
+
+```shell
+go get <github/url>
+```
+
+
+
+## Variables
+
+### Déclaration de variable 
+
+```go
+# syntaxe longue
+var maVariable int = 1
+
+# syntaxe courte 
+maVariable := 1
+```
+
+Si aucune valeur n'est passer lors de l'initialisation, alors le compilateur Go initialise automatiquement la variable à la valeur zéro.
+
+Généralement, la syntaxe courte est utilisé pour déclarer les variables, mais dans les cas ou l'on souhaite déclarer une variable globale ou une variable local sans valeur initiale.
+
+L'utilisation de `var` est également dans le cas ou l'on souhaite définir explicitement le type d'une variable.
+
+L'utilisation de la syntaxe courte est impossible en dehors du corps d'une fonction.
+
+### Constante
+
+Dans le cas ou l'on souhaite déclarer une variable qui ne doit pas changer, on utilise une constante.
+
+Il faut obligatoirement définir une valeur à cette constante, et celle ci ne pourras pas changer par la suite.
+
+```go
+const maConstante = 10
+```
+
+### Variable globale 
+
+Les variables globale sont déclarée en dehors d'une fonction.  Elles sont accessibles en dehors du package sans avoir besoin de les passer explicitement.
+
+
+
+
+
+
+
 ## Lint 
 
 https://golangci-lint.run/

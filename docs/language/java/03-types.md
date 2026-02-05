@@ -134,3 +134,34 @@ System.out.println(messy.trim()); // "hello"
 ## CONVERSION DE TYPE 
 
 Il est possible de convertir une valeur dans un autre type. Si cette conversion n'est pas effectuée, cela provoquera une erreur.
+
+### Conversion int vers string 
+
+#### String.valueOf()
+C'est la méthode principale et la plus répandue 
+```java
+int number = 42;
+String str = String.valueOf(number);  // str == "42"
+```
+
+La méthode convertit un nombre en une chaîne qui correspond au type de l'objet passé en argument.
+
+#### Concaténation avec une chaîne vide 
+```java
+int number = 42;
+String str = "" + number;
+```
+
+#### Conversion implicite en chaîne 
+Cette conversion se produit automatiquement lorsque l'on concaténe un `String` avec un autre type 
+```java
+int a = 5;
+String name = "Anya" + a;            //  name contient la chaîne Anya5
+
+int a = 5;
+String city = a + "New York" + a;   //  city contient la chaîne 5New York5
+
+int number = 10;
+String code = "Yo";
+String message = "Hello! " + number + code; //  message contient la chaîne Hello! 10Yo
+```

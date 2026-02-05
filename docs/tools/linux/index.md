@@ -2344,3 +2344,427 @@ systemctl isolate rescue.target
 # lancement fsck
 fsck -y /
 ```
+
+---
+
+### Montage et démontage des system file 
+
+Le montage est le processus de connecter un system file d'un périphérique à l'arborescence des fichiers Linux.
+Sous Linux tous les périphériques sont intégrés dans la structure des fichiers à un dossier spécifique appelé point de montage.
+
+#### mount - Monter un system file 
+
+```shell
+mount [options] <périphérique> <point de montage>
+
+sudo mount /dev/sdb1 /mnt/usb
+```
+
+- `periphérique`: c'est l'endroit où le périphérique est conecté au système (`/dev/sdb1`)
+- `point de montage` : le dossier ou les données du périphérique sont accessibles (par exemple `mnt/disk`)
+
+Une fois monté, les fichiers du périphérique sont accessible dans le dossier `/mnt/usb`.
+
+##### Spécifier le system file 
+
+```shell
+sudo mount -t ext4 /dev/sdb1 /mnt/usb
+```
+
+- `-t`: permet de spécifier le system file  
+
+##### Montage en lecture seule 
+Pour protégé les données du périphérique contre toute modification, on utilise `-o ro`
+```shell
+sudo mount -o ro /dev/sdb1 /mnt/usb
+```
+
+##### Montage avec spécification de l'encodage 
+Pour les disques `FAT32` ou `NTFS`, il peut être nécessaire de spécifier l'encodage
+```shell
+sudo mount -o iocharset=utf8 /dev/sdb1 /mnt/usb
+```
+
+####  umount - Démonter un system file 
+Le démontage permet de déconnecter un périphérique. C'est important que Linux ferme toutes les connexions avec le disque et termine l'écriture.
+
+```shell
+umount <périphérique ou point de montage>
+
+# périphérique connecté 
+sudo umount /mnt/usb
+sudo umount /dev/sdb1
+```
+
+##### Echec du démontage
+Parfois la commande peut retourner une erreur `Device is busy`. Cela signifie qu'un programme utilise encore le périphérique.
+
+Dans ce cas, on utilise la commande pour montrer les processus bloquant 
+```shell
+fuser -v /mnt/usb
+```
+Une fois identifié, on peut venir kill le processus 
+```shell
+kill <ID de processus>
+```
+
+On peut ensuite venir démonter le périphérique
+
+#### Montage automatique 
+
+Lorsque l'on doit connecter un périphérique à chaque démarrage du système, on peut utiliser le fichier `/etc/fstab`.
+C'est un fichier de configuration qui contient une liste des périphérique que Linux doit automatiquement connecter.
+On peut y définir des paramètres comme le type de system file, le point de montage et les droits d'accès.
+
+Pour ajouter un périphérique, on commence par récupérer son UUID 
+```shell
+sudo blkid
+```
+
+On ouvre ensuite le fichier de configuration : 
+```shell
+sudo nvim /etc/fstab
+```
+
+Et on ajoute une nouvelle ligne : 
+```txt
+UUID=1234-5678 /mnt/usb ext4 defaults 0 2
+```
+
+- `UUID`: identifiant unique 
+- `/mnt/usb`: point de montage 
+- `ext4`: format 
+- `defaults`: paramètre par défaut du montage 
+- `0` et `2` : paramètres pour la vérification du périphérique au démarrage
+
+On fois ajouter, on viens tester les paramètres en montant le périphérique 
+```shell
+sudo mount -a
+```
+
+----
+
+### Archivage et compression des fichiers 
+
+L'archivage c'est le processus de regroupement de plusieurs fichiers dans un seul conteneur, et la compression c'est la réduction de sa taille.
+C'est utile pour : 
+- **Stockage des données**: en emballant des fichiers dans une archives, on peut faciliter le déplacement et les copie comme un seul fichier.
+- **Transmission de donnée**: avec la compression, les données prennent moins de place, ce qui accélère le transfert sur le réseau 
+- **Backup**: l'archivage permet de protéger les données et simplifier leur restauration 
+
+#### tar - Création et gestion des archives 
+
+Utilitaire qui permet d'archiver des fichiers sous Linux. Il ne compresse pas les fichiers, mais il les assemble dans un fichier unique.
+
+```shell
+tar [options] <archive> <fichiers/dossiers>
+```
+
+- `-c` : création de la nouvelle archive
+- `-v`: affichage détaillé des opérations (affiche les fichiers ajoutés)
+- `-f`: spécifie le nom de l'archive 
+- `-x`: extraction des fichiers de l'archive
+- `-t`: affichage du contenu de l'archive 
+
+##### Création d'une archive 
+```shell
+tar -cvf archive.tar file1.txt file2.txt
+```
+
+La commande vient créer une `archive.tar` à partir des fichiers `file1.txt` et `file2.txt`
+
+##### Archivage d'un dossier 
+```shell
+tar -cvf project.tar /home/user/project
+```
+
+Cette commande créer une archive `project.tar` qui inclut tout le dossier `/home/user/project`
+
+##### Extraction d'une archive 
+```shell
+tar -xvf archive.tar
+```
+
+Décompresse l'archive `archive.tar` dans le répertoire actuel 
+
+##### Affichage du contenu d'une archive 
+```shell
+tar -tvf archive.tar
+```
+
+Affiche la liste des fichiers et des dossiers dans l'archive
+
+#### gzip - compression 
+
+Il permet de réduire les données en utilisant des algo de compression.
+
+```shell
+gzip [options] <fichier>
+```
+
+##### Compression d'un fichier 
+```shell
+gzip file1.txt
+```
+
+La commande transforme le fichier en `file1.txt.gz`
+
+##### Décompression d'un fichier 
+```shell
+gunzip file1.txt.gz
+```
+
+Restaure le fichier d'origine `file1.txt`
+
+##### Archivage et compression avec tar et gzip
+```shell
+tar -czvf archive.tar.gz file1.txt file2.txt
+```
+
+Cette commande créer une archive `archive.tar.gz` qui combine et compresse les fichier `file1.txt` et `file2.txt`
+
+##### Extraction d'une archive compressée 
+```shell
+tar -xzvf archive.tar.gz
+```
+
+Décompresse et extrait le contenu de l'archive `archive.tar.gz`
+
+#### zip - création d'archives compressées
+
+`zip` crée immédiatement une archive compressée qui peut par défaut être utilisée sur Windows et d'autres systèmes.
+
+```shell
+zip [options] <archive> <fichiers/dossiers>
+```
+
+##### Création d'une archive zip 
+
+```shell
+zip archive.zip file1.txt file2.txt
+```
+
+Crée une archive `archive.zip` qui inclut les fichiers `file1.txt` et `file2.txt`
+
+##### Archivage d'un dossier
+
+```shell
+zip -r project.zip /home/user/project
+```
+
+Crée une archive `project.zip` qui inclut tout le dossier `/home/user/project`.
+
+`-r` : ajout récursif des fichiers et dossier => permet d'ajouter ce qui est présent dans le dossier
+
+|Outil|Archivage|Compression|Approche|Utilisation principale|
+|---|---|---|---|---|
+|`tar`|✅|❌|Paquet de fichiers|Fusion des fichiers dans une archive sans compression|
+|`gzip`|❌|✅|Compression|Réduction de la taille des fichiers ou des archives individuelles|
+|`zip`|✅|✅|Tout-en-un|Créer des archives transportables|
+
+---
+
+### Sauvegarde 
+
+Les systèmes et les humains ne sont pas fiables, et les fichiers disparaissent. La sauvegarde permet d'éviter ce genre de problème.
+
+#### rsync - copie de données 
+
+`rsync` est un outils pour  copier et synchroniser des données. Sa principale force réside dans sa rapidité et son efficacité.
+Au lieu de copier, `rsync` ne copie que les fichiers modifiés. Cela lui permet d'être efficace pour effectuer des sauvegarde régulière de grande quantité de données.
+
+```shell
+rsync [options] source destination
+```
+
+- `source` : le chemin vers le fichier ou dossier que l'on souhaite copier 
+- `destination`: l'endroit où l'on veux envoyer ces données
+
+Options principales :
+- `-a`: (archive); inclut la copie de toutes les métadonnées (permissions, timestamps, etc)
+- `-v`: (verbose); active une sortie détaillée pour que l'on puisse voir ce qui se passe 
+- `--progress`: montre la progression du transfert 
+- `--delete`: supprime côté destination les fichiers qui ne sont plus présent côté source. Utile pour une synchro complète 
+- `-z` compress; compresse les données avant de les transmettre, ce qui accélère le processus (important pour les opération réseau)
+
+##### Copie de données locales 
+
+Dans un folder `/backup`, on viens y stocker les sauvegardes. On viens coper le contenu d'un repo dans ce nouveau repo 
+```shell
+rsync -av /home /backup
+```
+
+On viens copier les données du `/home` dans le nouveau dossier `/backup`.
+- `-a`: permet de préserver la structure et les permissions des fichiers
+- `-v` : fournit les info sur les processus en cours
+
+Si on relance la commande, elle ne copiera que les fichiers modifés ou nouveaux
+
+##### Sauvegarde distante 
+
+On souhaite envoyer une sauvegarde vers un serveur distant. Pour cela `rsync` prends en charge l'utilisation de SSH 
+
+```shell
+rsync -av /backup user@remote_server:/remote_backup
+```
+
+- `user`: le nom de l'utilisateur pour le serveur distant 
+- `remote_server`: l'adresse du serveur 
+- `/remote_backup`: le chemin sur le serveur où l'on souhaite sauvegarder les données
+
+#### scp - copie simple 
+
+`scp` (secure Copy Protocol) est un outil pour copier des fichiers entre une machine locale et une machine distante. Cet outil est plus simple que `rsync` et convient pour les cas où une synchronisation complète n'est pas nécessaire.
+
+```shell
+scp [options] source destination
+```
+
+- `-r` : copie récursive 
+- `-C`: compresse avant transfert 
+- `-P`: spécifie un post SSH si différent du 22 
+
+##### Copie un fichier sur une machine distante 
+
+```shell
+scp document.txt user@remote_server:/remote_folder
+```
+
+Cette commande permet de copier `document.txt` dans le dossier `/remote_folder` sur le serveur via SSH
+
+Le processus inverse est également possible 
+```shell
+scp user@remote_server:/remote_folder/document.txt /home/user/documents
+```
+
+#### Différence entre rsync et scp 
+
+|**Particularité**|**rsync**|**scp**|
+|---|---|---|
+|**Vitesse**|Seuls les fichiers modifiés, plus rapide pour de gros volumes|Copie tout, même si les fichiers n'ont pas changé|
+|**Synchronisation**|Support complet de la synchronisation|Ne supporte pas la synchronisation|
+|**Compression des données**|Option disponible `-z`|Option disponible `-C`|
+|**Simplicité d'utilisation**|Plus complexe à configurer|Interface simple|
+
+#### Configurer une sauvegarde 
+
+On souhaite configurer un processus complet de sauvegarde d'un projet sur un serveur distant.
+- Les fichiers du projet sont stockés dans le dossier `/home/user/project`. On souhaite qu'il soient sauvegardés sur le serveur `backup.server.com` dans le dossier `/backups/project`
+- Pour que la copie soit rapide, on utilise `rsync`
+
+On viens configurer un script de sauvegarde dans un fichier nommé `backup.sh`
+
+```bash 
+#!/bin/bash
+
+SOURCE="/home/user/project"
+DESTINATION="user@backup.server.com:/backups/project"
+
+# Effectue une sauvegarde avec rsync
+rsync -av --delete "$SOURCE" "$DESTINATION"
+
+# Affiche un message de fin
+echo "Sauvegarde terminée !"
+```
+
+On rend le script exécutable 
+```shell
+chmod +x backup.sh
+
+# on peut lancer ensuite le script 
+./backup.sh
+```
+
+On peut également l'ajouter à `cron` pour une exécution automatique.
+
+### Formatage des disques, montage et sauvegarde avec rsync 
+
+On ajoute un nouveau disque sur un ordinateur, mais celui ci n'est pas encore vide et pas prêt à être utilisé sur le système.
+
+On commence par s'occuper du formatage. 
+
+1. Vérifier les périphérique connectés
+
+On viens identifier où se trouve le nouveau disque :
+```shell
+lsblk
+
+# sortie 
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  100G  0 disk
+├─sda1   8:1    0   50G  0 part /
+├─sda2   8:2    0   50G  0 part /home
+sdb      8:16   0  500G  0 disk
+```
+
+Ici `sdb` est le nouveau disque. Pour le moment il n'a pas de partition.
+
+2. Création du system file 
+
+Pour notre nouveau disque, on choisit le format `ext4`.
+```shell
+sudo mkfs.ext4 /dev/sdb
+```
+
+Après cette commande, le système sera prêt à travailler avec le disque. 
+
+3. Montage du nouveau disque 
+Le nouveau disque est maintenant formaté avec le bon system file.
+
+On viens créer un point de montage, ici on créer un dossier `/mnt`
+
+```shell
+# création de l'emplacement où le disque sera connecté => généralement un dossier
+sudo mkdir /mnt/newdisk
+
+# montage du disque 
+sudo mount /dev/sdb /mnt/newdisk
+
+# check si ok => affiche le disque dans la liste
+df -h
+```
+
+Pour éviter d'ajouter le disque manuellement à chaque fois, on l'ajoute au fichier `etc/fstab`.
+
+```shell
+# on récupère l'UUID
+sudo blkid /dev/sdb
+
+# sortie 
+/dev/sdb: UUID="abcd-1234-efgh-5678" TYPE="ext4"
+
+# ajoute de la ligne dans `etc/fstab`
+UUID=abcd-1234-efgh-5678 /mnt/newdisk ext4 defaults 0 2
+```
+
+Le disque sera maintenant monté automatiquement à chaque démarrage du système.
+
+4. Archivage des données 
+
+On as un  dossier `/mnt/newdisk/data` que l'on souhaite archiver et compresser avant de le sauvegarder.
+
+```shell
+# création de l'archive 
+tar -cvf data_backup.tar /mnt/newdisk/data
+
+# compression de l'archive 
+gzip data_backup.tar
+```
+
+Le fichier `data_backup.tar.gz` est créer, et est plus simple à transférer comme il est compresser.
+
+5. Sauvegarde avec rsync 
+
+Le fichier est maintenant compresser et prêt pour la sauvegarde. On utilise `rsync` pour le transférer vers un autre serveur ou un emplacement sur le disque.
+
+```shell
+# copie local 
+rsync -av /mnt/newdisk/data /mnt/backup/
+
+# copie distante 
+rsync -av /mnt/newdisk/data username@remote_server:/backup/
+
+# avec scp 
+scp data_backup.tar.gz username@remote_server:/backup/
+```
+
