@@ -3256,3 +3256,218 @@ sed [options] 'modèle/action' fichier
 - `modèle`: le texte ou expression régulière rechercher 
 - `action`: opération que l'on souhaite effectuer 
 - `fichier`: fichier contenant les lignes à modifier
+
+### Remplacer du texte
+
+On as un fichier `example.txt` avec le contenu :
+```txt
+Hello world!
+Welcome to Linux.
+Linux is awesome.
+```
+
+On souhaite remplacer le mot "Linux" par sed
+
+```shell
+sed 's/Linux/sed/' example.txt
+```
+
+- `s`: action de remplacement 
+- `/Linux/`: ancien mot
+- `sed/` : le nouveau mot 
+
+On obtient ce résultat : 
+```txt
+Hello world!
+Welcome to sed.
+sed is awesome.
+```
+
+Pour un remplacement global, on utilise l'option `g`. Toute les occurrences seront remplacés
+
+```shell
+sed 's/Linux/sed/g' example.txt
+```
+
+Pour ignorer la casse, on utilise l'option `I` ou `i`
+
+```shell
+sed 's/linux/sed/gi' example.txt
+```
+
+Par défaut, le tool affiche juste le résultat dans la console, sans modifier le fichier. Pour enregistrer les changements directement dans le fichier, :
+
+```shell
+sed -i 's/Linux/sed/g' example.txt
+```
+
+Le fichier sera mis à jour avec la modification
+
+### Suppression de lignes 
+
+On souhaite supprimer toutes les lignes contenant le mot "Linux"
+
+```shell
+sed '/Linux/d' example.txt
+```
+
+Pour supprimer une ligne en fonction du numéro :
+
+```shell
+sed '2d' example.txt
+
+# supprimer plusieurs lignes 
+sed '2,3d' example.txt
+```
+
+### Utiliser les regex
+
+On peut utiliser des regex pour rechercher des correspondances plus complexes 
+
+```shell
+sed 's/^error:.*/Issue Detected/' logs.txt
+```
+
+On remplace toutes les lignes qui commence par "error" par "Issue Detected". 
+- `.*` : signifie tout ce qui suit 
+
+### Insérer et ajouter des lignes 
+
+```shell
+sed '/Linux/i\# Apprendre, c'est amusant' example.txt
+```
+
+Cette commande permet d'insérer avant chaque ligne contenant "Linux"
+
+Pour insérer une ligne après une correspondance 
+
+```shell
+sed '/Linux/a\# sed le rend plus facile' example.txt
+```
+
+---
+
+## AWK - formatage des données 
+
+Permet de sélectionner rapidement des colonnes, de filtrer des lignes, de formater les données et d'effectuer des opérations arithmétique.
+
+Le concept de l'outil est de bosser avec les données à l'aide de modèles et d'actions.
+
+```shell
+awk 'modèle {action}' fichier
+```
+
+- `modèle`: condition vérifié pour chaque ligne du fichier 
+- `action`: opérations effectuées sur les lignes correspondant au modèle
+- Si le modèle est absent l'action est appliqué à chaque ligne
+
+```shell
+awk '{print $1}' data.txt
+```
+
+Cette commande imprime la première colonne `$1` pour chaque ligne du fichier `data.txt`
+
+### Sélection de colonne 
+
+C'est la façon la plus simple d'utiliser l'outil. On sélectionne une ou plusieurs colonnes d'un fichier. Un champ est représenté comme `$n` ou `n` est le numéro de la colonne, en commençant par 1.
+
+Pour afficher la première et la troisième colonne 
+
+```shell
+awk '{print $1, $3}' data.txt
+```
+
+On as ce contenu dans notre fichier 
+
+```txt
+John 25 Engineer
+Jane 30 Designer
+Mike 28 Developer
+```
+
+On obtient ce résultat 
+
+```txt
+John Engineer
+Jane Designer
+Mike Developer
+```
+
+### Traitement conditionnel des lignes 
+
+Les conditions permettent de ne traiter que les lignes qui répondent à certains critères 
+
+Par exemple, afficher les lignes où la valeur dans la deuxième colonne est supérieur à 27 
+
+```shell
+awk '$2 > 27 {print $1, $2}' data.txt
+
+# résultat
+Jane 30
+Mike 28
+```
+
+### Opération arithmétique 
+
+On peut venir faire des calculs à la volée. Par exemple, ajouter 10 à la valeur de la deuxième colonne 
+
+```shell
+awk '{print $1, $2+10}' data.txt
+
+# résultat 
+John 35
+Jane 40
+Mike 38
+```
+
+### Comptage de ligne 
+
+Le tool connait automatiquement le nombre de lignes traitées. Cette information est stockée dans la variable `NR`
+
+Pour compter le nombre de ligne dans le fichier 
+
+```shell
+awk 'END {print NR}' data.txt
+
+# résultat 
+3
+```
+
+### Formatage de la sortie 
+
+Il prend en charge une sortie formatée à l'aide de la fonction `printf`.
+
+Affichage des données avec alignement 
+
+```shell
+awk '{printf "%-10s %-5s %-10s\n", $1, $2, $3}' data.txt
+
+# résultat 
+John       25    Engineer
+Jane       30    Designer
+Mike       28    Developer
+```
+
+### Variable 
+On peut utiliser des variables pour stocker des données et simplifier le travail 
+
+Par exemple, on calcul la somme de la deuxième colonne 
+```shell
+awk '{sum += $2} END {print "Âge Total :", sum}' data.txt
+
+# résultat 
+Âge Total : 83
+```
+
+### Expression régulière 
+
+On peut aussi utiliser les regex pour rechercher des lignes 
+
+Par exemple, on veux afficher les lignes ou la première colonne contient la lettre `J`
+```shell
+awk '/J/ {print $0}' data.txt
+
+# résultat 
+John 25 Engineer
+Jane 30 Designer
+```
