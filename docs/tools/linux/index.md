@@ -3471,3 +3471,195 @@ awk '/J/ {print $0}' data.txt
 John 25 Engineer
 Jane 30 Designer
 ```
+
+--- 
+## TRIE ET FILTRAGE DES FICHIER
+
+### SORT - Trie et filtrage des fichiers 
+
+Cette commande permet de trier les lignes dans un fichier texte. Elle fonctionne avec n'importe quel format de texte.
+
+Par défaut, le trie est par ordre alphabétique.
+
+```shell
+sort [options] fichier
+```
+
+On as ce fichier texte 
+```txt
+Charlie
+Alice
+Bob
+David
+```
+
+On utilise la commande pour trier ligne
+
+```shell
+sort names.txt 
+
+# résultat 
+Alice
+Bob
+Charlie
+David
+```
+
+```shell
+# trie inverser
+sort -r names.txt
+
+# trie numérique 
+sort -n numbers.txt
+
+# trie en appliquant un trim
+sort -b fichier.txt
+
+# triage sur colonne 
+sort -k2 -n visits.log
+```
+
+
+---
+
+### uniq - suppression des lignes dupliquées
+
+Cette commande permet de supprimer les lignes duppliquées dans un fichier. Elle ne fonctionnent qu'avec des doublons consécutifs. 
+Il faut au préalable trier les lignes.
+
+```shell
+uniq [options] fichier
+
+uniq colors.txt
+
+# triage et suppression des doublons 
+sort colors.txt | uniq
+
+# comptage des répétitions 
+sort colors.txt | uniq -c
+
+# trie + comptage 
+sort access.log | uniq -c | sort -rn
+```
+
+---
+
+### cut - Extraction de lignes 
+
+Permet d'extraire certaines parties des lignes comme des colonnes spécifiques dans un fichier CSV ou plages de caractères 
+
+```shell
+cut [options] fichier
+
+# extraction de la premiere colonne 
+cut -d',' -f1 data.csv
+```
+
+- `-d` : séparateur => ici la virgule 
+- `-f1`: champ ou colonne à extraire
+
+--- 
+
+## TELECHARGEMENT DE FICHIER 
+
+### CURL - Transfert de fichier
+
+Outil CLI qui permet de transférer des données via des protocoles réseau. Il supporte plus de 20 protocoles. 
+
+```shell
+curl [options] URL 
+```
+#### Télécharger une page web 
+
+```
+# télécharger une page internet => permet de récupérer le code HTML
+curl http://www.google.com
+
+# enregistrer le résultat dans un fichier 
+curl -o google.html http://google.com 
+```
+
+Le `-o` indique à curl de rediriger la sortie dans un fichier. Le code HTML sera télécharger dans le fichier `google.html`.
+
+#### Télécharger un fichier 
+
+On peut utiliser le CLI pour télécharger des fichiers depuis internet (comme un `.zip`)
+
+```shell
+curl -O http://example.com/file.zip
+```
+
+- `-O` sauvegarde le fichier avec son nom d'origine, indiqué dans l'URL
+
+#### Authentification HTTP 
+
+Parfois, l'accès au fichier ou une ressource API est protégé par un login ou un mot de passe. C'est utile pour travailler avec des API privée, comme GitHub 
+```shell
+curl -u username:password http://example.com/private-data
+```
+
+#### Téléchargement via API 
+On peut utiliser curl pour faire des requête vers des API
+```shell
+curl -X GET "https://api.exchangerate-api.com/v4/latest/USD"
+```
+
+- `-X`: indique la méthode de requête
+
+---
+
+### WGET - Téléchargement de fichier
+
+Il est spécialement conçu pour le téléchargement de gros fichier, et prends en charge la reprise de téléchargement.
+
+```shell
+wget [options] URL
+
+# téléchargement d'un fichier simple 
+wget http://example.com/file.zip
+
+# téléchargement avec changement de nom 
+wget -O newfile.zip http://example.com/file.zip
+
+# reprise de téléchargement 
+wget -c http://example.com/largefile.iso
+
+# télécharger un site entier 
+wget --mirror http://example.com
+
+```
+
+---
+
+## MISE A JOUR SYSTEME
+
+### APT GET - Système debian 
+
+`apt-get` c'est l'outil CLI qui permet d'intéragir avec APT (Advanced Packaging Tool), qui est un gestionnaire de paquets utilisé dans Debian et Ubuntu.
+
+```shell
+# vérifie les nouveauté 
+sudo apt-get update 
+
+# mise à jour des paquets vers la dernière versions
+sudo apt-get upgrade
+
+# mets à jour et ajoute ou supprime des dépendances nécessaire pour l'update
+sudo apt-get dist-upgrade
+
+# installer un paquet 
+sudo apt-get install <paquet>
+
+# supprimer un paquet 
+sudo apt-get remove <paquet>
+
+# supprimer les fichiers de config 
+sudo apt-get purge <paquet>
+
+# nettoyer des paquets supprimés
+sudo apt-get autoremove 
+
+# nettoyer le cache des paquets téléchargés
+sudo apt-get clean 
+
+```
