@@ -127,6 +127,8 @@ De cette manière, on place le projet dans le folder des projets. On viens `pull
 
 Le symlink fera la syncronisation automatique, et le folder qui est fournis par Nginx aura la mise à jour.
 
+Les liens symboliques contiennent le chemin de l'objet original, et non l'objet lui même. Si le fichier ou le dossier original est déplacé ou supprimé, le lien devient cassé car il ne point plus vers un objet existant.
+
 ```shell
 ln -s <path_projet_parent> <path_esclave>
 
@@ -2768,3 +2770,489 @@ rsync -av /mnt/newdisk/data username@remote_server:/backup/
 scp data_backup.tar.gz username@remote_server:/backup/
 ```
 
+---
+
+## SERVEUR WEB 
+
+Un serveur web est un programme qui reçoit des requête HTTP, les traite et répond avec le contenu correspondant (page HTML, fichier, erreur 404).
+Il sert de pont entre les utilisateurs et le contenu
+
+### Nginx 
+
+Installation :
+```shell
+# mise à jour de la liste des paquets
+sudo apt-get update
+
+# installation nginx 
+sudo apt-get install nginx 
+
+# vérification du statut serveur
+sudo systemctl status nginx 
+```
+
+Si le statut est `active (running)`, on peut accéder à `http://localhost` pour afficher la page d'accueil de Nginx.
+
+#### Configuration de base 
+
+Le fichier de configuration de Nginx se trouve :
+```shell
+sudo nvim /etc/nginx/nginx.conf
+```
+
+Une fois la configuration modifié, on vient check la configuration si il n'y a pas d'erreur de syntaxe 
+
+```shell
+sudo nginx -t
+```
+#### Gestion du serveur 
+
+```shell
+# démarrage 
+sudo systemctl start nginx 
+
+# stop 
+sudo systemctl stop nginx 
+
+# restart 
+sudo systemctl restart nginx 
+
+# reload 
+sudo systemctl reload nginx 
+```
+
+#### Configurer un site 
+
+On commence par créer un répertoire pour le nouveau site 
+
+```shell
+# création du repo du projet 
+sudo mkdir -p /var/www/hello
+```
+
+Dans ce dossier, on place les fichier du projet. On vient ensuite ajouter la nouvelle configuration 
+
+```shell
+sudo nvim /etc/nginx/sites-available/hello
+```
+
+On vient y ajouter cette configuration :
+
+```nginx 
+server {
+    listen 80;
+    server_name hello.local;
+
+    root /var/www/hello;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+On vient ensuite activer la configuration 
+
+```shell
+# création du lien symbolique 
+sudo ln -s /etc/nginx/sites-available/hello /etc/nginx/sites-enabled/
+# check config
+sudo nginx -t
+# reload nginx 
+sudo systemctl reload nginx
+```
+
+On viens ensuite ajouter une entrée dans `/etc/hosts` afin de configurer le nom de domaine `hello.local` sur la machine.
+
+Ce fichier permet de configurer le DNS local.
+
+```shell
+sudo nvim /etc/hosts
+
+127.0.0.1 hello.local
+```
+
+On peut ensuite vérifier si le domaine est accessible `http://hello.local`
+
+---
+
+### Hôtes virtuels
+
+Les hôtes virtuels permettent à un serveur de gérer plusieurs sites (avec différents domaines) tout en ayant qu'une seul serveur physique.
+
+Il existes deux types d'hôtes virtuels :
+- **Basé sur l'ip**: chaque site reçoit une adresse IP unique. 
+- **Basé sur le nom de domaine**: plusieurs sites peuvent partager une seule adresse IP. Le serveur utilise le nom d'hôte de la requête du client pour comprendre quel site afficher. C'est l'option la plus courante pour la plupart des projets.
+
+
+#### Configuration d'un hôte virtuel dans Nginx 
+
+Pour créer un nouvel hôte, il faut créer un fichier de configuration. Ce fichier contient des informations sur la façon dont le serveur doit gérer les requêtes pour un domaine spécifique.
+
+On viens créer un nouveau dossier :
+
+```shell
+sudo nvim /etc/nginx/sites-available/example.com
+```
+
+On viens y ajouter le bloc de configuration : 
+
+```nginx
+server {
+	# indique que le serveur écoute le port 80
+    listen 80;
+    # définit le nom de domaine auxquels le serveur doit répondre
+    server_name example.com www.example.com;
+
+	# indique le répertoire racine ou sont stockés les fichiers du site
+    root /var/www/example.com;
+    # spécifie le fichier d'entrée
+    index index.html;
+
+	# configuration  du routage des requêtes, 404 si non trouvé
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+Une fois le fichier de configuration ajouté, on viens activer l'hôte virtuel avec des liens symbolique
+
+```shell
+# ajout du lien symbolique 
+sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+
+# check config 
+sudo nginx -t
+
+# reload du serveur 
+sudo systemctl reload nginx 
+```
+
+On viens ensuite ajouter les fichiers du site : 
+```shell
+sudo mkdir -p /var/www/example.com
+sudo nvim /var/www/example.com/index.html
+```
+
+On ajoute ensuite le HTML simple : 
+
+```html
+<h1>Bienvenue sur example.com !</h1>
+<p>Votre serveur Nginx est prêt à fonctionner.</p>
+```
+
+On enregistre, et en se rendant sur `http://example.com`, on voit le contenu du fichier HTML dans le navigateur.
+
+En cas d'erreur, on peut venir vérifier :
+
+```shell
+sudo tail -f /var/log/nginx/error.log
+```
+
+---
+
+### Configuration HTTPS 
+
+Pour configurer le HTTPS, on utilise `Let's Encrypt` et `Certbot`. Ils permettent d'obtenir des certificat SSL pour le serveur web.
+
+```shell
+sudo apt-get update
+sudo apt-get upgrade
+
+# installation Certbot 
+sudo apt-get install certbot python3-certbot-nginx
+
+# configuration HTTPS pour le site 
+sudo certbot --nginx
+```
+
+Certbot vient scanner les hôtes virtuels (les bloc `server` dans la configuration). Il vient demander pour quel domaine on souhaite configurer le HTTPS.
+Le domaine doit pointer vers le serveur via DNS (par exemple, avec un enregistrement A)
+
+##### Renouvellement automatique
+
+Les certificats Lets Encrypt sont valides pendant 90 jours, il est donc nécessaire de les renouveler régulièrement. 
+Certbot peut le faire automatiquement, mais il faut s'assurer que tout est bien configurer.
+
+```shell
+# vérification expiration 
+sudo certbot certificates 
+```
+
+Lors de installation, Certbot ajoute automatiquement une tâche Cron ou un Systemd Time pour vérifier les mise à jours. Pour s'assurer que tout fonctionne bien, on vient ajouter une tâche de test dans Cron 
+
+```shell
+sudo contab -e
+```
+
+Et on vient ajouter la ligne suivante 
+
+```txt
+0 0 * * * certbot renew --quiet
+```
+
+Cette commande vérifie et renouvelle les certificats tous les jours à minuit. L’option `--quiet` supprime l'affichage d'information inutiles.
+
+#### Renouvellement manuel 
+
+Pour renouveler les certificats manuellement 
+```shell
+sudo certbot renew
+```
+
+#### Activation de la redirection HTTP - HTTPS
+
+Le site peut toujours être accessible via HTTP. Il faut venir configurer une redirection automatique de toutes les requêtes vers le HTTPS
+
+Certbot peut configurer automatiquement la redirection lors de l'émission du certificat. Si l'option n'est pas activé, il faut l'ajouter manuellement dans le fichier de configuration du virtual host 
+
+```nginx
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    return 301 https://$host$request_uri;
+}
+```
+
+On redémarre ensuite 
+```shell
+sudo systemctl restart nginx 
+```
+
+---
+
+### Gestion des certificats et configuration des mise à jour automatiques
+
+#### Vérification des certificats actuels
+
+Le commande permet de savoir quels certificats est déjà installés sur le serveur.
+
+```shell
+sudo certbot certificates 
+
+# sortie
+Found the following certs:
+  Certificate Name: example.com
+    Domains: example.com www.example.com
+    Expiry Date: 2023-12-31 10:00:00+00:00 (VALID: 89 days)
+    Certificate Path: /etc/letsencrypt/live/example.com/fullchain.pem
+    Private Key Path: /etc/letsencrypt/live/example.com/privkey.pem
+```
+
+On retrouve les infos :
+- nom du certificat
+- domaine couverts par le certificat
+- date d'expiration
+- chemin vers les fichiers du certificat et de la clé privé
+
+#### Mise à jour automatique des certificats 
+
+La commande permet d'automatiser la mise à jour des certificats. Elle vérifie tous les certificats et met à jour automatiquement ceux qui approchent de leur expiration.
+
+```shell
+sudo certbot new 
+```
+
+
+---
+
+### Déploiement avec hôte virtuel et SSL 
+
+On souhaite déployer deux sites sur un serveur web : 
+- example.com 
+- test.com 
+
+Pour chaque site, on configure un hôte virtuel, on active HTTPS et on viens débueger et vérifier.
+
+On commence par installer Nginx 
+
+```shell
+sudo apt-get update
+sudo apt-get install nginx
+```
+
+On installe ensuite Certbot
+
+```shell
+sudo apt-get install certbot python3-certbot-nginx
+```
+
+On viens ensuite créer les répertoire pour les fichiers des sites 
+
+```shell
+sudo mkdir -p /var/www/example.com
+sudo mkdir -p /var/www/test.com
+```
+
+On créer ensuite un fichier HTML de test pour chacun 
+
+```shell
+sudo nano /var/www/example.com/index.html
+
+sudo nano /var/www/test.com/index.html
+```
+
+On configure ensuite les hôtes virtuels. Pour chaque site, on viens créer un fichier de configuration 
+
+```shell
+sudo nano /etc/nginx/sites-available/example.com
+```
+
+On y ajoute cette configuration
+
+```nginx
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    root /var/www/example.com;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+```shell
+sudo nano /etc/nginx/sites-available/test.com
+```
+
+```nginx
+server {
+    listen 80;
+    server_name test.com www.test.com;
+
+    root /var/www/test.com;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+On active ensuite la configuration 
+
+```shell
+sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/test.com /etc/nginx/sites-enabled/
+```
+
+On redémarre ensuite le serveur 
+
+```shell
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+On vient ensuite configurer HTTPS pour les sites 
+
+```shell
+sudo certbot --nginx
+```
+
+On peut ensuite vérifier dans le navigateur si le domaine `https://example.com` et `https://test.com` sont visible
+
+Si quelque chose ne fonctionne pas, on peut aller checker les logs :
+```shell
+sudo tail -f /var/log/nginx/error.log
+```
+
+On peut ensuite ajouter le renouvellement automatique des certificats avec Certobt et Cron 
+
+```shell
+sudo certbot renew --dry-run
+```
+
+---
+
+## GREP - Recherche dans un fichier 
+
+`grep` est un outil CLI utiliser pour rechercher des lignes qui correspondent à un motif donné dans des fichiers texte.
+
+```shell
+grep [options] "modèle" fichier
+
+# on cherche les ligne avec le mot error dans le fichier définit
+grep "error" /var/log/syslog
+
+# ignore la casse
+grep -i "error" application.log
+
+# retourne tout ce qui ne contient pas debug
+grep -v "debug" system.log
+
+# affiche les numéro de ligne 
+grep -n "error" server.log
+
+# recherche récursive
+grep -r "keyword" /home/user/documents
+
+# limiter au 10 premiere lignes 
+grep "error" log.txt | head -n 10
+
+# compter les lignes avec erreur 
+grep -c "error" log.txt
+
+
+```
+
+- `[options]` : paramètre supplémentaire 
+- `modèle` : text ou expression régulière rechercher 
+- `fichier` : nom du fichier ou des fichier où la recherche est effectuée
+
+- `-i`: ignorer la casse 
+- `-v` : recherche inversé: retourne ce qui ne correspond pas au motif 
+- `-n` : affiche la ligne avec son numéro 
+- `-r` ou `-R` : recherche récursive; permet de rechercher dans les sous dossier 
+
+### Combinaison avec d'autres commandes 
+
+En utilisant les pipe `|`, on peut combiner plusieurs commandes.
+
+```shell
+# filtrer les erreur de périphérique 
+dmesg | grep "usb"
+
+# appliquer un filtre  
+cat /var/log/syslog | grep "memory"
+
+# recherche dans les processus 
+ps aux | grep "nginx"
+```
+
+### Expression régulière 
+
+`grep` prends également en compte les expressions régulière.
+
+```shell
+# les lignes qui commencent par error
+grep "^error" logfile.txt
+
+# lignes qui se terminent par .conf
+grep "\.conf$" filelist.txt
+```
+
+- `^`: signifie début de ligne 
+- `$`: fin de ligne 
+- `\`: échappe le caractère pour que le `.` soit traité comme un point
+
+---
+
+## SED - Transformation de texte 
+
+`sed` (Stream Editor) est un outil qui permet de manipuler du texte et qui permet d'ajouter, de modifier, de supprimer ou transformer des fichiers texte et des flux de données.
+
+Il modifie le texte à la volée, sans toucher au fichier original.
+
+```shell
+sed [options] 'modèle/action' fichier
+```
+
+- `modèle`: le texte ou expression régulière rechercher 
+- `action`: opération que l'on souhaite effectuer 
+- `fichier`: fichier contenant les lignes à modifier
