@@ -7,6 +7,17 @@ Python contient des concepts de base :
 - L'indentation est importante
 - Les commandes sont regroupees en bloc a l'aide de l'indentation. Si plusieurs commandes ont le meme niveau d'indentation, elles sont consideres comme appartenant au meme bloc
 
+## ENVIRONNEMENT DE DEVELOPPEMENT 
+
+### venv 
+
+`venv` est l'environnement virtuel. C'est un module Python qui permet de créer différents environnement virtuel légers et isolés pour des proejts Python.
+C'est un outil qui permet de gérer les dépendances d'un projet, en les isolant des lib systèmes.
+
+Chaque environnement virtuel a ses propres exécutables Python, et un emplacement pour installer des libs. Ce qui garantit l'indépendance des projets les uns des autres.
+
+C'est utile lorsque différents projets nécessitent différentes version d'une même bibliothèques, ou quand il faut éviter les conflits entre les lib système et les lib pour le projet.
+
 ---
 
 ## AFFICHAGE 
@@ -399,3 +410,103 @@ else:
 ```
 
 --- 
+
+### if elif else 
+
+`elif` permet de vérifier une condition supplémentaire
+
+```python
+if consition1:
+	commande1
+elif condition2:
+	commande2
+else:
+	commandeElse
+	
+# exemple 
+x, y = 5, -8
+if x > 0 and y > 0:
+	print("Premier quart")
+elif x < 0 and y > 0:
+	print("Deuxieme quart")
+elif x < 0 and y < 0:
+	print("troiseme quart")
+else:
+	print("quatrieme quart")
+```
+
+---
+
+## BLOC DE CODE 
+
+Un bloc de commande est un regroupement de code. Les blocs de code sont définis par des indentations, ce qui rend la structure du code claire et lisible.
+
+Python utilise des indentations pour délimiter les séquences d'instructions.
+
+La convention Python indique d'utiliser 4 espaces pour un niveau de d'indentation.
+
+### Structure des blocs 
+
+Un bloc de code commence par une instruction, suivie de deux points et une indentation à la ligne suivante.
+Toutes les instructions avec le même niveau d'indentation sont considérées comme faisant partie d'un même bloc.
+
+---
+
+## BOUCLE FOR 
+
+La boucle `for` permet d'exécuter des instructions sous certaines condition.
+
+```python 
+for variable in liste_valeurs:
+	commande
+```
+
+Cette boucle est adapté pour parcourir des liste de valeurs : liste, chaîne, dictionnaire ... 
+
+`variable` prends la valeur en cours d'itération, et pour chacune elle exécute les commandes.
+
+```python 
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits:
+	print(fruit)
+```
+
+Dans ce code, on parcourt la liste, et on affiche la valeur. La boucle parcourt la liste, et affiche chacune des valeurs. 
+
+### range()
+Cette fonction permet de générer une séquence de nombres.
+
+Elle peut s"utiliser de manière différentes selon les besoin : 
+- **un argument**: génère une séquence de 0 à n-1. Utiliser pour faire une action un certain nombre de fois 
+```python 
+for i in range(5):
+	print(i) #affiche de 0 à 4
+```
+
+- **deux arguments** : génère une séquence de `start` à `end-1`. 
+```python
+for i in range(1, 6):
+	print(i) # affiche 1 à 5
+```
+
+- **trois arguments** : ajoute un `step` qui permet de définir le pas entre les nombres dans la séquence 
+```python
+for i in range(0, 10, 2):
+	print(i) # affiche les nombres paire de 0 à 8
+```
+
+#### Boucle inversé 
+
+```python
+for i in range(10, 0, -1):
+	print(i) # affiche de 10 à 1
+```
+
+### Itérer une liste 
+
+```python
+for variables in [val1, val2, ...]:
+	commande
+```
+
+La boucle vient itérer une liste, et exécuter les commandes pour chaque valeur de la liste.
