@@ -27,6 +27,7 @@ markdown_extensions:
 
 nav:
   - Docker: docker/index.md
+  - Python: Python/index.md
   - Language:
       - HTML: language/HTML/index.md
       - CSS: language/css/index.md
