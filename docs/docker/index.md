@@ -291,7 +291,64 @@ Docker simplifie la mise à l'échelle via l'intégration avec des plateforme cl
 
 ## CONTAINER 
 
-### docker run - lancement de conteneur 
+### docker run 
 
+Cette commande permet de lancer un nouveau conteneur en utilisant une images existante. 
 
+```shell
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+```
 
+- `OPTIONS`: paramètre pour configurer le conteneur (ports, volumes, variables d'environnement)
+- `IMAGE`: nom de l'image à partir duquel le conteneur sera crée
+- `COMMAND`: commande qui sera exécutée à l'intérieur du conteneur 
+- `ARG`: argument pour la commande 
+
+#### Lancement simple 
+
+```shell
+docker run hello-world
+```
+
+Cette commande télécharger l'image `hello-world` depuis Docker Hub et la lance. Le conteneur exécute la commande définir dans l'image et affiche le message à l'écran.
+
+#### Lancement en mode background 
+
+Par défaut, les conteneurs se lance en mode intéractif, et leur sortie est affichée dans le terminal. Le mode background est le mode détaché, les sortie ne seront pas affiché.
+
+```shell
+docker run -d nginx
+```
+
+La commande démarre un serveur nginx en mode détaché. Docker retourne l'identifiant du conteneur, que l'on peut utiliser pour gérer le conteneur plus tard.
+
+#### Attribuer un nom au conteneur 
+
+Pour simplifier la gestion des conteneur, on peut lui attribuer un nom avec le parametre `--name`
+```shell
+docker run -d --name my_nginx nginx
+```
+
+En ajoutant un nom, on peut y faire reference dans d'autre commande Docker.
+
+#### Demarrer en mode interactif 
+On peut lancer un conteneur en mode interactif avec la l'option `-i` et `-t`
+```shell
+docker run -it ubuntu bash
+```
+
+La commande denarre un conteneur base sur une image ubuntu et ouvre un terminal interactif Bash a l'interieur du conteneur. On peux ensuite executer ses commandes dans ce terminal.
+
+#### Lancer un conteneur avec une variable env 
+```shell
+docker run -e MY_VAR=HelloDocker ubuntu
+```
+
+On passe dans le conteneur la variable d'environnement
+
+#### Lancer un conteneur en montant un volume 
+```shell
+docker run -v /host/data:/container/data ubuntu
+```
+
+On viens passer le volume `/host/data` dans le container dans le repo `/container/data` avec l'option `-v`
