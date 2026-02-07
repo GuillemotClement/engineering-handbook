@@ -26,7 +26,7 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
-  - Docker: docker/index.md
+  - Docker: docker/Docker.md
   - Language:
       - HTML: language/HTML/index.md
       - CSS: language/css/index.md
