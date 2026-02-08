@@ -352,3 +352,137 @@ docker run -v /host/data:/container/data ubuntu
 ```
 
 On viens passer le volume `/host/data` dans le container dans le repo `/container/data` avec l'option `-v`
+
+---
+
+### docker start 
+Permet de démarrer des containers qui ont été arrêtés auparavant. Cela signifie que l'on peut réutiliser un container déjà créé sans avoir besoin de le recréer à chaque fois que nécessaire 
+
+```shell
+docker start [options] container [container...]
+```
+
+- `container`: le nom ou identifiant du container à lancer 
+```shell
+# lancer un container 
+docker start my_container 
+
+# lancer plusieurs container 
+docker start container1 container2
+
+# lance un container avec affichage des sortie 
+docker start -a my_container
+```
+
+---
+
+### docker stop 
+
+Cette commande permet d'arrpeter des container en cours d'exécution. Elle donne au conteneur le temps de s'arrêter correctement en envoyant le signal SIGNTERM et SIGKILL si le container ne s'arrête pas dans le délai imparti
+
+```shell
+docker stop [option] container [container...]
+
+# arrêter un container 
+docker stop my_container 
+
+# arrêter plusieurs container 
+docker stop container1 container2
+
+# arrête avec délais en seconde
+docker stop -t 30 my_container
+```
+
+---
+
+### docker restart 
+
+Cette commande permet de redémarrer  les conteneurs. Permet d'appliquer rapidement des changements ou résoudre des erreurs 
+```shell
+docker restart [options] container [container...]
+
+# redémarrer un container 
+docker restart my_container
+
+# redémarrer plusieurs container 
+docker restart container1 container2
+
+# redémarrer avec timeout en seconde
+docker restart -t 20 my_container
+```
+
+---
+
+### docker rm 
+Cette commande permet de supprimer des container arrêtés. Cela permet de libérer les ressources utilisées par le container.
+Avant la supression, il doit être arrêté.
+
+```shell
+# Suppression d'un conteneur avec les volumes
+docker rm -v old_service
+```
+
+---
+
+### docker ps 
+
+Cette commande affiche la liste des conteneurs en cours d'exécution et fournit des informations à leur sujet. 
+
+Elle affiche :
+- **Container ID**: identifiant du conteneur 
+- **Image**: image de base du conteneur 
+- **Command**: commande exécuté dans le container 
+- **Created**: durée depuis la création du container 
+- **Status**: état actuel du conteneur 
+- **Ports** : ports redirigés
+- **Name**: nom du conteneur 
+
+```shell
+docker ps [options]
+
+# utilisation de base 
+docker ps 
+
+# liste les conteneur arrête et en exe
+docker ps -a
+
+# filtrage par status 
+docker ps -f "status=exited"
+
+# filtrage par nom 
+docker ps -f "name=my_container"
+
+# filtrage par image
+docker ps -f "ancestor=nginx"
+
+# formatage de sortie 
+docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"
+
+# affiche les identifiant des conteneur en cours
+docker ps -q
+
+# affiche les conteneur démarré dans les 24h
+docker ps --filter "since=24h"
+
+# affiche les conteneur dans un état particulier et mise en forme de la sortie 
+docker ps -f "status=running" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+# recherche et suppression des conteneur arrêtés 
+docker rm $(docker ps -a -f "status=exited" -q)
+
+# génération rapoort d'état 
+if [ $(docker ps -q -f "name=my_container) ]; then
+	echo "Le conteneur est en cours exécution"
+else
+	docker start my_container
+fi
+```
+
+- **{{.ID}}**: identifiant du conteneur 
+- **{{.Image}**: image du conteneur 
+- **{{.Commande}}**: commande exécuté dans le conteneur 
+- **{{.CreatedAt}}**: date de création
+- **{{.RunningFor}}**: durée de fonctionnement
+- **{{.Status}}**: état actuel
+- **{{.Ports}}**: ports redirigés
+- **{{.Names}}**: nom du conteneur 

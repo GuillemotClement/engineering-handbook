@@ -65,6 +65,18 @@ x, y, z = 1, 2, 3
 
 Python supporte plusieurs types de données de base utilisés pour stocker et manipuler des données dans les programmes. 
 
+| Type de données | Description                           | Exemple d'utilisation     |
+| --------------- | ------------------------------------- | ------------------------- |
+| `int`           | Nombres entiers                       | x = 10                    |
+| `float`         | Nombres à virgule flottante           | y = 3.14                  |
+| `complex`       | Nombres complexes                     | z = 1 + 2j                |
+| `str`           | Chaînes                               | s = "Hello, world!"       |
+| `bool`          | Type booléen                          | is_valid = True           |
+| `None`          | Absence de valeur                     | result = None             |
+| `bytes`         | Séquence immuable d'octets            | b = bytes([50, 100, 76])  |
+| `bytearray`     | Séquence mutable d'octets             | ba = bytearray([50, 100]) |
+| `memoryview`    | Représentation des données en mémoire | mv = memoryview(b'abc')   |
+
 #### int 
 
 Le type `int` est utilisé pour représenter les nombres entiers sans partie décimale. Il peut stocker du positif comme du négatif.
@@ -80,8 +92,58 @@ nom = "Alex" + "Alex"
 #### float 
 Permet de représenter des nombres à virgule.
 
+#### complex
+Représente les nombres complexe (composés d'une partie réel et imaginaire)
+
 #### bool 
 Représente un boolean. Il prends une valeur `True` ou `False`. 
+
+#### None
+Type spécial représentant l'absence de valeur 
+
+#### bytes 
+Séquence immuable d'octects 
+
+#### bytearray
+
+Séquence mutable d'octets
+
+#### memoryview 
+Objet permettant de travailler avec des données sous forme binaire sans les copier 
+
+#### Collection 
+Les collections permettent de stocker des groupes entiers d'objets. 
+
+Elles permettent de représenter différentes structures de donnée pour stocker, gérer et traiter des groupes d'éléments.
+- `list` : ensemble ordonné et modifiables d'éléments 
+- `tuple`: séquence ordonné et immuable d'éléments
+- `range`: séquence de nombres souvent utilisé dans les boucles 
+- `set` : collection non ordonnées d'élément unique 
+- `dict`: collection de clé-valeur avec des clé unique 
+- `frozenset`: variable immuable de l'ensemble `set`
+
+| Type de collection | Description                             | Exemple                             |
+| ------------------ | --------------------------------------- | ----------------------------------- |
+| `list`             | Mutable, éléments pouvant se répéter    | my_list = [1, 2, 3]                 |
+| `tuple`            | Immuable, éléments pouvant se répéter   | my_tuple = (1, 2, 3)                |
+| `range`            | Séquence immuable de nombres            | my_range = range(1, 10)             |
+| `set`              | Ensemble non ordonné d'éléments uniques | my_set = {1, 2, 3}                  |
+| `dict`             | Paires clé-valeur, clés uniques         | my_dict = {'a': 1, 'b': 2}          |
+| `frozenset`        | Ensemble immuable d'éléments uniques    | my_frozenset = frozenset([1, 2, 3]) |
+
+Chacune de ces collections a ses propres propriété et méthodes unique ce qui les rends adaptées à différentes tâches de programmation.
+
+#### Classes et objet
+Python permet de déclarer ses propres types - les classes.
+
+Elles offrent un moyen d'emballer des fonctions et des données liées. De plus, elles permettent de modéliser des objets réel ou abstraits avec un comportement et des propriétés spécifiques.
+
+Une classe est créer à l'aide du mot clé `class`. Cette instruction crée un nouveau type d'objet et permet à la nouvelle classe d'hériter des attributs et méthodes d'une autre classe.
+
+Les classes ont leur propre fonction intégrées.
+
+
+
 
 ### Convention de nommage 
 
@@ -241,6 +303,78 @@ La sortie de données vers la console est le processus d'affichage d'information
 print("Mon message à afficher")
 ```
 
+#### sep 
+
+`sep` : définit le caractères de la chaine qui sera utilisée pour séparer plusieurs valeurs. Par défaut, c'est `espace`. Cela signie que si on passe plusieurs valeur, c'est ce caractère qui sera utilisé comme séparateur.
+
+```python
+print("Hello", "World")
+print("Hello", "world", sep=", ") #Hello, world
+
+print(1, 2, 3, 4, sep=",\n") # ajoute une nouvelle ligne 
+```
+
+#### end 
+Permet de définit ce qui sera imprimé après toutes les valeurs passées. Par défaut `\n` qui ajoute une nouvelle ligne.
+
+```python
+print("Hello", end=" ")
+print("world")
+```
+
+
+
+
+### format()
+
+Permet de combiner des chaînes et d’afficher les données à l'écran de manière plus simple et compréhensible.
+
+Elle permet d'insérer des valeurs dans une chaîne à des position spécifiques. 
+```python
+"Modèle de chaîne de {} à {}".format(valeur1, valeur2,…)
+```
+
+Cette fonction est une fonction fille de la chaîne, elle est appelée sur une chaîne.
+
+Elle remplit le modèle de la chaîne avec les valeurs passée. elle convertit les valeurs passées en chaîne, et les insère dans les emplacement désignés par les `{}`.
+
+```python
+welcome_message = "Salut {}, bienvenue à {}"
+print(welcome_message.format("Anna", "notre magasin"))
+
+output = "Données: {0:.2f} et {1:.2f}".format(3.1415, 2.7158)
+print(output) # Données: 3.14 et 2.72
+
+output = "{name} travaille chez {company}"
+print(output.format(name="Serguei", company="Google"))
+```
+
+### f-string 
+Ces chaînes améliorent la lisibilité du code et fonctionnent également plus rapidement que les autres méthodes de formatage.
+
+Pour les utiliser on place la lettre `f` ou `F` devant la chaîne. Les expressions à insérer sont placées entre accolades `{}`
+
+```python
+force = "Côté Obscur"
+message = f"Que la force soit avec toi {force}"
+print(message) # Que la force soit avec toi Côté Obscur
+
+age = 28
+message = f"J'ai {age} ans"
+print(message)
+
+birth_year = 1985
+current_year = 2024
+message = f"J'ai {current_year - birth_year} ans"
+print(message) # J'ai 39 ans
+```
+
+On peut indiquer des variables disponible dans le score actuel, et Python les convertit automatiquement en chaîne et les insère au bon endroit
+
+
+
+
+
 ### input() 
 Cette fonction permet de récupérer des saisie utilisateur via la console. La fonction permet d'intéragir avec l'utilisateur dans les applications console.
 
@@ -288,6 +422,34 @@ L'utilisation de `input()` peut provoquer des erreurs si une saisie incorrecte e
 ## CONVERSION DE TYPE 
 
 La conversion de type permet de convertir une valeur d'un type à un autre. 
+
+### type() 
+Cette fonction permet de déterminer le type d'un objet. Elle retourne le type de l'objet spécifié, utile pour le debug, la validation de donnée ou l'implémentation d'une logique dépendant des types de données
+
+```python 
+x = 1
+print(type(x)) # <class 'int'>
+
+x = "Salut"
+print(type(x)) # <class 'str'>
+
+x = [1, 2, 3]
+print(type(x)) # <class 'list'>
+
+# vérifier qu'une variable contient un nombre 
+arg = 123
+if type(arg) == int:
+	print(arg + 10) # 133
+	
+# vérifier le type de la variable 
+arg = "123"
+if type(arg) == int:
+	print(arg + 10)
+elif type(arg) == str:
+	print(arg + "monde") 
+else:
+	print("type inconnu")
+```
 ### int() 
 Cette fonction permet de convertir une valeur en nombre entier.
 ```python 
@@ -371,6 +533,32 @@ print(float(false_bool)) # 0.0
 
 ---
 
+### tuple()
+Convertit une séquence en tuple 
+```python
+t = tuple([1, 2, 3]) # devient (1, 2, 3)
+```
+
+---
+
+### list()
+Convertis un objet itérable en liste. Un objet ittérable est un objet qui peut être parcourur séquentiellement comme des chaîne, des listes ou des tuples
+```python
+l = list("abc") # ['a', 'b', 'c']
+```
+
+---
+
+### dict()
+Permet de créer un dictionnaire à partir d'une séquence clé valeur 
+```python 
+d = dict([(1, 'a'), (é, 'b')]) # {1: 'a', 2: 'b'}
+```
+
+
+
+
+
 ## INSTRUCTION CONDITIONNELLE 
 
 ### if 
@@ -435,6 +623,16 @@ else:
 	print("quatrieme quart")
 ```
 
+### Opérateur ternaire 
+
+Les ternaire est une syntaxe simplifié pour les `if else`.
+
+```python
+variable = valeur1 if condition else valeur 2
+```
+
+Si la condition est vraie, alors la variable est assigné à `valeur1` sinon `valeur2`
+
 ---
 
 ## BLOC DE CODE 
@@ -451,8 +649,8 @@ Un bloc de code commence par une instruction, suivie de deux points et une inden
 Toutes les instructions avec le même niveau d'indentation sont considérées comme faisant partie d'un même bloc.
 
 ---
-
-## BOUCLE FOR 
+## BOUCLE 
+###  FOR 
 
 La boucle `for` permet d'exécuter des instructions sous certaines condition.
 
@@ -510,3 +708,119 @@ for variables in [val1, val2, ...]:
 ```
 
 La boucle vient itérer une liste, et exécuter les commandes pour chaque valeur de la liste.
+
+### while 
+
+La boucle `while` permet d'exécuter un bloc de commande tant que la condition évaluer est `True`. Attention à toujours prévoir une condition de sortie pour ne pas créer de boucle infinie.
+
+```python
+while condition:
+	commande
+
+# exemple 
+count = 0
+while count < 5:
+	print(count)
+	count += 1
+
+# CLI 
+user_input = ""
+while user_input != "exit":
+	user_input = input("Saisir une entrée :")
+	print(user_input)
+```
+
+### break 
+
+L'opérateur `break` est utiliser pour stoper immédiatement l'exécution d'une boucle `while` ou `for`
+
+Il permet de sortir d'une boucle avant sa fin normal en fonction d'une condition.
+```python
+for num in range(10):
+	if num == 5:
+		break # stop l'exécution de la boucle 
+	print(num)
+
+while True:
+	response = input("Saisir exit pour quiter"):
+	if response == "exit":
+		break;
+
+elements = [1, 2, 3, -99, 5]
+for element in elements:
+	if element < 0:
+		print("Elément négatif trouvé :" , element)
+		break
+```
+
+### continue 
+
+L'opérateur `continue` permet de sauter l'itération en cours de la boucle et passer à l'itération suivante.
+```python
+for i in range(10):
+	if i % 2 = 2 # si paire 
+		continue
+	print(i)
+	
+# filtrage de donnée 
+data = ["apple", "banana", "", "cherry", "date"]
+for fruit in data:
+	if not fruit:
+		continue # saute les chaine vide
+	print(fruit.capitalize)
+	
+scores = [92, 85, 99, 78, 82, 100, 67, 88]
+for score in scores:
+	if score < 80:
+		continue # saute les scores bas
+	print("Félicitation, votre score : ", score)
+```
+
+### else 
+
+L'opérateur `else` peut être utiliser dans une boucle. Il s'exécute après la fin de la boucle, mais uniquement si la boucle s'est terminé normalement. 
+Cela permet de venir faire des vérification si la boucle s'est terminé prématurément 
+
+```python
+for in in range(3):
+	password = input("Saisir le mot de passe : ")
+	if password == "secret":
+		print("Mot de passe accepté.")
+		break
+else:
+	print("Mot de passe incorrect")
+```
+
+Dans ce code, si l'utilisateur à saisis un mot de passe incorrect trois fois, le `else` s'affiche.
+
+```python
+n = 5
+while n > 0:
+	print(n)
+	n -= 1
+else:
+	print("La boucle est terminé")
+```
+
+L'utilisattion des `else` dans une boucle est utile dans les algo de recherche, où il est nécessaire de déterminer si la recherche à réussie. Par exemple, lors de la recherche d'un élément dans une liste qui n'existe pas, on peut utiliser `else` pour afficher un message d'échec après la fin de la boucle 
+
+---
+
+### Boucle imbriquées 
+
+Une boucle imbriquée signifie qu'une boucle est présente à l'intérieur d'une autre. Cela permet de traiter des tableaux à dimensions multiples, des listes de liste ou d'autres sutrctures de données imbriquées.
+
+Elle se compose d'une boucle externe et d'une ou plusieurs boucle interne. Chaque fois que la boucle externe accomplit une itération, la boucle interne s'exécute entièrement 
+```python
+for i in range(3):
+	for j in range(3):
+		print(f"{i}, {j})
+		
+		
+# affiche une table de multiplication
+n = 5
+for i in range(1, n + 1):
+	for j in range(1, n + 1):
+		print(f"{i} * {j} = {i * j}", end="\t")
+	print()
+```
