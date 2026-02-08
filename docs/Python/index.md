@@ -49,6 +49,21 @@ Python gère automatiquement la mémoire des variables à l'aide du garbage coll
 
 Certain types de données en Python comme les chaînes et les tuples sont immuables. Cela signifie que leur contenu ne peut pas être modifé après leur création. Toute tentative de modification de ces données entraînera la création d'un nouvel objet.
 
+### Variable comme référence 
+Les variables Python sont des références à des objet, et non à la variable elle même. Lorsque l'on créer une variable, on crées une référence à un objet en mémoire.
+
+Lorsqu'une variable est crée, et une valeur attribué, Python alloue un objet en mémoire pour cette valeur, et fait de la variable une référence à cet objet.
+Si on assignes un variable à une autre, la nouvelle variable référence le même objet que la variable d'origine.
+
+Les modifications impact le même objet étant donné que les deux variables pointe sur la même référence.
+
+```python 
+a = [1, 2, 3]
+b = a
+b.append(4)
+print(a) # [1, 2, 3, 4]
+```
+
 ### Création d'une variable 
 
 En Python, on peut attribuer n'importe quel valeur a n'importe quelle variable. 
@@ -61,7 +76,15 @@ nom = valeur
 x, y, z = 1, 2, 3
 ```
 
-### Type de données 
+### Convention de nommage 
+
+Le nom d'une variable doit refléter les données qu'elle contient, de manière à ce que le code soit facilement lisible.
+
+Il est recommander d'utiliser des minuscules avec des underscore pour les noms des variables ( par exemple `ma_var`).
+
+Pour les variables globales, on privilégie des nom longs et descriptifs pour que leur but soit clair.
+
+## TYPE
 
 Python supporte plusieurs types de données de base utilisés pour stocker et manipuler des données dans les programmes. 
 
@@ -93,8 +116,13 @@ nom = "Alex" + "Alex"
 Permet de représenter des nombres à virgule.
 
 #### complex
-Représente les nombres complexe (composés d'une partie réel et imaginaire)
+Représente les nombres complexe (composés d'une partie réel et imaginaire). Les deux sont représentées par des nombres à virgules flottante.
 
+Le suffixe `j` ou `J` est utilisé pour indiquer la partie imaginaire.
+
+```python
+complex_number = 3 + 5j
+```
 #### bool 
 Représente un boolean. Il prends une valeur `True` ou `False`. 
 
@@ -142,18 +170,210 @@ Une classe est créer à l'aide du mot clé `class`. Cette instruction crée un 
 
 Les classes ont leur propre fonction intégrées.
 
+#### Objet immuables 
 
+Les objets sont divisées en modifiables et immuables. Les objets modifiables, tels que les listes et les dictionnaires peuvent être modifées après leur création.
 
+Les objets immuables comme les chaîne, et les nombres ne peut pas être modifiés après leur création.
 
-### Convention de nommage 
+Lorsque l'on travaille avec des objets immutables, les modifications entraînent la création d'un nouvel objet.
 
-Le nom d'une variable doit refléter les données qu'elle contient, de manière à ce que le code soit facilement lisible.
+L'affectation ne modifie jamais un objet 
+```python
+a = 5
+b = a 
+b = 3 # déclenche la création d'un nouvel objet 
+print(a) # 5
+```
 
-Il est recommander d'utiliser des minuscules avec des underscore pour les noms des variables ( par exemple `ma_var`).
+Un objet peut être modifié en appelant sa fonction 
+```python 
+a = [1, 2, 3]
+b = a 
+b.append(4)
+print(a) # [1, 2, 3, 4]
+```
 
-Pour les variables globales, on privilégie des nom longs et descriptifs pour que leur but soit clair.
+Ils y a également des objets immuables qui ont des fonctions. Ces fonctions ne modifient pas l'objet d'oigine mas retourne un nouvel objet qui contient le nouveau résultat : 
+```python 
+name = "Alex"
+print(name)
+name2 = name.lower()
+print(name2) # alex
+```
+
+Les string sont des objets immuables. Les méthodes de string ne changent jamais l'objet de la chaîne, elle retourne une nouvelle chaine.
+La chaine d'origine n'est jamais changer 
+### Nombre pseudo-aléatoire 
+
+C'est une sorte de séquence dans laquelle les nombres semblent aléatoire. C'est utilile pour simuler un lancer de dés par exmeple, mais pas pour des opération de cryptage.
+
+Le programme affiche 1000 nombres non répétitif :
+```python
+a = 41
+c = 11119
+m = 11113
+seed = 1 
+
+# la fonction retourne un nouveau pseudo alatoire
+def get_next_random():
+	global seed 
+	seed = (a * seed + c) % m
+	return seed 
+
+# dans la boucle, on affiche 1000 nombre
+for t in range(1000):
+	x = get_next_random()
+	print(x)
+```
+
+#### random 
+
+Python est fournit avec une lib intégré `random`. Elle permet de générer des nombres pseudo-aléatoire.
+
+Il sera nécessaire d'importer la lib :
+```python
+import random
+```
+
+#### random.random()
+Cette méthode retourne un nombre à virgule entre 0 .0 et 1.0. Les nombres sont générés uniformément dans cet intervalle.
+
+```python
+import random 
+
+probability = random.random()
+print("Probabilité aléatoire :", probability)
+```
+
+#### random.randint(a, b)
+
+Cette fonction retourne un entier aléatoire dans l’intervalle des arguments. Retourne un entier. 
+
+```python 
+import random 
+
+dice_roll = random.randint(1, 6) # retourne une valeur entre 1 et 6
+print("Le nombre est : ", dice_roll)
+```
 
 ---
+
+### math 
+
+Cette librarie contient des fonctions mathématiques de base et les constante tel que pi.
+
+| Fonction/Constante  | Description                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------ |
+| math.pi             | Constante π, approximativement égale à 3.14159                                                               |
+| math.e              | Base du logarithme naturel, approximativement égale à 2.71828                                                |
+| math.sqrt(x)        | Renvoie la racine carrée de x                                                                                |
+| math.exp(x)         | Renvoie e à la puissance x                                                                                   |
+| math.log(x[, base]) | Renvoie le logarithme de x pour une base donnée, si base est précisée; sinon, renvoie le logarithme naturel. |
+| math.cos(x)         | Renvoie le cosinus de x, où x est spécifié en radians                                                        |
+| math.sin(x)         | Renvoie le sinus de x, où x est spécifié en radians                                                          |
+| math.tan(x)         | Renvoie la tangente de x, où x est spécifié en radians                                                       |
+| math.ceil(x)        | Arrondit le nombre vers le haut à l'entier le plus proche                                                    |
+| math.floor(x)       | Arrondit le nombre vers le bas à l'entier le plus proche                                                     |
+| math.factorial(x)   | Renvoie la factorielle de x                                                                                  |
+- `sqrt()` : retourne la racine carré d'un nombre
+- `ceil()`: arrondi vers le haut à l'entier le plus proche 
+- `floor()`: arrondi vers le bas à l'entier le plus proche 
+
+
+---
+
+### Travailler avec des nombres à virgule 
+
+#### round()
+
+Cette fonction arrondit le nombre au nombre entier le plus proche :
+```python
+round(float_number)
+```
+
+La fonction retourne le nombre entier le plus proche de celui qui lui a été transmis.
+Si la partie fractionnaire du nombre est 0.5, la fonction utilise la méthode d'arrondi au nombre pair le plus proche.
+
+#### math.ceil() 
+
+Cette fonction arrondit à l'entier supérieur 
+
+```python
+math.ceil(value)
+```
+
+#### math.floor()
+
+La fonction arrondit au nombre entier inférieur 
+```python 
+math.floor(value)
+```
+
+#### Comparaison entre nombre à virgule 
+
+Pour éviter les problème de comparaison avec la perte de précision sur les nombres à virgule, on utilise ce type de comparaison :
+```python
+a = 0.0000012
+b = 0.0000011
+
+if abs(a - b) < 0.0001:
+	print("égaux)
+else:
+	print("inégaux")
+
+
+# comparer deux nombre réel
+# Demander deux nombres réels à l'utilisateur  
+num1 = float(input("Entrez le premier nombre réel : "))  
+num2 = float(input("Entrez le second nombre réel : "))  
+  
+# Définir la marge d'erreur acceptable  
+epsilon = 1e-9  
+  
+# Comparer les nombres en tenant compte de la marge d'erreur  
+if abs(num1 - num2) < epsilon:  
+    print("Les nombres sont égaux")  
+else:  
+    print("Les nombres ne sont pas égaux")
+
+```
+
+---
+
+### Travailler avec None 
+
+`None` représente l'absence de valeur. Il permet de désigner des variables vides, ou comme valeur de retour d'une fonction qui ne retourne rien.
+
+`None` est l'unique instance de la classe `NoneType`. I
+```python
+a = None 
+if a: 
+	print("a est True")
+else:
+	print("a est None ou False")
+	
+# utilisation avec une fonction 
+def func():
+	print("La fonction renvoie None")
+
+result = func()
+print(result) #None
+```
+
+
+#### is 
+Permet de vérifier si une valeur est `None`
+```python 
+a = None
+if a is None:
+	print("a is None")
+else:
+	print("a a une valeur")
+```
+
+ 
+
 
 ## COMMENTAIRE 
 Les commentaire ne sont pas pris en compte par l’interpréteur. Le commenter n'est pas exécuter.
@@ -283,6 +503,39 @@ Compare deux valeurs pour vérifier si une valeur est plus grande ou égale à u
 ```python
 print(5 >= 5) # True 
 print(5 <= 4) # False
+```
+
+---
+
+### Opérateur logique 
+#### AND 
+Permet de vérifier si deux condition sont `True`. 
+```python
+a = True
+b = False 
+print(a and b) # False
+
+a = 5
+b = 10
+c = 20
+
+result = a < b and b < c
+print(result)# True 
+```
+
+#### OR 
+Retourne `True` si l'une des conditions est vraie. 
+```python 
+a = True 
+b = False 
+print(a or b) # True 
+```
+
+#### NOT 
+L'opérateur inverse la valeur boolean de son argument. 
+```python 
+a = True
+print(not a) # False
 ```
 
 ---
@@ -824,3 +1077,123 @@ for i in range(1, n + 1):
 		print(f"{i} * {j} = {i * j}", end="\t")
 	print()
 ```
+
+---
+
+## FONCTION 
+
+Les fonctions sont des objets de première classe. Elles peuvent donc être : 
+- Attribuée à une variable 
+- Passe comme argument à d'autre fonctions 
+- Retourné depuis d'autre fonction
+- Incluse dans des structures de données
+
+```python 
+def nom(paramètre):
+	commande
+	
+# exemple de déclaration de fonction  
+def greet(name):
+	print(f"Hello {name} !")
+	
+# Appel de la fonction 
+greet("Jean")
+
+# --------
+def shout(text):
+	return text.upper()
+	
+yell = shout # on affecte la fonction à la variable 
+
+def greet(func):
+	greeting = func("Hello") # appel de la fonction passé en argument 
+	print(greeting)
+	
+greet(shout) # on passe la fonction en argument de la fonction greet()
+```
+
+---
+### return 
+
+L'opérateur `return` met fin à l'exécution d'une fonction et retourne le résultat du code. 
+
+```python 
+def sum(a, b):
+	return a + b
+
+result = sum(5, 3)
+print(result) # 7
+
+# retour multiple 
+def get_user():
+	name = "Ivan"
+	age = 25
+	return name, age
+	
+user_name, user_age = get_user()
+
+# terminer une fonction 
+def check_password(pwd):
+	if len(pwd) < 8:
+		return "Mot de passe trop court"
+	return "Mot de passe accepté"
+	
+# valeurs par défaut 
+def print_info(name, company="Unknow"):
+	print(f"Name: {name}, Company: {company}")
+```
+
+Lorsqu'une fonction ne retourne aucune valeur, celle ci retourne `None`
+
+```python 
+def print_message(txt):
+	print(txt)
+	return
+	
+result = print_message("Salut")
+print(result) # None
+```
+
+#### Retourner une fonction 
+
+Une fonction peut retourner une autre fonction. Cela permet de developper des programmes flexibles et expressifs en utilisant des concepts comme les décorateurs et les fabrique de fonctions.
+
+Par exemple, une fonction qui génère des fonctions pour élever des nombres à la puissance donnée. 
+
+```python 
+def power(exponent):
+	def inner(base):
+		return base ** exponent
+	return inner
+	
+square = power(2)
+print(square(3)) # 9
+
+cube = power(3)
+print(cube(3)) # 27 
+```
+
+La fonction `power` ne fait pas appel à la fonction `inner`. Celle ci est définie dans la fonction `power` avec un paramètre `base`.
+La fonction `inner` utilise également le paramètre `exponent` dans son propre corps.
+
+---
+### pass 
+
+L'opérateur permet d'ajouter un placeholder dans un bloc de code où un contenu est requis syntaxiquement, mais qui n'est pas encore défini.
+
+Cela permet de structurer un programme sans qu'il n'effectue encore des opérations.
+
+```python 
+# dans une fonction 
+def my_function():
+	pass 
+	
+# dans une boucles ou condition 
+for item in my_list:
+	pass
+```
+
+L'opérateur est souvent utilisé lors du processus de développement de test, lorsque la structure du programme est déjà claire, mais que les détails d'implémentation de certain composants ne sont pas encore définis.
+Cela permet d'organiser le code et d'ajouter progressivement des fonctionnalités sans compromettre le fonctionnement global de l'application.
+
+---
