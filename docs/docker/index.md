@@ -486,3 +486,25 @@ fi
 - **{{.Status}}**: état actuel
 - **{{.Ports}}**: ports redirigés
 - **{{.Names}}**: nom du conteneur 
+
+--- 
+
+### docker logs 
+
+Affiche les logs d'un conteneur. 
+```shell
+docker logs [options] container
+
+# affiche touts les logs du container 
+docker logs my_container 
+
+# affichage des logs en temps réel 
+docker logs -f my_container 
+
+# limitation du nombre de ligne affiché 
+docker logs --tail 100 my_container
+
+# affiche les logs depuis un certain moment 
+docker log --since "2023-07-20T15:00:00" my_container
+```
+
