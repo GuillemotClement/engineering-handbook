@@ -230,9 +230,24 @@ docker volume rm my_volume
 
 ## DOCKER HUB
 
-Service cloud de Docker. Il sert pour le stockage et la distribution des images Docker, simplifie les processus de build et de déploiement des applications. 
+Service cloud qui permet de télécharger des images et de les extraires. C'est une plateforme qui permet de partager des images et d'utiliser des solutions crées par d'autres.
 
-Il permet aux utilisateurs de télécharger leurs images, et de les partager avec d'autres, mais également de rechercher et télécharger des images créer par d'autre utilisateurs.
+- Répertoire privés et publics: permet de stocker des images en public ou en accès limités 
+- Automated builds : intégrations avec des systèmes de contrôle de version comme GitHub pour la construction automatique d'images à chaque modif du code 
+- Webhooks: configuration d'actions automatique qui s'exécutent lors de la mise à jour des images 
+
+### Recherche d'images 
+
+1. Accéder à Docker Hub 
+2. Recherche une image par mot clé (Nginx par exemple )
+3. Affichage des résultats. Les images officielles sont marquées comme `Official` et sont pris en charge par Docker.
+
+On peut également utiliser la CLI pour rechercher une image 
+```shell 
+docker searsh nginx
+```
+
+La commande affiche une liste d'image. 
 
 ### Repositories
 
@@ -252,13 +267,52 @@ docker push yourusername/repositoryname:tag
 
 Il est possible de configurer le builds automatiquement du repo. De cette manière, à chaque modifications dans le code source, Docker Hub créera et téléchargera automatiquement une nouvelle image.
 
-### Recherche d'image 
+### Téléchargement d'une image 
 
-Il est possible de rechercher des images prête. Une fois l'image trouvé, on peut la télécharger localement :
-```shell
-docker pull imagename:tag
+#### docker pull 
 
-docker pull nginx:latest
+Cette commande permet de télécharger sur la machine l'image 
+```shell 
+docker pull [OPTIONS] NAME[:TAG|@DIGEST]
+
+# téléchargement d'une image NGINX 
+docker pull nginx:latest 
+
+# téléchargement d'une version spécifique 
+docker pull ubuntu:20.04
+```
+
+- `NAME`: le nom de l'image 
+- `TAG`: optionnel, par défaut le tag `latest` est utilisé 
+- `@DIGEST`: optionel, identifiant SHA256 de l'image 
+
+#### docker images - Afficher les images téléchargées 
+Cette commande affiches les images télécharger sur la machine 
+```shell 
+docker images 
+```
+
+### Utilisation d'image 
+
+#### Nginx 
+
+Par exemple, on souhaite utiliser `nginx` pour monter un serveur web. 
+
+Une fois l'image télécharger, on peut venir démarrer le serveur dans un conteneur 
+```shell 
+docker run -d -p 8080:80 nginx
+```
+
+#### MySQL 
+Dans cet exemple, on lance un conteneur avec MySQL, on définit un mot de passe pour `root` et on redirige le port 3306 du conteneur vers le port 3306 de l'hôte 
+```shell 
+docker run -d -p 3306:3306 --name my_sql -e MYSQL_ROOT_PASSWORD=my-secret-pw mysql:latest
+```
+
+#### Redis 
+Redis est un système de mise en cache. 
+```shell 
+docker run -d -p 6379:6379 --name my_redis redis:latest 
 ```
 
 ---
