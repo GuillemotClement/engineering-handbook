@@ -143,6 +143,7 @@ docker logs my_container
 # exécuter une commande dans un conteneur 
 docker exec -it my_container /bin/bash
 ```
+Il permet de 
 
 ---
 
@@ -274,6 +275,7 @@ Docker aide à créer un environnement identiques pour toutes les étapes du dé
 ### Portabilité et cohérence
 
 Docker permet d'emballer une application avec toutes ses dépendances dans un conteneur qui onctionne de manière garantie dans n'importe quel environnement 
+Il permet de 
 
 ### Garantis la sécurité 
 
@@ -518,4 +520,42 @@ docker logs --stdout my_container
 # affiche les message du flus de sortie erreur 
 docker logs --stderr my_container 
 ```
+
+### docker exec - Interaction avec un conteneur en cours d'exécution 
+
+Cette commande permet d'exécuter des commandes et d'ouvrir des sessions interactives dans un conteneur en cours d'exécution, de la même manière que si on travaillait directement avec un serveur.
+
+```shell
+docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
+```
+
+- `CONTAINER`: nom ou identifiant du container 
+- `COMMANDE`: commande à exécuter dans le conteneur 
+- `ARG...`: arguments pour la commande 
+
+```shell
+# exécute la commande ls /app dans le conteneur ce qui affiche le contenu du conteneur 
+docker exec my_container ls /app 
+
+# ouverture d'une session interactive avec un terminal bash 
+docker exec -it my_container /bin/bash
+
+# exécution de commande en mode détaché. Permet d'exécuter une commande sans avoir besoin d'attendre qu'elle se termine.
+# la commande vient crér un fichier vide dans le repertoire /app
+docker exec -d my_container touch /app/newFile.txt
+
+# transmettre une variable d'environnement 
+# la variable MY_VAR est transmises au conteneur et lance la commande env pour afficher toutes les variable env dans le conteneur
+docker exec -e MY_VAR=value my_container env 
+```
+
+On pourras de cette manière créer des scripts pour automatiser des tâches : 
+```bash 
+#!/bin/bash 
+for container in $(docker ps -q); do 
+    docker exec $container uptime 
+done
+```
+Ce script exécute la commande `uptime` sur tout les conteneur en cours d'exécution et affiche leur durée de fonctionnement
+
 
