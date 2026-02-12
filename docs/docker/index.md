@@ -500,11 +500,22 @@ docker logs my_container
 
 # affichage des logs en temps réel 
 docker logs -f my_container 
+# suivre les flux de request et response
+docker logs -f web_server_container
 
 # limitation du nombre de ligne affiché 
 docker logs --tail 100 my_container
 
 # affiche les logs depuis un certain moment 
-docker log --since "2023-07-20T15:00:00" my_container
+docker logs --since "2023-07-20T15:00:00" my_container
+
+# -- until permet d'afficher des logs jusqu'à un moment précis
+docker logs --until "2023-07-20T16:00:00" my_container
+docker logs --until 10m my_container
+
+# afficher les message du flux de sortie standard
+docker logs --stdout my_container 
+# affiche les message du flus de sortie erreur 
+docker logs --stderr my_container 
 ```
 
