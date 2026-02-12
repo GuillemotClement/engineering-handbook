@@ -703,8 +703,7 @@ Ces volumes peuvent être connectés aux conteneur, ce qui permet de stocker les
 - Peuvent être connectés à plusieurs conteneurs et sont conservés même après leurs suppréssions ou arrêts 
 
 #### Bind Volumes 
-- Relient un répertoire de la machine hê à un répertoire dans le conteneur 
-- 
+- Relient un répertoire de la machine hê à un répertoire dans le conteneur  
 
 ### Utilisation
 
