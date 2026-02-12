@@ -662,7 +662,7 @@ On peut préciser une adresse IP à laquelle sera lié le port redirigé. C'est 
 
 Dans cet exemple, le port 80 du conteneur est rediriger vers le port 8080 uniquement sur l'interface `127.0.0.1` de l'hôte. L'accès au service sera possible uniquement depuis l'hôte 
 ```shell
-docker run -d -p 127.0.0.1 8080:80 nginx
+docker run -d -p 127.0.0.1:8080:80 nginx
 ```
 
 ### Redirection d'une plage de ports 
@@ -684,6 +684,143 @@ docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecret postgres
 docker run -d -p 8080:80 -p 8443:443 myapp 
 ```
 
+---
+
+## VOLUMES 
+Le montage des volumes permet aux conteneurs de manipuler des données sur la machine hôte. Cela permet de conserver les données à long terme, partager entre les conteneurs et effectuer des sauvegardes ou restaures les données.
+
+Les volumes sont un moyen de conserver des données afin qu'elles soient indépendantes des conteneurs. Même si le conteneurs est supprimé, les données sont stockées dans les volumes.
+Ces volumes peuvent être connectés aux conteneur, ce qui permet de stocker les données séparément et de les réutiliser.
+
+### Types de volumes 
+
+#### Anonymous Volumes 
+- Crées automatiquement par Docker si aucun volumes n'est indiqué pour un conteneur 
+- Utilisés pour le stockage temporaire de données 
+
+#### Named Volumes 
+- Créer et gérés par Docker 
+- Peuvent être connectés à plusieurs conteneurs et sont conservés même après leurs suppréssions ou arrêts 
+
+#### Bind Volumes 
+- Relient un répertoire de la machine hê à un répertoire dans le conteneur 
+- 
+
+### Utilisation
+
+```shell 
+docker run -v <host_path>:<container_path> [OPTIONS] IMAGE [COMMAND] [ARG...]
+```
+
+#### -v - Bind Mount 
+
+`-v` ou `--volume` est utilisé pour créer un volume ou un `Bind Mount`.
+```shell 
+docker run -d -v /host/data:/container/data nginx
+```
+
+#### --mount
+Fournit une méthode de montage plus fléxible et détaillée, prenant en charge des paramètres supplémentaires 
+```shell 
+docker run -d --mount type=bind, source=/host/data,target=/container/data nginx
+```
+
+### Création et utilisation des volumes 
+
+#### Création d'un volume nommé 
+Les volumes nommés sont crées et gérés par Docker. Ils sont conçus pour le stockage à long terme des données qui doivent être conservées entre les redémarrages ou la supressions des conteneurs 
+
+```shell
+docker volume create my_volume 
+```
+
+##### Lancement d'un conteneur avec montage de volume 
+Dans cet exemple, le volume `my_volume` est monté dans le répertoire `/data` à l'intérieur du conteneur `my_container`. Toutes les données écrites dans `/data` seront sauvegardées dans le volume et resteront accessibles même après la supression du conteneur 
+```shell 
+docker run -d -v my_volume:/data --name my_container nginx 
+```
+
+#### Volumes anonymes 
+Ils sont automatiquement crées par Docker et associés à un conteneur spécifique. Ils sont utiles pour les données temporaires qui ne doivent pas être conservées après la supression du conteneur.
+
+Dans cet exemple, Docker créer automatiquement un volume anonyme et monte dans le répertoire `/data` dans le conteneur 
+```shell 
+docker run -d -v /data --name my_container nginx 
+```
+
+#### Bind Volume 
+Ces volumes permettent de monter les répertoires de l'hôte dans les conteneurs. Ils permettent de partager des données entre les conteneurs et le système hôte. 
+Ces volumes sont utilisé durant le développement lorsque le code source est stocké sur l'hôte.
+
+Dans cet exemple, le répertoire `/host/data` de l'hôte est monté dans le repertoire `/container/data` dans le conteneur `my_container`.
+```shell 
+docker run -d -v /host/data:/container/data --name my_container nginx 
+```
+
+### Exemples d'utilisation des volumes 
+
+#### Sauvegarde des données de la base de données 
+L'utilisation de volumes pour les BDD permet de conserver les données même lors du redémarrage et des mise à jours de conteneur. 
+
+Dans cet exemple, les donnée PG sont sauvegardées dans le volumes `db_data`, ce qui garantit leur conservation en cas de reload ou suppression du conteneur.
+```shell 
+docker volume create db_data
+docker run -d -v db_data:/var/lib/postgresql/data --name postgres_container postgres 
+```
+
+#### Partage de données entre conteneur 
+Il est parfois nécessaire de partager des données entre plusieurs conteneurs. 
+
+On vient créer un volume et lancer deux conteneurs qui utiliseront ce volume. Les deux conteneurs auront accès aux données du volume `shared_data` ce qui leur permet d'échanger des données 
+```shell 
+docker volume create shared_data 
+docker run -d -v shared_data:/data --name container1 nginx 
+docker run -d -v shared_data:/data --name container2 nginx 
+```
+
+#### Développement et test 
+Lorsque l'on travail sur des projets, on utilise des répertoire montés pour partager le code entre le conteneur et l'hôte. Cela permet de modifier le code code sur l'hôte et au conteneur d'utiliser immédiatement les mises à jour.
+
+Dans l'exemple, le répertoire `/path/to/source` sur l'hôte est monté dans le répertoire `/app` dans le conteneur. Le conteneur peut accéder au code source du projet.
+
+```shell 
+docker run -d -v /path/to/source:/app --name dev_container node 
+```
+
+### Gestion des volumes 
+
+#### volume ls - Affichage des volumes 
+Affiche une liste de tous les volumes disponible sur l'hôte 
+```shell 
+docker volume ls
+```
+
+#### volume inspect - Afficher des informations sur le volume 
+Cette commande permet d'obtenir des détails sur le volume : emplacement sur le system file de l'hôte et des infos sur le conteneur qui utilisent ce volume
+```shell 
+docker volume inspect my_volume 
+```
+
+#### volume rm - Supprimer un volume 
+Cette commande supprime un volume. Si ce volume est utilisé, la commande échouera 
+```shell 
+docker volume rm my_volume
+```
+
+### Sauvegarde des données 
+Pour garantir la sécurité des données, il est important de créer des copies de sauvegarde des volumes et de les restaure si nécessaire.
+
+#### Sauvegarde d'un volumes 
+Dans cet exemple, le contenu du volume `my_volume` est archivé dans un fichier `my_volume_backup.tar.gz` qui est suavegardé dans le répertoire `/backup` sur l'hôte 
+```shell 
+docker run --rm -v my_volume:/volume -v /backup:/backup busybox tar czf /backup/my_volume_backup.tar.gz /volume
+```
+
+#### Restauration d'un volume 
+Cet exemple vient restaurer le volume `my_volume` à partir de la sauvegarde qui est stockée dans le fichier 
+```shell 
+docker run --rm -v my_volume:/volume -v /backup:/backup busybox tar xzf /backup/my_volume_backup.tar.gz -C /volume
+```
 
 
 
