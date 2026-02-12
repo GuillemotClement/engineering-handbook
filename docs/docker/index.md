@@ -546,7 +546,10 @@ docker exec -d my_container touch /app/newFile.txt
 
 # transmettre une variable d'environnement 
 # la variable MY_VAR est transmises au conteneur et lance la commande env pour afficher toutes les variable env dans le conteneur
-docker exec -e MY_VAR=value my_container env 
+docker exec -e MY_VAR=value my_container env
+
+# mise à jour des paquets et installation de vim dans le container 
+docker exec my_container apt-get update && apt_get install -y vim 
 ```
 
 On pourras de cette manière créer des scripts pour automatiser des tâches : 
@@ -557,5 +560,73 @@ for container in $(docker ps -q); do
 done
 ```
 Ce script exécute la commande `uptime` sur tout les conteneur en cours d'exécution et affiche leur durée de fonctionnement
+
+---
+
+## GESTION DES RESSOURCES DES CONTENEURS 
+
+Limiter les ressources des conteneurs permet de : 
+- éviter qu'un conteneur prenne toutes les ressources et ralentissent les autres conteneurs ou le système hôte 
+- optimiser la puissance du système 
+- réduis les soucis avec les conteneurs qui pourraient potentiellement surcharger le système 
+
+### Limiter l'utilisation du CPU 
+Par `CPU`, on entend un coeur de processur. Un processeur quadricoeur aura 4 `CPU`.
+
+#### --cpu-shares 
+Ce paramètre définit une valeur relative de priorité d'utilisation du CPU pour le conteneur. La valeur par défaut est de 1024.
+
+Cette valeur relative signfie qu'un conteneur avec `--cpu-shares=512` aura la moitié de la priorité sur un conteneur avec un `--cpu-shared=1024`.
+
+```shell
+# le second conteneur aura une priorité plus élevé que le premier 
+docker run -d --name low_priority_container --cpu-shares=512 nginx 
+
+docker run -d --name hight_priority_container --cpu-shares=1024 ngin 
+```
+
+#### --cpus 
+Ce paramètre définit le nombre de CPU accessible au conteneur. 
+```shell
+docker run -d --name limited_cpu_container --cpus="1.5" nginx 
+```
+
+#### --cpu-quota & --cpu-period
+Ces paramètres permettent de configurer avec plus de précision l'utilisation du CPU.
+`--cpu-period` définit un intervale de temps en ms, et `--cpu-quota` définit le temps maximum d'utilisateur sur cette période 
+
+```shell
+docker run -d --name custom_cpu_quota_container --cpu-period=5000 --cpu-quota=2500 nginx
+```
+
+### Limiter l'utilisateur de la mémoire 
+Permet de gérer la quantité de mémoire vide qu'un conteneur peur utiliser. 
+
+#### --memory
+Ce paramètre définit le plafond supérieur de mémoire qu'un conteneur peut utiliser. Si le conteneur dépasse cette limite, le système le termine.
+```shell
+docker run -d --name limited_memory_container --memory="512m" nginx
+```
+
+#### --memory-swap
+Définit la limite totale pour la mémoire vide et la swap. Par exemple, avec `--memory` définit à 512 et `--memory-swap` à 1Gb, le conteneur pourras utiliser 512MB de mémoire vive et 512MB de swap supplémentaire
+```shell
+docker run -d -name swap_limited_container --memore="512m" --memory-swap="1g" nginx
+```
+
+#### --memory-swap=-1 
+Ce paramètre interdit l'utilisation de la swap 
+```shell 
+docker run -d --name no_swap_container --memory="512m" --memory-swap="-1" nginx 
+```
+
+
+
+
+
+
+
+
+
 
 
