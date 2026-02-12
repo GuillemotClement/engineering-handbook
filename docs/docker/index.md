@@ -609,10 +609,15 @@ docker run -d --name limited_memory_container --memory="512m" nginx
 ```
 
 #### --memory-swap
+La Swap, ou espaces d'échanges est une zone sur le disque dur utilisé par l'OS pour étendre la RAM disponible. Lorsque la RAM est saturé, le système déplace temporairement des données inactives vers cette zone, libérant ainsi de la RAM pour les applications en cours d'exécution.
+
+
 Définit la limite totale pour la mémoire vide et la swap. Par exemple, avec `--memory` définit à 512 et `--memory-swap` à 1Gb, le conteneur pourras utiliser 512MB de mémoire vive et 512MB de swap supplémentaire
 ```shell
 docker run -d -name swap_limited_container --memore="512m" --memory-swap="1g" nginx
 ```
+
+On utilise `1g` de swap, car memory-swap doit être la somma des deux types de mémoires.
 
 #### --memory-swap=-1 
 Ce paramètre interdit l'utilisation de la swap 
@@ -620,9 +625,64 @@ Ce paramètre interdit l'utilisation de la swap
 docker run -d --name no_swap_container --memory="512m" --memory-swap="-1" nginx 
 ```
 
+---
 
+## PORT FORWARDING 
 
+La redirection de ports permet aux applications dans les conteneurs d'être accessible depuis l'extérieur. C'est essentiels pour se connecter au serveurs web, au base de données ou d'autres services lancés dans des conteneurs depuis la machine hôte ou d'autre réseaux.
 
+Par défaut, les conteneurs fonctionnent dans un réseau isolé. Pour rendre un service dans un conteneur accessible, Docker redirige les ports du conteneur vers les ports de la machine hôte.
+
+### Redirection de port 
+
+```shell 
+docker run -p [HOST_PORT]:[CONTAINER_PORT] [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+# redirection du port hôte 8080 vers le poort 80 du conteneur 
+docker run -d -p 8080:80 nginx
+```
+
+- `HOST_PORT`: port de la machine hôte par lequel le trafic va passer 
+- `CONTAINER_PORT` : port dans le conteneur où le trafic sera redirigé 
+- `OPTIONS`: paramètres supplémentaire pour configurer le conteneur 
+- `IMAGE` : image à partir de laquelle le conteneur sera créé. 
+- `COMMAND`: commande exécutée à l'intérieur du conteneur 
+- `ARG`: arguments pour la commande 
+
+### Redirection multiple des ports 
+Docker permet de rediriger plusieurs ports en même temps.
+
+Dans cette commande, le port 80 du conteneur est rediriger vers le 8080 de l'hôte et le port 443 du conteneur est redirigé vers le port 8443 de l'hôte.
+```shell 
+docker run -d -p 8080:80 -p 8443:443 nginx
+```
+
+### Redirection avec spécification d'adresse IP 
+On peut préciser une adresse IP à laquelle sera lié le port redirigé. C'est utile dans le cas ou l'hôte dispose de plusieurs interfaces réseaux et que l'on souhaite limiter l'accès au conteneur.
+
+Dans cet exemple, le port 80 du conteneur est rediriger vers le port 8080 uniquement sur l'interface `127.0.0.1` de l'hôte. L'accès au service sera possible uniquement depuis l'hôte 
+```shell
+docker run -d -p 127.0.0.1 8080:80 nginx
+```
+
+### Redirection d'une plage de ports 
+Dans cette exemple, on redirege les port de 7000 à 8000 du conteneur sur les ports correspondants de l'hôte.
+```shell 
+docker tun -d -p 7000-888:7000-8000 someimage
+```
+
+### Scénario pratique 
+
+```shell
+# accéder au serveur web 
+docker run -d -p 8080:80 nginx 
+
+# Accès base de donnée 
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecret postgres 
+
+# Tests et développement - l'application est lancé sur les port 8080 & 8443 pour pouvoir y accéder depuis la machine hôte via le navigateur
+docker run -d -p 8080:80 -p 8443:443 myapp 
+```
 
 
 
