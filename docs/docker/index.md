@@ -875,6 +875,55 @@ Cet exemple vient restaurer le volume `my_volume` à partir de la sauvegarde qui
 docker run --rm -v my_volume:/volume -v /backup:/backup busybox tar xzf /backup/my_volume_backup.tar.gz -C /volume
 ```
 
+---
+
+## DOCKER IMAGE 
+
+Templates immuable utilisé pour créer des conteneurs. Ils contients tous les composants nécessaire pour exécuter une application dans un environnement isolé. 
+Lorsque qu'un conteneur est lancé, Docker crée une instance de l'image et la démarre.
+
+- **Immutable**: tout modification dans un conteneur n'affecte pas l'image d'origine. Pour changer le contenu d'une image, il faut en créer une nouvelle.
+- **Structure en couche**: les images sont constituées de couches. Chaque couche représente un changement par rapport à la précédente. Cela permet d'utiliser efficacement l'espace en réutilisant les couches.
+- **Identifiaction**: chaque image possède son identifiant et peut avoir un ou plusieurs tags.
+
+### Structure d'une images 
+
+Les images ont une structure en couches, où chaque couches est un system de fichier. Ces couches sont stockées dans le cache Docker, et peuvent être réutilisés par d'autre images.
+Par exemple, une première couche peut être le système d'exploitation, la deuxième Python et la troisième une application.
+
+Composant de la structure : 
+
+- **Base Layer**: couche initiale de l'image, souvent utilisé comme base pour créer d'autres images. Par exemple Ubuntu, Alpine Linux ...
+- **Intermediate Layers**: couches crées à partir des commandes exécutées dans un Dockerfile (installation de paquets, copie de fichier). Chaque couche ajoute des modifications à la précédente.
+- **Final Layer**: la dernière couche, créer à partir des instruction `CMD`, `ENTRYPOINT` ou des modifications dans le conteneur. Cette couche est temporaire et n'existe que pendant l'exécution du conteneur.
+
+### Fonctionnement des couches 
+
+Lorsque docker crée une image, il exécute chaque instruction du Dockerfile et ajoute une nouvelle couche pour chaque changement.
+
+Exemple de création de couches : 
+
+- **Image de base**: on commence avec une image de base, par exemple `ubuntu:20.04`.
+- **Installation de paquet**: la commande `RUN apt-get update && apt-get install -y python3` vient créer une nouvelle couche avec python d'installé 
+- **Copie de fichiers**: la commande `COPY . /app` ajoute les fichiers de l'application dans une nouvelle couche 
+- **Définir un repertoire de travail** : la commande `WORKDIR /app` vient créer une couche qui définit le repertoire de travail pour les commandes suivante
+
+Avantage d'utiliser des couches : 
+
+- **Réutilisation** : les couches peuvent être réutilisées par d'autres images. Par exemple, si deux images utilisent la même couche de base, Docker la télécharge une fois, économisant de l'espace et du temps 
+- **Cache**: Docker met en cache les couches, ce qui accélère le processus de création des images. Si une couche n'as pas changé, Docker l'utilise depuis le cache au lieu de reconstruire.
+- **Modularité**: la structure en couche permet de développer des images de manière modulaire. On peut mettre à jour ou modifier des couches individuelles sans affecter toute l'image 
+
+---
+
+
+
+
+
+
+
+
+
 
 
 
