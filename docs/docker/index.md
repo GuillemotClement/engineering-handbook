@@ -914,6 +914,60 @@ Avantage d'utiliser des couches :
 - **Cache**: Docker met en cache les couches, ce qui accélère le processus de création des images. Si une couche n'as pas changé, Docker l'utilise depuis le cache au lieu de reconstruire.
 - **Modularité**: la structure en couche permet de développer des images de manière modulaire. On peut mettre à jour ou modifier des couches individuelles sans affecter toute l'image 
 
+### docker images 
+Cette commande affiche la liste des images stockées sur la machine. Elle montre des données telles que le nom du repository, le tag, l'identifiant de la machine, la date de création et la taille. 
+
+```shell 
+docker image [OPTIONS] [REPOSITORY[:TAG]]
+
+# lister les images stockées
+docker images 
+
+# filtrer par repository
+docker images nginx 
+
+# filtrer par tag 
+docker images ubuntun:20.04
+
+# afficher toutes les images 
+docker images -a 
+
+# formater la sortie 
+docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}"
+```
+
+- `OPTION`: les paramètres supplémentaires pour filtrer et formater la sortie 
+- `REPOSITORY:TAG`: otpionnel, filtre par le nom du repo et/ou le tag 
+
+### docker rmi 
+Cette commande permet de supprimer des images Docker. Cela permet de libérer de l'espace et garder le système en ordre.
+
+```shell 
+docker rmi [OPTIONS] IMAGE [IMAGE...]
+
+# supprimer une image 
+docker rmi nginx 
+
+# supprimer une image avec son id 
+docker rmi <id>
+
+# suppression forcé => si un conteneur bloque l'image 
+docker rmi -f myapp:1.0 
+
+# supression multiple 
+docker rmi nginx ubuntu:20.04 myapp:1.0 
+
+# supprimer les images inutilisés 
+docker image -q 
+docker rmi $(docker images -q)
+
+# supprimer les images sans tags 
+docker rmi $(docker images -f "dangling=true" -q)
+```
+
+- `OPTIONS`: paramètre supplémentaire pour gérer le processus de suppression 
+- `IMAGE` : nom, tag, ou identifiant de l'image à supprimer 
+
 ---
 
 ## DOCKER BUILD 
