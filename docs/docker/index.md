@@ -925,16 +925,126 @@ Les commandes sont exécutées de haut en bas. Chaque commande crée un nouvelle
 
 Presque chaque instruction ajoute une nouvelle couche à l'image. Ces couches sont mises en cache, ce qui permet d'optimiser le processus de construction.
 
-### Instruction 
 
-- **FROM** : définit l'image de base utilisée pour créer la nouvelle image 
+### FROM 
+Permet de définir l'image de base à partir de laquelle sera créée la nouvelle image. C'est la première instruction que l'on retrouve dans le dockerfile, et détermine le point de départ pour construire l'image 
+```dockerfile 
+FROM <image>[:<tag] [AS <name>]
+```
+
+- `<image>` : nom de l'image de base 
+- `<tag>` : optionnel; définit la version de l'image de base à utiliser. Par défaut `latest`
+- `AS <name>`: optionnel; attribution d'un nom pour cette étape de build (utilisé dans le multi-stage build)
+
+```dockerfile 
+# image de base ubuntu
+FROM ubuntu:20.04 
+
+# image Node 
+FROM node:14 
+
+# multi stage build pour optimisation 
+FROM node:14 AS builder 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install
+COPY . . 
+RUN npm run build 
+
+FROM nginx:alipine
+COPY --from=builder /app/build /usr/share/nginx/html 
+```
+
+Dans l'exemple, on vient créer deux image. 
+La premiere est utilisée pour construire l'application, et la seconde sert à créer un serveur qui vient servie les fichiers statiques.
+
+Avec le multi-stage, l'image final contient seulement le minimum de fichiers et programmes ce qui la rend légère et plus rapide à envoyer
+
+### RUN 
+Cette instruction permet d'exécuter des commandes dans le conteneur et créer une nouvelle couche dans l'image. 
+
+Cette instruction est utilisée pour installer des packages, configurer l'environnement et exécuter d'autres commandes nécessaires à la prépration de l'image. 
+
+```dockerfile 
+RUN <command>
+
+# installation dans une image ubuntu
+RUN api-get update && apt-get install -y curl git 
+
+# compilaton de code 
+RUN gcc -o myapp myapp.c 
+```
+
+On peut venir combiner les commandes pour diminuer la taille de l'image et accélérer la construction. Il est recommandé de combiner plusieurs commandes dans une seule instruction `RUN`.
+
+```dockerfile 
+RUN apt-get update \
+    && apt-get install -y curl git \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+### COPY 
+Cette instruction copie des fichiers et répertoires depuis le contexte du build vers le system file du conteneur. Cela permet de transférer du code source, des fichiers de configuration et d'autres ressources dans le conteneur.
+
+```dockerfile 
+COPY <src> <dest>
+```
+
+- `src`: chemin vers les fichiers ou répertoire dans le contexte du build 
+- `dest`: chemin de destination dans le conteneur 
+
+```dockerfile 
+# copie du repertoire actuel dans le repo de travail du conteneur 
+COPY . /app 
+
+# copie de fichier individuel 
+COPY package.json /app/package.json 
+COPY server.js /app/server.js 
+```
+
+##### .dockerignore 
+Ce fichier permt d'exclure les fichiers inutiles du processus de copie. Il fonctionne de la même manière qu'une `.gitignore`
+```.dockerignore 
+node_modules 
+dist 
+*.log 
+```
+
+### CMD 
+Cette instruction définit une commande qui sera exécutée au démarrage du conteneur. Contrairement à `RUN` qui s'exécute au moment du build, cette instruction s'exécute lorsque le conteneur démarre à partir de l'image créée.
+
+```dockerfile 
+# préférable pour garantir un bon traitement des signaux 
+CMD ["executable", "param1", "param2"]
+# forme shell qui exécute la commande dans un shell 
+CMD command param1 param2
+
+# lancement d'une application Node.js 
+CMD ["node", "app.js"]
+
+# lancement d'un script shell 
+CMD /usr/bin/myscript.sh 
+```
+
+#### Différence entre ENTRYPOINT et CMD  
+
+`CMD` définit une commande par défaut, qui peut être remplacée au démarrage du conteneur. `ENTRYPOINT` définit une commande immuable qui sera toujours exécutée au démarrage du conteneur. 
+
+```dockerfile 
+ENTRYPOINT ["python", "script.py"]
+CMD ["arg1"]
+```
+
+Dans l'exemple, `ENTRYPOINT` lance le script Python, alors que `CMD` fournit des arguments qui peuvent être modifés au démarrage du conteneur.
+
+
+### Instruction principale 
+
 - **MAINTAINER**: spécifie l'auteur du Dockerfile 
 - **RUN**: exécute des commandes dans le conteneur et crée une nouvelle couche 
-- **COPY**: copie des fichiers et répertoire du contexte de construction vers le system file du conteneur 
 - **ADD**: copie des fichiers et répertoires, prends en charge l'extraction de construction des archives et le téléchargement de fichiers à partir d'URL 
 - **WORKDIR**: définit le répertoire de travail pour les commande suivantes 
 - **ENV**: configure des variables d'environnement 
-- **CMD** : définit la commande par défaut exécuté lors du démarrage du conteneur 
 - **ENTRYPOINT**: spécifie une commande exécutée au démarrage du conteneur, avec la possibilité de passer des arguments 
 - **EXPOSE**: indique les ports utilisés par le conteneur 
 - **VOLUME** : crée un point de montage pour les volume externes 
@@ -1023,6 +1133,8 @@ ENV NODE_ENV=production
 # lancement de l'app 
 CMD ["node", "server.js"]
 ```
+
+
 
 
 
