@@ -1,6 +1,93 @@
 # Evode 
 
-## Modale de confirmation 
+## Affichage d'élément 
+
+On souhaite afficher un bouton permettant de vider des input lorsque l'utilisateur à sélectionner un éléménnt de l'autocomplete.
+
+On vient ajouter le bouton dans le formulaire 
+```html
+<div class="form-group col-12 col-lg-6">
+    <label for="RefArticle">Référence :</label>
+    <div class="input-group">
+        <input  type="numeric"
+                class="form-control"
+                name="RefArticle"
+                id="RefArticle"
+                value="<?= $data_article_kit->RefArticle ?>"
+                <?= (!empty($data_article_kit->RefArticle)) ? 'readonly' : '' ?>
+        />
+        <button type="button" 
+                class="btn btn-danger btn-sm" 
+                id="btn_clear_input" 
+                <!-- par défaut, le bouton n'est pas affiché -->
+                style="display: none" 
+                <!-- la fonction qui déclenche le vidage des inputs-->
+                onclick="handleClearInput()" 
+        >
+            <i class="fas fa-window-close"></i>
+        </button>
+    </div>
+</div>
+```
+
+On vient implémenter la fonction js qui permet de vider les champs :
+```js 
+function handleClearInput(){
+    // on récupère les 3 champs à vider
+    const $idArticle = $('#IdArticle');
+    const $refArticle = $('#RefArticle');
+    const $nomArticle = $('#NomArticle');
+    
+    // on viens vider leurs valeurs, et pour deux champs, les rendre de nouveau modifiable
+    $idArticle.val('');
+    $refArticle.val('').attr('readonly', false);
+    $nomArticle.val('').attr('readonly', false);
+    
+    // on vient cacher le bouton qui permet de déclencher le vide input
+    $('#btn_clear_input').hide();
+}
+```
+
+C'est la fonction autocomplete qui permet d'afficher le bouton lorsque l'on a sélectionné un élément dans la liste :
+```js 
+$(document).ready(function(){
+  $('#RefArticle').autocomplete({
+    minLength: 1,
+    source: "ajax.php?U=<?= setURL('do=ajax&action=autocomplete&todo=Articles'); ?>",
+    focus: function(event, ui){
+        return false;
+    },
+    select: function(event, ui){
+        event.preventDefault(); // permet d'éviter le conflit pour set les valeur (RefArticle)
+        $('#IdArticle').val(ui.item.IdArticle);
+        $('#RefArticle').val(ui.item.RefArticle).attr('readonly', true);
+        $('#NomArticle').val(ui.item.NomArticle).attr('readonly', true);
+
+        // on affiche le bouton qui permet de vier les input
+        $('#btn_clear_input').show(); 
+    }
+}).data('ui-autocomplete')._renderItem = function(ul, item){
+    let idArticleParent = <?= $id_article_parent ?>;
+    // comparaison avec l'article en cours
+    let isParent = (item.IdArticle == idArticleParent);
+    let html_select = "";
+    if (isParent){
+        // affiche la ligne en grisé
+        html_select = "<a style='color: #ccc; cursor: not-allowed;'><b>"+ item.RefArticle + "</b> - " + item.NomArticle + " (Article actuel)</a>";
+    } else {
+        html_select = "<a><b>" + item.RefArticle + "</b> - " + item.NomArticle + "</a>";
+    }
+
+    return $('<li></li>')
+        .data("ui-autocomplete-item", item)
+        .append(html_select)
+        .appendTo(ul);
+  };
+});
+```
+
+---
+
 
 ## Mettre en place une confirmation
 
