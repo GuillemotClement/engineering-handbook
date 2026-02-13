@@ -916,6 +916,110 @@ Avantage d'utiliser des couches :
 
 ---
 
+## DOCKER BUILD 
+
+Cette commande permet de créer une image Docker depuis un Dockerfile. Elle prends les instruction du fichier, les exécute étape par étape, formant une image à partir des couches. 
+Elle assemble l'image depuis le Dockerfile et du contexte de build. Le contexte de build est constitué des fichiers que Docker utilise pour créer une image. Cela peut être un dossier sur la machine ou d'un repo Github.
+
+```shell 
+docker build [OPTIONS] PATH | URL | - 
+
+# utilise le dockerfile du repotoire actule et créer une image avec un tag latest 
+docker build -t myimage:latest 
+```
+
+- `PATH`: chemin vers le repertoire contenant le Dockerfile et le contexte de build 
+- `URL`: url d'un repo distant 
+- `-` : lecture du dockerfile depuis l'entrée standard (stdin)
+
+### -t 
+Le paramètre `-t` ou `--tag` permet d'attribuer un nom et un tag à l'image créée.
+```shell 
+docker build -t myimage:latest .
+```
+
+### -f 
+Le paramètre `-f` ou `--file` permet de spécifier un Dockerfile alternatif s'il diffère du dockerfile standard 
+```shell 
+docker build -f Dockerfile.dev -t myimage:dev .
+```
+
+### --build-arg 
+Ce paramètre est utilisé pour transmettre des arguments de construction définis dans le Dockerfile à l'aide de la directive `ARG`
+```shell 
+docker build --build-arg APP_VERSION=1.0 -t myimage:1.0 .
+```
+
+### --no-cache 
+Permet d'exécuter une création sans utiliser le cache. Permet de s'assurer que toutes les commandes sont exécutées à nouveau 
+```shel 
+docker build --no-cache -t myimage:latest .
+```
+
+### --target 
+Permet de spécifier une étape cible dans une création multi-étape 
+```shell 
+docker build --target builder -t myimage:builder .
+```
+
+### --rm 
+Indique à Docker de supprimer les conteneurs intermédiaire avec une création d'image réussies (activé par défaut )
+```shell 
+docker buld --rm -t myimage:latest .
+```
+
+### Build avec argument 
+On vient créer un dockerfile permettant de passer des variables 
+```dockerfile 
+FROM node:14 
+
+ARG APP_VERSION 
+ENV APP_VERSION=${APP_VERSION}
+
+WORKDIR /app 
+
+COPY package.*.json ./ 
+RUN npm install 
+
+COPY . . 
+
+EXPOSE 3000 
+
+CMD ["node", "app.js"]
+```
+
+On lance ensuite cette commande pour passer la variable pendant le build 
+```shell 
+docker build --build-arg APP_VERSION=1.0 -t mynodeapp:1.0
+```
+
+Avec cette commande, l'argument est passé dans le Dockerfile et permet de spécifier la version de l'app pendant la construction.
+
+### Construction multi-étape 
+La construction multi-étapes est utilisée pour créer des images qui incluent seulement les composants nécessaires. Cela permet de réduire la taille de l'image finale. 
+
+```dockerfile 
+# Etape de construction 
+FROM node:14 AS builder 
+
+WORKDIR /app 
+
+COPY package.*.json ./ 
+RUN npm install 
+
+COPY . . 
+RUN npm run build 
+
+# former l'image final avec un ensemble minimal de fichiers 
+FROM nginx:alpine 
+
+COPY --from=builder /app/buil /usr/share/nginx/html 
+```
+
+On peut ensuite lancer la commande pour builder l'image. La première image est créer, puis ensuite l'application. Après la construction, l'application est transférée dans l'image final, qui utilise Nginx pour servir le contenu prêt. 
+
+---
+
 ## DOCKERFILE 
 Fichier texte qui contient une série de commande que Docker utilise pour construire une image. Il sert de recettte décrivant comment l'image doit être assemblée, de la couche de base à l'état final. 
 
@@ -952,13 +1056,17 @@ COPY . .
 RUN npm run build 
 
 FROM nginx:alipine
+# ici on indique que l'on transfert uniquement le résultat final (le dossier build) du premier build vers le second
 COPY --from=builder /app/build /usr/share/nginx/html 
 ```
 
 Dans l'exemple, on vient créer deux image. 
 La premiere est utilisée pour construire l'application, et la seconde sert à créer un serveur qui vient servie les fichiers statiques.
 
-Avec le multi-stage, l'image final contient seulement le minimum de fichiers et programmes ce qui la rend légère et plus rapide à envoyer
+Avec le multi-stage, l'image final contient seulement le minimum de fichiers et programmes ce qui la rend légère et plus rapide à envoyer.
+
+Dans le premier "chantier", on viens construire une image avec Node. Dans le second, on repart d'un nginx et on lui passe le résultat de la premiere image.
+Une fois construit `Node` n'existe plus dans l'image que l'on déploie. On obtient juste un serveur nginx qui sert les fichiers statiques. Cela permet d'obtenir des images de production performantes et sécurisée
 
 ### RUN 
 Cette instruction permet d'exécuter des commandes dans le conteneur et créer une nouvelle couche dans l'image. 
