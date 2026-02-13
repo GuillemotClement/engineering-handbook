@@ -916,11 +916,113 @@ Avantage d'utiliser des couches :
 
 ---
 
+## DOCKERFILE 
+Fichier texte qui contient une série de commande que Docker utilise pour construire une image. Il sert de recettte décrivant comment l'image doit être assemblée, de la couche de base à l'état final. 
 
+Les commandes doivent être idempotentes, leur exécution produit toujours le même résultat.
 
+Les commandes sont exécutées de haut en bas. Chaque commande crée un nouvelle couche dans l'image.
 
+Presque chaque instruction ajoute une nouvelle couche à l'image. Ces couches sont mises en cache, ce qui permet d'optimiser le processus de construction.
 
+### Instruction 
 
+- **FROM** : définit l'image de base utilisée pour créer la nouvelle image 
+- **MAINTAINER**: spécifie l'auteur du Dockerfile 
+- **RUN**: exécute des commandes dans le conteneur et crée une nouvelle couche 
+- **COPY**: copie des fichiers et répertoire du contexte de construction vers le system file du conteneur 
+- **ADD**: copie des fichiers et répertoires, prends en charge l'extraction de construction des archives et le téléchargement de fichiers à partir d'URL 
+- **WORKDIR**: définit le répertoire de travail pour les commande suivantes 
+- **ENV**: configure des variables d'environnement 
+- **CMD** : définit la commande par défaut exécuté lors du démarrage du conteneur 
+- **ENTRYPOINT**: spécifie une commande exécutée au démarrage du conteneur, avec la possibilité de passer des arguments 
+- **EXPOSE**: indique les ports utilisés par le conteneur 
+- **VOLUME** : crée un point de montage pour les volume externes 
+
+### Création d'un dockerfile 
+
+On souhaite crée un Dockerfile pour une application Node js. 
+
+On commnce par créer un nouveau fichier `Dockerfile` à la racine du projet : 
+```dockerfile
+# on utilise une image de base Node 
+FROM node:14 
+
+# on configure le repertoire de travail 
+WORKDIR /app 
+
+# on copie le package.json et le package-lock.json 
+COPY package*.json ./ 
+
+# on installe les dépendances à partir du package.json 
+RUN npm install 
+
+# on copie les fichiers du projets dans le workdir du conteneur 
+COPY . . 
+
+# on expose le port que l'application va utiliser 
+EXPOSE 3000 
+
+# on définit la commande pour démarrer l'app 
+CMD ["node", "app.js"]
+```
+
+Une fois le Dockerfile temriné, on vient construire l'image : 
+```shell 
+docker build -t my-node-app .
+```
+
+On peut ensuite lancer le conteneur 
+```shell 
+docker run -d -p 3000:3000 my-node-app 
+```
+
+### Définir des variables d'environnement 
+On peut venir définir des variables d'environnement dans le dockerfile
+```dockerfile
+ENV NODE_ENV=production 
+```
+
+### Utiliser plusieurs commandes RUN 
+Il est parfois nécessaire de combiner plusieurs commandes dans une instruction `RUN` pour réduire le nombre de couches, diminuer la taille de l'image et accélérer le build 
+```dockerfile
+RUN api-get update && apt-get install -y \
+    curl \
+    git \ 
+    && rm -rf /var/lib/apt/lists/*
+```
+
+L'utilisation de `\` permet d'écrire une commande sur plusieurs lignes. Elle sera interprété comme une seule commande. 
+
+L'opérateur `&` permet d'exécuter des commande successivement.
+
+### Optimisation de l'ordre des commandes 
+Pour une utilisation efficase du cache Docker, on commence par copier les fichiers qui changent rarement (par exemple `package.json`), et on installe les dépendances avant d'ajouter le reste des fichiers du projet.
+
+### Dockerfile avancée 
+```dockerfile
+# on utilise une image de base minimalise 
+FROM node:14-alpine
+
+# définition du repo de travail 
+WORKDIR /usr/src/app 
+
+# copie des package et installation des dépendances 
+COPY package.*.json ./ 
+RUN npm install --only=production 
+
+# copi du code source 
+COPY . . 
+
+# spécification du port 
+EXPOSE 8080 
+
+# définition de la variable env 
+ENV NODE_ENV=production 
+
+# lancement de l'app 
+CMD ["node", "server.js"]
+```
 
 
 
