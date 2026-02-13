@@ -1,5 +1,65 @@
 # Evode 
 
+## Modale de confirmation 
+
+## Mettre en place une confirmation
+
+On commence par ajouter un bouton qui déclenche la fonction. Dans l'exemple, on as une liste et le bouton permet de supprimer l'article correspondant.
+```html
+<tr onclick="openModalFormKit(<?= $row->ArticleKitId ?>)">
+    <td><b><?= $row->RefArticle ?></b></td>
+    <td><?= $row->NomArticle ?></td>
+    <td><?= $row->Quantite ?></td>
+    <td><?= $row->PrixInclus == '1' ? 'Oui' : 'Non' ?></td>
+    <td>
+        <!-- le bouton déclenche la supression de l'article -->
+        <!-- event.stopPropagation() emêcher la remonter de l'event, et permet de déclencher l'action sans déclencher l'ouverture de la modale sur l'élément parent -->
+        <button type="button" class="btn btn-danger btn-sm" onclick="event.stopPropagation(); handleDeleteArticle(<?= $row->ArticleKitId ?>)">
+            <i class="fas fa-trash"></i>
+        </button>
+    </td>
+</tr>
+```
+
+On viens ensuite implémenter la fonction qui : 
+
+- ouvre une modale qui demande la confirmation de l'utilisateur 
+- si confirmer, déclenche l'appel Ajax et viens supprimer l'élément en DB 
+
+```js 
+function handleDeleteArticle(ArticleKitId){
+  // on utilise fonction qui permet d'afficher une modale personnalisé 
+  // en premier argument on passe le text qui sera affiché 
+  // en second argument, on passe la fonction callback qui est exécuter si l'user confirme 
+  confirme("Etes-vous sûr de vouloir supprimer l'article du kit ?", function(){
+      // affiche un overload de chargement pendant le traitement serveur 
+      showLoader(1);
+      
+      // on définit le endpoint pour accéder au case côté php via l'ajax
+      let url = "ajax.php?U=<?= setUrl('do=php/article/ajax&action=general&todo=deleteArticleKit') ?>";
+      // création d'un nouvel objet form data qui permet d'envoyer des données au PHP 
+      let fd = new FormData();
+      // on ajoute une clé valeur qui sera transmis au php
+      fd.append('ArticleKitId', ArticleKitId);
+
+      // envoie de la requête au serveur
+      // en premier argument, on passe la fonction de callback déclencher à la réponse du serveur 
+      loadUrl(function(response){
+          // affichage de la response retourné par le serveur 
+          console.log(response);
+          // fermeture du loader 
+          showLoader(0);
+          // on appel la fonction qui permet de reload la liste des articles dans notre exemple 
+          showKit();
+          // on ferme la modal 
+          closeModal();
+      }, url, fd);
+  });
+}
+```
+
+---
+
 ## Autocomplete 
 
 Dans la page ou l'on souhaite ajouter l'autocomplete, on viens définir la fonction ajax.
@@ -12,7 +72,7 @@ Dans la page ou l'on souhaite ajouter l'autocomplete, on viens définir la fonct
       // déclenche lorsque user tape au moins un caractères
       minLength: 1,
       // endpoint qui permet d'aller taper dans la db (framework Evode)
-      source: "ajax.php?U=<?= setURL('do=ajax&action=autocomplete&todo=Articles); ?>",
+      source: "ajax.php?U=<?= setURL('do=ajax&action=autocomplete&todo=Articles'); ?>",
       // permet de retirer le comportement par défaut de l'autocomplete
       focus: function(event, ui){
           return false;
