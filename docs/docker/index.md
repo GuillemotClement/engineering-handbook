@@ -1369,8 +1369,150 @@ Supprimer les blibliothèque inutile après l'installation des paquets nécessai
 RUN pip install --no-cache-dir -r requirement.txt
 ```
 
+### Choix d'une image de base 
 
+Lors du choix de l'image de base, il faut prendre en compte plusieurs factures 
+ 
+- **Taille de l'image**: les images plus petites se téléchargent plus rapidement, occupent moins d'espace disque et peuvent accélérer le déploiement des applications 
+- **Support et mise à jour**: l'utilisation d'images officielles avec des mises à jour régulières offre un niveau de sécurité supérieur, des correctifs de vulnérabilités et une stabilité de fonctionnement 
+- **Compatibilité**: l'image de base doit inclure les lib et dépendances nécessaire à l'application pour fonctionner correctement 
 
+#### Image de base populaire 
 
+- **Alpine Linux** : image très légère idéale pour des applications qui nécessite un système d'expoitation minimal. 
+- **Debian/Ubuntu**: image complète qui incluent des outils et lib. Convient aux application qui nécessite un environnement complet ou une lib Linux standard 
+- **Offcial Language Image**: images officielle pour les language de dev. Elles contiennent tout l'environnement nécessaire pour développer et exécuter des applications dans le langague correspondant.
 
+#### Configuration de l'image de base 
+Après avoir choisis l'image, il faut venir la configurer en fonction des besoin de l'application. La configuration inclut l'installation des package, la copie des fichiers de l'appli et la configuration de l'environnement.
 
+```dockerfile 
+# image de base alpine linux 
+FROM alpine:3.12 
+# installation des package 
+RUN apk add --no-cache python3 py3-pip 
+# configuration repo de travail 
+WORKDIR /app 
+# copie des fichiers de l'app 
+COPY . . 
+# installation des dépendances 
+RUN pip3 install -r requirements.txt 
+# spécifie la commande pour lancer l'app 
+CMD ["python3", "app.py"]
+```
+
+### Tag et versions des images 
+
+Le tagging est le processus d'attribution d'un tag à une image. Cela permet de simplifier la gestion des versions.
+
+Le taf permet d'identifier une version spécifique d'une image. Ils permettent de suivre les changements plus facilement et aident à choisir les bonnes versions pour différents environnement.
+
+#### Attribuer un tag 
+
+```shell 
+# attribution du tag
+docker build -t myapp:1.0 .
+
+# tag multiple 
+docker tag myapp:1.0 myapp:latest 
+
+# précision du tag lors du lancement du conteneur 
+docker run -d myapp:1.0
+```
+
+#### Tagging 
+
+##### Label sémantique 
+
+La version sémantique (Semantic Versioning) est une pratique standard d'attribution de versions qui permet d'aider à comprendre le niveau des changements dans une image. 
+
+On utilise le format `<major>.<minor>.<patch>` ou : 
+ 
+- `major`: changement majeurs, incompatibles avec les versions précédents 
+- `minor` : nouvelle fonctionnalités, compatible avec les versions précédentes 
+- `patch`: correction de bugs et autre modifcations mineures 
+
+```shell 
+dockeer build -t myapp:2.1.3 
+```
+
+##### Label d'état 
+
+On peut également utiliser les labes pour indiquer l'état d'une image (beta, alpha, stable, prod)
+```shell 
+docker build -t myapp:1.0-beta .
+```
+
+##### Mise à jour des tags 
+Lorsque l'on vient mettre à jour une image, il est conseillé de modifier les tags pour faciliter le suivi des changements. Le tag `latest` est souvent utilisé pour indiquer la dernière version d'une image 
+
+```shell 
+docker build -t myapp:2.0 .
+docker tag myapp:2.0 myapp:latest 
+```
+
+#### Utilisation des tags 
+Lors du développement, on utilise généralement des images avec des tags indiquant la versin actuelle ou l'état de développement 
+```shell
+docker build -t myapp:dev .
+docker run -d myapp:dev 
+```
+
+Dans les environnement de test, on utilise des images avec des tags qui indiquent des versions spécifiques ou un état 
+```shell 
+docker build -t myapp:1.1-beta .
+docker run -d myapp:1.1-beta 
+```
+
+Pour les environnement de production, il est important d'utiliser des versions stables et validées des images, indiquées par des tags ou des version sémantique 
+```shell
+docker build -t myapp:1.1.0-stable .
+docker run -d myapp:1.1.0-stable 
+```
+
+#### Best pratique 
+
+- Toujours suivre le versionning sémantique pour toutes les images. Cela permet de distinguer clairement les niveaux de modifications et facilite la gestion des versions 
+- Utiliser des tags qui reflète l'état ou l'objetif de l'image 
+- Le tag `latest` peut être utile pour le dev et les tests mais en production, il vaut mieux utiliser des versions spécifiques pour éviter des modification imprévisible 
+- Documenter comment et pourquoi les tags sont utilisés dans le projet. 
+
+Exemple de flow 
+
+1. Création et assignations des tags 
+```dockerfile 
+# version 1.0.0 
+FROM node:14 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install 
+COPY . . 
+EXPOSE 3000 
+CMD ["node", "app.js"]
+```
+
+2. Construction et tag 
+```shell 
+docker build -t myapp:1.0.0.0 .
+docker tag myapp:1.0.0 myapp:stable 
+```
+
+3. Mise à jour de l'image et tag 
+```dockerfile 
+# Dockerfile version 1.1.0 
+FROM node:14 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install 
+COPY . .
+RUN rm -rf /app/tests /app/docs 
+ENV NODE_ENV=production 
+EXPOSE 3000 
+CMD ["node", "app.js"]
+```
+
+4. Build et tag 
+```shell 
+docker build -t myapp:1.1.0 
+docker tag myapp:1.1.0 myapp:latest 
+```
