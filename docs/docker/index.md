@@ -244,7 +244,7 @@ Service cloud qui permet de télécharger des images et de les extraires. C'est 
 
 On peut également utiliser la CLI pour rechercher une image 
 ```shell 
-docker searsh nginx
+docker search nginx
 ```
 
 La commande affiche une liste d'image. 
@@ -313,6 +313,32 @@ docker run -d -p 3306:3306 --name my_sql -e MYSQL_ROOT_PASSWORD=my-secret-pw mys
 Redis est un système de mise en cache. 
 ```shell 
 docker run -d -p 6379:6379 --name my_redis redis:latest 
+```
+
+### docker push 
+Commande qui permet d'envoyer des images Docker locale sur Docker Hub. Avant de publier une image, il faut que celle ci soit marqué avec un tag incluant le nom d'utilisateur Docker Hub 
+
+```shell 
+# build de l'image
+docker build -t myapp:latest .
+
+# tag de l'image 
+docker tag myapp:latest <username>/myapp:latest 
+
+# publication de l'image 
+docker push <username>/myapp:latest 
+```
+
+### docker pull 
+Cette commande permet de télécharger des images depuis Docker Hub. Elle permet d'accéder à des images publiées par d'autres utilisateurs
+
+```shell
+# rechercher d'une image 
+docker search nginx 
+
+# téléchargement de l'image 
+docker pull <username>/myapp:latest 
+docker pull nginx:latest 
 ```
 
 ---
