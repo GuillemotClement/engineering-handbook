@@ -1296,9 +1296,78 @@ ENV NODE_ENV=production
 CMD ["node", "server.js"]
 ```
 
+---
 
+### Optimisation du Dockerfile 
 
+#### Utilisation d'image de base minimale 
+Le choix de l'image de base influence la taille final de l'image Docker. L'utilisation des images de base minimale comme `alpine` permet de réduire la taille de l'image. 
+```dockerfile 
+# utilisation d'ubuntu alpine 
+FROM alpine:3.12
+```
 
+#### Minimisation du nombre de layers 
+Chaque instruction dans un Dockerfile ajoute une nouvelle couche à l'image. Combiner plusieurs commandes dans une seule instruction `RUN` réduit le nombre de couches, ce qui permet de réduire la taille globale.
+
+```dockerfile 
+# Avant optimisation 
+RUN apt-get update 
+RUN apt-get install -y curl 
+RUN apt-get install -y git 
+RUN rm -rf /var/lib/apt/lists/* 
+
+# Après optimisation 
+RUN apt-get update && apt-get install -y curl git && rm -rf /var/lib/apt/lists/*
+```
+
+La suppression du cache du gestionnaire de paquets réduit la taille de l'image en supprimant les fichiers temporaire créées pendant l'installation 
+
+#### Utilisation du .dockerignore 
+Ce fichier permet d'exlure des fichiers et répertoires inutile du contexte de construction, réduisant la taille de l'image et accélérant le processus de construction 
+```.dockerignore
+node_modules 
+dist 
+*.log 
+Dockerfile*
+.dockerignore 
+```
+
+#### Construction multi-stage 
+La construction multi stage permet d'utiliser plusieurs images intermédiaire pour créer une image finale légère qui contient uniquement les fichiers et dépendances nécessaire 
+
+```dockerfile 
+FROM node:14 AS builder 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install 
+COPY . . 
+RUN npm run build 
+
+# étape finale 
+FROM nginx:alpine 
+COPY --from=builder /app/build /usr/share/nginx/html 
+```
+
+#### Optimisation de l'installation des paquets 
+L'installation uniquement des paquets nécessaire et utiliser les options des gestionnaires de paquets pour une installation minimale permet de réduire la taille de l'image. 
+
+```dockerfile 
+RUN apt-get update && apt-get install -y --no-install-recommends curl git && \ 
+    run -rf /var/lib/apt/lists/* 
+```
+
+#### Compression et minimisation des données 
+L'utilisation d'outils pour compresser et minimiser les données aide à réduire la taille de l'image 
+```dockerfile 
+RUN gzip /path/to/large/file.log
+```
+
+#### Supression des lib et dépendances inutilisées 
+Supprimer les blibliothèque inutile après l'installation des paquets nécessaire aide à maintenir l'image légère 
+```dockerfile 
+RUN pip install --no-cache-dir -r requirement.txt
+```
 
 
 
