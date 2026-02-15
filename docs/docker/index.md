@@ -1542,3 +1542,185 @@ CMD ["node", "app.js"]
 docker build -t myapp:1.1.0 
 docker tag myapp:1.1.0 myapp:latest 
 ```
+
+---
+
+## DOCKER COMPOSE 
+
+C'est un outil qui permet de définir et lancer des application Docker multi-conteneurs. On lui décrit l'architecture de l'application, et lui s'occupe de lancer l'application avec les différents conteneurs.
+
+Il permet de définir tous les composant d'une application dans un fichier (serveur web, bdd, cache, autres service). 
+
+La configuration est écrite dans un fichier `docker-compose.yaml` ou `compose.yaml`.
+
+```shell 
+# lancer l'application 
+docker compose up 
+
+# arrêter l'application => supprime également les conteneurs, réseaux et volumes 
+docker compose down 
+
+# voirs les logs 
+docker compose logs 
+
+# redémarrer les services 
+docker compose restart
+```
+
+### Ajouter Docker au groupe 
+En faisant cela, il n'est plus nécessaire d'ajouter `sudo` à chaque fois que l'on souhaite lancer une commande Docker. 
+```shell 
+sudo usermod -aG docker $USER
+```
+
+### Création du docker compose 
+
+Dans le fichier `compose.yaml`, on vient définir et gérer les applications multi-éléments. On vient décrire les conteneurs (services) qui doivent être lancés, comment ils interagissent entre eux, et quelles ressources ils nécessient.
+
+Ce fichier contients plusieurs sections, décrivant différents aspects de la configuration d'une application. 
+
+#### version 
+Définis la version de la syntaxe utilisées dans le fichier. Déprécié, il n'est plus nécessaire de le définir. 
+
+#### service 
+Définit les conteneurs qui doit être créer et lancer. Chaque service représente un conteneur individuel et une configuration spécifique
+```yaml 
+services: 
+    web:
+        image: nginx:latest 
+        ports:
+            - "80:80"
+    
+    db: 
+        image: mongo:latest 
+        volumes:
+            - mongo-data:/data/db 
+```
+
+Dans ce fichier, deux services sont définis : `web` et `db`. 
+
+#### volumes 
+Utilisé pour définit les volumes qui peuvent être attachés au conteneurs pour le stockage des données. Permet de préserver les données lorsque les conteneurs sont redémarrés 
+
+#### network 
+Permet de définir les réseaux personnalisés où travailleront les conteneurs. Cela permet d'assurer la configuration des connexions réseaux. 
+Si aucun n'est définis, Docker créer un réseau par défaut, et tous les services y seront connectés.
+
+#### image 
+Permet de spécifier l'image utilisée pour créer le conteneur 
+```yaml 
+services:
+    web: 
+        image: nginx:latest 
+```
+
+#### build 
+Permet d'indiquer le chemin vers le Dockerfile qui doit être utilisé pour construire l'image 
+
+```yaml 
+services:
+    app:
+        build: ./app 
+```
+
+#### ports 
+Permet de définir les ports qui doivent être ouverts et redirigé vers la machine hôte vers le conteneur 
+```yaml 
+services:
+    web: 
+        image: nginx:latest 
+        ports: 
+            - "80:80"
+```
+
+#### volumes 
+Permet de monter les volumes dans le conteneurs, permettant de conserver les données entres les redémarrage des conteneurs 
+```yaml 
+services:
+    app: 
+        image: myapp:latest 
+        environnement:
+            - NODE_ENV=production 
+            - API_KEY=123456789
+```
+
+#### depends_on 
+Indique si le service dépend d'un autre service et démarre ensuite 
+
+```yaml 
+services:
+    web:
+        image: nginx:latest 
+        depends_on:
+            - db 
+    
+    db:
+        image: mongo:latest 
+```
+
+#### command 
+Permet de redéfinir la commande exécutée lors du démarrage du conteneur 
+```yaml 
+services:
+    app:
+        image: myapp:latest 
+        command: python app.py
+```
+
+#### networks
+Permet de connecter un service à un ou plusieurs réseaux 
+```yaml 
+services:
+    web: 
+        image: nginx:latest 
+        networks:
+            - front-end 
+
+    db: 
+        image: mongo:latest 
+        networks:
+            - back-end
+
+```
+
+#### Exemple 
+
+```yaml 
+version: '3.8'
+
+services:
+    web: 
+        image: nginx:latest 
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf 
+        depends_on:
+            - app 
+        networks:
+            - front-end 
+
+    app:
+        build: ./app 
+        volumes:
+            - ./app:/usr/usr/app 
+        environnement:
+            - NODE_ENV=production 
+        networks:
+            - front-end 
+            - back-end 
+
+    db:
+        image: mongo:latest 
+        volumes:
+            - mongo-data:/data/db 
+        networks:
+            - back-end 
+
+volumes:
+    mongo-data:
+
+networks:
+    front-end:
+    back-end:
+```
