@@ -1724,3 +1724,93 @@ networks:
     front-end:
     back-end:
 ```
+
+### docker compose up
+
+Cette commande permet de lancer les conteneurs définis dans le fichier `compose.yml`. Elle lance tous les services spécifié dans la configration, configure les réseaux et monte les volumes. 
+Tous les services sont lancés en parallèle et affiches les logs de tous les conteneurs lancée en temps réel.
+
+```shell 
+docker compose up [options] [SERVICE...]
+```
+
+- `options` : paramètre supplémentaire pour configurer le composertement 
+- `services`:  les services à lancer. Si pas spécifie, tous les services sont lancés.
+
+```shell 
+# lance tous les services
+docker compose up  
+
+# lance un service spécifique 
+docker compose up web 
+
+# lance en mode détaché 
+docker compose up -d 
+```
+
+#### --build 
+Force le Docker compose à reconstruire les images avant de démarrer les conteneurs. A utiliser lorsque le code source, le dockerfile ou une dépendances à été ajouter dans le conteneur. 
+
+```shell 
+docker compose up --build 
+```
+
+#### --force-recreate 
+Force la reconstruction des conteneurs, même si la configuration n'a pas changé 
+
+```shell 
+docker compose up --force-recreate
+```
+
+#### --no-recreate 
+Supprime les conteneurs qui ne sont pas définis dans le `compose` actuel mais qui ont été crées par des exécutions précdente. 
+
+```shell 
+docker compose up --remove-orphans
+```
+
+#### -V 
+`--renew-anon-volumes` Force à recréer les volumes anonymes au lieux de les réutiliser 
+
+```shell 
+docker compose up -v 
+```
+
+### docker compose down 
+Utilisé pour arrêter et supprimer toutes les ressources créés par la commande `docker compose up`. 
+Cela inclut l'arrêts des conteneurs, la supression des réseux et volume (si spécifié) et la suppression des images (optionel) 
+
+```shell 
+docker compose down [options]
+```
+
+- `option`: paramètre supplémentaire pour configurer le comportement de la commande 
+
+```shell 
+# stop et supprime les ressources 
+docker compose down
+
+# Supprime les volumes 
+docker compose down --volumes 
+
+# supprime les images 
+docker compose down --rmi all 
+```
+
+#### -v 
+Permet de supprimer les volumes crées et utilisées par les services. 
+```shell 
+docker compose down --volumes 
+```
+
+#### --rmi 
+Supprime les images utilisées pour créer des conteneurs. (`all` => supprime toutes les images pour le projet, `local` => supprime toutes les images local)
+```shell 
+dokcer compose down --rmi all 
+```
+
+#### --remove-orphans 
+Supprime les conteneurs qui ne sont pas définis dans le compose mais été créer par des exécution précédente 
+```shell 
+docker compose down --remove-orphans 
+```
