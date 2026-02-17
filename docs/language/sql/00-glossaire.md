@@ -290,3 +290,13 @@ ADD <name_col> <type>
 ALTER TABLE <name_table>
 ADD Actif BIT DEFAULT(1);
 ```
+
+### UPDATE 
+Permet de mettre à jour la valeur d'un champ d'une table 
+
+```sql 
+-- SQL Server - la requête viens mettre à jour toutes les valeurs NULL à 1 pour rendre actif  
+UPDATE TypesClientsCat
+SET TypesClientsCat.Actif = 1
+WHERE TypesClientsCat.Actif IS NULL;
+```
