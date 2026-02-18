@@ -29,6 +29,7 @@ nav:
   - Docker: docker/index.md
   - JQuery: jquery/index.md
   - Python: Python/index.md
+  - Rust: Rust/index.md
   - Language:
       - HTML: language/HTML/index.md
       - CSS: language/css/index.md
@@ -83,7 +84,6 @@ nav:
           - Programme Java: language/java/01-programme-java.md
           - Variables: language/java/02-variables.md
           - Types: language/java/03-types.md
-      - Rust: language/rust/index.md
   - Outils:
       - Linux: tools/linux/index.md
       - Git: tools/git/index.md
