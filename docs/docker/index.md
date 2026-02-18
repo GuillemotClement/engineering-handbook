@@ -1814,3 +1814,141 @@ Supprime les conteneurs qui ne sont pas définis dans le compose mais été cré
 ```shell 
 docker compose down --remove-orphans 
 ```
+
+## Variables d'environnement 
+
+Il est possible d'utiliser un fichier `.env` pour définir des variables d'environnements qui seront utiliser par le docker compose dans le fichier `compose.yaml`.
+
+### Utilisation dans le compose 
+
+```compose
+services:
+    web:
+        image: nginx:${NGINX_VERSION}
+        ports:
+            - "${HOST_PORT}:80"
+``` 
+
+Dans le fichier `.env`, on viens définir les valeurs de ses variables d'environnements.
+
+```env 
+NGINX_VERSION=latest
+HOST_PORT=8080
+DB_USER=admin
+DB_PASSWORD=secret 
+```
+
+Docker compose viens automatiquement charger les variables depuis le fichier `.env` s'il se trouve dans le même répertoire que le `compose` 
+
+### Transmission des variables 
+
+Il est possible de transmettre directement via la CLI les variables d'environnement.
+
+```shell
+export NGINX_VERSION=latest
+export HOST_PORT=8080
+docker compose up 
+``` 
+
+On peut également venir spécifier le fichier `.env` 
+
+```shell
+docker compose --env-file .env.dev up 
+``` 
+
+### Variables d'environnement intégrées 
+
+Docker compose supporte des variables d'environnement intégrées, comme `${PWD}` qui représente le répertoire de travail actuel.
+
+```compose
+services:
+    app:
+        image: myapp:latest
+        volumes:
+            - ${PWD}/app:/app
+```
+
+### Exemple pratique 
+
+#### Configuration d'un serveur web et d'une base de données 
+
+On viens créer un fichier `.env` avec les paramètres pour le serveur web et la base de données 
+
+```.env 
+NGINX_VERSION=1.19.3
+HOST_PORT=8080
+DB_USER=myuser
+DB_PASSWORD=password
+```
+
+On viens ensuite définir le compose 
+
+```compose 
+services:
+    web:
+        image: nginx:${NGINX_VERSION}
+        ports:
+            - "${HOST_PORT}:80
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+
+    db:
+        image: postgres:latest
+        environnement:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data
+```
+
+#### Séparation des environnements de dev et de production 
+
+On vient créer deux fichier `.env` pour les environnements : `.env.dev` et `.env.prod` 
+
+```.end
+# env.dev 
+NGINX_VERSION=latest
+HOST_PORT=8080
+DB_USER=devuser
+DB_PASSWORD=devpassword
+
+# env.prod
+NGINX_VERSION=1.19.3
+HOST_PORT=80
+DB_USER=produser
+DB_PASSWORD=prodpassword
+``` 
+
+On viens ensuite créer le fichier `compose` 
+
+```compose 
+services:
+    web:
+        image: nginx:${NGINX_VERSION}
+        ports:
+            - "${HOST_PORT}:80"
+    db:
+        image: postgres:latest
+        environnement:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - postres_data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data:
+```
+
+Pour lancer le docker compose pour le dévelopmment : 
+```shell
+docker compose --env-fil .env.dev up 
+```
+
+Pour lancer le docker de prod 
+
+```shell
+docker compose --env-fil .env.prod up 
+```
