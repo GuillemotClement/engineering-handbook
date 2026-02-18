@@ -29,7 +29,7 @@ nav:
   - Docker: docker/index.md
   - JQuery: jquery/index.md
   - Python: Python/index.md
-  - Rust: Rust/index.md
+  - Rust: rust/index.md
   - Language:
       - HTML: language/HTML/index.md
       - CSS: language/css/index.md
