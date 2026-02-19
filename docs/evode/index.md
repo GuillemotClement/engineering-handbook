@@ -1,5 +1,13 @@
 # Evode 
 
+## Helper hover 
+Permet d'afficher un  message lors du survol de l'élément. Permet d'indiquer des renseigner sur l'action provoquer par le bouton par exemple
+```html
+<div class="pointer" onclick="changePassword()" title="Changer mon mot de passe">
+    <i class="fa-solid fa-user-cog fa-2x"></i>
+</div>
+```
+
 ## Affichage d'élément 
 
 On souhaite afficher un bouton permettant de vider des input lorsque l'utilisateur à sélectionner un éléménnt de l'autocomplete.
