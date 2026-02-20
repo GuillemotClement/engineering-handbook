@@ -1,35 +1,36 @@
-site_name: Engineering Handbook
-site_url: https://engineering-handbook.netlify.app
-
-theme:
-  name: material
-  palette:
-    primary: "indigo"
-    accent: "indigo"
-  features:
-    - content.code.copy
-    - content.code.select
-    - content.code.annotate
-
-markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-
 nav:
   - Docker: docker/index.md
   - JQuery: jquery/index.md
   - Python: Python/index.md
   - Rust: rust/index.md
+  - SLQ:
+      - Glossaire: language/sql/00-glossaire.md
+      - Introduction: language/sql/01-introduction.md
+      - Instruction de base: language/sql/02-instruction-base.md
+      - Postgres: language/sql/03-postgres.md
+      - Formatage: language/sql/05-formatage-des-donnees.md
+      - Selection et trie: language/sql/06-selection-tri.md
+      - Fonction d'agrégat: language/sql/07-regroupement-agregat.md
+      - GROUP BY - HAVING: language/sql/08-utilisation-avancee-agregat.md
+      - Travailler avec le NULL: language/sql/09-null.md
+      - CASE - WHEN: language/sql/10-condition-avancee.md
+      - Jointure: language/sql/11-jointure.md
+      - Sous-requête: language/sql/12-sous-requete.md
+      - Type SQL: language/sql/13-type-donnee.md
+      - Tableau et JSON: language/sql/14-tableau-et-json
+      - DB: language/sql/database.md
+      - Conversion de type: language/sql/15-comparaison-et-conversion.md
+      - Création et modification des tables: language/sql/16-creation-modification-table.md
+      - Table temporaire: language/sql/17-table-temporaire.md
+      - Clé étrangère et relations: language/sql/18-foreign-key-relation.md
+      - Insertion, update et supression des données: language/sql/19-insertion-update-delete.md
+      - Transaction: language/sql/20-transaction.md
+      - Chargement de données en masse: language/sql/21-import-data.md
+      - Normalisation des données: language/sql/22-normalisation.md
+      - Modélisation des tables: language/sql/23-modelisation-diagramme.md
+      - CTE: language/sql/24-cte.md
+      - Fonction Window: language/sql/25-windows.md
+      - Gestion du temps: language/sql/26-gestion-temps.md
   - Language:
       - HTML: language/HTML/index.md
       - CSS: language/css/index.md
@@ -37,34 +38,6 @@ nav:
           - JavaScript: language/javascript/index.md
           - Bun: language/bun/index.md
           - Elysia: language/elysia/index.md
-      - SQL:
-          - Glossaire: language/sql/00-glossaire.md
-          - Introduction: language/sql/01-introduction.md
-          - Instruction de base: language/sql/02-instruction-base.md
-          - Postgres: language/sql/03-postgres.md
-          - Formatage: language/sql/05-formatage-des-donnees.md
-          - Selection et trie: language/sql/06-selection-tri.md
-          - Fonction d'agrégat: language/sql/07-regroupement-agregat.md
-          - GROUP BY - HAVING: language/sql/08-utilisation-avancee-agregat.md
-          - Travailler avec le NULL: language/sql/09-null.md
-          - CASE - WHEN: language/sql/10-condition-avancee.md
-          - Jointure: language/sql/11-jointure.md
-          - Sous-requête: language/sql/12-sous-requete.md
-          - Type SQL: language/sql/13-type-donnee.md
-          - Tableau et JSON: language/sql/14-tableau-et-json
-          - DB: language/sql/database.md
-          - Conversion de type: language/sql/15-comparaison-et-conversion.md
-          - Création et modification des tables: language/sql/16-creation-modification-table.md
-          - Table temporaire: language/sql/17-table-temporaire.md
-          - Clé étrangère et relations: language/sql/18-foreign-key-relation.md
-          - Insertion, update et supression des données: language/sql/19-insertion-update-delete.md
-          - Transaction: language/sql/20-transaction.md
-          - Chargement de données en masse: language/sql/21-import-data.md
-          - Normalisation des données: language/sql/22-normalisation.md
-          - Modélisation des tables: language/sql/23-modelisation-diagramme.md
-          - CTE: language/sql/24-cte.md
-          - Fonction Window: language/sql/25-windows.md
-          - Gestion du temps: language/sql/26-gestion-temps.md
       - PHP: language/php/index.md
       - Go: language/go/index.md
       - Python:
@@ -102,7 +75,35 @@ nav:
       - Index: evode/index.md
       - Gestion des modales: evode/modale.md
       - Confirmation: evode/confirmation.md
+      - Jquery: evode/jquery.md
+      - PHP: evode/php.md
   - DevOps:
       - Github action: devops/github_action/index.md
       - VPS: devops/VPS/index.md
-  - ChatGPT App: ChatGptApp/index/md
+
+site_name: Engineering Handbook
+site_url: https://engineering-handbook.netlify.app
+
+theme:
+  name: material
+  palette:
+    primary: "indigo"
+    accent: "indigo"
+  features:
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
