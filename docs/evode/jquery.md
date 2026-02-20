@@ -52,7 +52,7 @@ Lorsque l'on viens soumettre le formulaire, on viens récupérer l'ensemble des 
     sender.disabled = true;  
   
 	// récupération du formulaire qui contient les valeurs
-    const form = $('#table_article_price');
+    const form = document.getElementById('table_article_price');
     
     const url = "ajax.php?U=<?= setURL('do=php/article/ajax&action=general&todo=savePrice') ?>";  
     const fd = new FormData();  
