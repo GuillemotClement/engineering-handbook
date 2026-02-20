@@ -1,3 +1,14 @@
+## Problème de SESSION 
+
+Si à la connexion, cela ne fonctionne pas, le problème peut provenir de la config du `.ini` de la version du PHP.
+
+Venir modifier ce fichier :
+```ini
+session.save_path = "C:\PHP8.2.5/tmp"
+```
+
+Puis relancer le serveur IIS
+
 ## Convertir tableau pour filtre IN 
 
 ```php
