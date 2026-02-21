@@ -758,6 +758,41 @@ setInterval(() => {
 Dans ce code, on viens augmenter la valeur de counter toutes les 1 seconde. 
 
 ## HOOK 
+
+Les hook `useState` et `useEffect` ne doivent pas être appelée depuis l'intérieur d'une boucle, d'une expression conditionelle ou tout endroit qui n'est pas une fonction définissant un composant.
+
+Cela permet d'assurer que les hooks sont toujours appelés dans le même ordre.
+
+Les hook ne peuvent être appelés que depuis l'intérieur d'un corps de fonction qui définis un composant React.
+
+```jsx
+const App = () => {
+  // ceci est ok
+  const [age, setAge] = useState(0)
+  const [name, setName] = useState('Juha Tauriainen')
+
+  if ( age > 10 ) {
+    // ceci ne marche pas!
+    const [foobar, setFoobar] = useState(null)
+  }
+
+  for ( let i = 0; i < age; i++ ) {
+    // toujours pas ok !
+    const [rightWay, setRightWay] = useState(false)
+  }
+
+  const notGood = () => {
+    // et ceci est presqu'un péché !
+    const [x, setX] = useState(-1000)
+  }
+
+  return (
+    //...
+  )
+}
+```
+
+
 ### useState 
 
 Permet de mettre a jour un etat avec React. 
@@ -1054,4 +1089,44 @@ const handleRightClick = () =>
 ---
 
 ### Gestion des tableaux 
+
+On ajoute dans un tableau `allClicks` les différents clic produits.
+
+```jsx
+const App = () => {
+  const [left, setLeft] = useState(0)
+  const [right, setRight] = useState(0)
+
+  const [allClicks, setAll] = useState([])
+
+
+  const handleLeftClick = () => {
+    setAll(allClicks.concat('L'))
+    setLeft(left + 1)
+  }
+
+
+  const handleRightClick = () => {
+    setAll(allClicks.concat('R'))
+    setRight(right + 1)
+  }
+
+  return (
+    <div>
+      {left}
+      <button onClick={handleLeftClick}>left</button>
+      <button onClick={handleRightClick}>right</button>
+      {right}
+
+      <p>{allClicks.join(' ')}</p>
+    </div>
+  )
+}
+```
+
+Chaque clic est stocké dans un élément d'état séparé `allClicks` qui est initialisé sous forme de tableau vide. 
+
+Lorsque le bouton gauche est cliqué, on ajoute la letttre L au tableau avec le handler `handleLeftClick`.
+Celle ci ajoute dans le tableeau la nouvelle lettre en utilisant `concat()` qui permet d'ajouter un nouvel élément dans un tableau sans modifier le tableau d'origine (on reste pur)
+
 

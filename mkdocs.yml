@@ -1,5 +1,7 @@
 nav:
-  - React: react/temp.md
+  - React: 
+        - Base: react/01-base.md
+        - Temp: react/temp.md
   - Docker: docker/index.md
   - JQuery: jquery/index.md
   - Python: Python/index.md
