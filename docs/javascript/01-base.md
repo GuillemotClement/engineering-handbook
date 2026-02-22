@@ -36,3 +36,28 @@ const t2 = t.concat(5)
 console.log(t)  // [1, -1, 3] est affiché => premier tableau
 console.log(t2) // [1, -1, 3, 5] est affiché => second tableau 
 ```
+
+----
+
+## OBJET 
+
+### Object.keys()
+
+Cette méthode retourne un tableau des clé d'un objet.
+
+### Object.values() 
+
+Cette méthode retourne  un tableau des valeurs d'un objet 
+
+On peut utiliser ces méthodes pour venir faire des recherches dans un objet. L'utilisation des tableau est prévilieger lorsque l'on veux travailler avec des données ordonné 
+
+```js
+const allVoteCounts = Object.values(votes); // on obtient un tableau avec les valeurs de l'objet
+const maxVotes = allVoteCounts.length === 0 ? 0 : Math.max(...allVoteCounts); // on recupère la valeur max
+
+	// on transforme les clé de l'objet en tableau 
+	// .find => prend en argument la clé une par une 
+	// on cherche pour chaque clé de l'objet, si la valeur est égale à la valeur max du vote 
+	// on retourne directement l'anecdate dans la vriable
+const winnerText = Object.keys(votes).find((key) => votes[key] === maxVotes); // on récupère l'anecdote avec la meilleur note
+```

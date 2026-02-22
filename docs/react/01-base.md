@@ -1,3 +1,30 @@
+## COMPOSANT 
+
+### Early return 
+
+```jsx
+const Statistics = ({ stats }) => {
+	const { good, neutral, bad, total, average, positif } = stats;
+
+	// si on rentre dans la condition, on retourne directment le jsx
+	if (total === 0) {
+		return <p>No feedback given</p>;
+	}
+
+	return (
+		<>
+			<Result text="good" result={good} />
+			<Result text="neutral" result={neutral} />
+			<Result text="bad" result={bad} />
+			<Result text="all" result={total} />
+			<Result text="average" result={average} />
+			<Result text="positif" result={positif} />
+		</>
+	);
+};
+```
+
+
 ## HOOK
 
 ### useState 

@@ -1129,4 +1129,285 @@ Chaque clic est stocké dans un élément d'état séparé `allClicks` qui est i
 Lorsque le bouton gauche est cliqué, on ajoute la letttre L au tableau avec le handler `handleLeftClick`.
 Celle ci ajoute dans le tableeau la nouvelle lettre en utilisant `concat()` qui permet d'ajouter un nouvel élément dans un tableau sans modifier le tableau d'origine (on reste pur)
 
+---
 
+## Rendu de collections et modules
+
+### Afficher une liste 
+
+Pour itérer des listes, on utilise la méthode `map()`. Cette méthode crée un nouveau tableau dont les éléments ont été créées à partir des éléments du tableau d'origine.
+
+Cette méthode permet de parcourir un tableau.
+
+```js
+// déclaration du tableau 
+const notes = [
+  {
+    id: 1,
+    content: 'HTML is easy',
+    date: '2019-05-30T17:30:31.098Z',
+    important: true
+  },
+  {
+    id: 2,
+    content: 'Browser can execute only JavaScript',
+    date: '2019-05-30T18:39:34.091Z',
+    important: false
+  },
+  {
+    id: 3,
+    content: 'GET and POST are the most important methods of HTTP protocol',
+    date: '2019-05-30T19:20:14.298Z',
+    important: true
+  }
+]
+
+// on affiche un élément pour chaque ligne du tableau 
+return (
+  <div>
+    <h1>Notes</h1>
+    <ul>
+      {notes.map(note => 
+        <li key={note.id}>
+          {note.content}
+        </li>
+      )}
+    </ul>
+  </div>
+)
+```
+
+- `notes` : c'est le tableau que l'on souhaite itérer.
+- `note` : argument passé dans la callback. Elle contient la valeur en cours d'itération.
+
+Les éléments générés par la méthode `map()` doivent avoir une valeur de clé unique. Cette valeur permet de déterminer comment mettre à jour la vue générée par un composant lorsque le composant est rendu à nouveau.
+
+La méthode `map()` peut prendre un second argument `i`. Celui ci contient un index des éléments du tableau. Cette méthode n'est pas recommandé, et peut provoquer des problèmes.
+
+```js
+<ul>
+  {notes.map((note, i) => 
+    <li key={i}>
+      {note.content}
+    </li>
+  )}
+</ul>
+```
+
+---
+
+### Passage d'une liste vers un enfant 
+
+On peut venir créer un composant `Note` dédié à l'affichage de l'élément d'une liste. Dans le composant parent, on viendras passer via des props le contenu d'une note.
+
+```jsx
+const Note = ({ note }) => {
+  return (
+    <li>{note.content}</li>
+  )
+}
+
+const App = ({ notes }) => {
+  return (
+    <div>
+      <h1>Notes</h1>
+      <ul>
+        { notes.map(note => 
+          <Note key={note.id} note={note} />
+        )}
+      </ul>
+    </div>
+  )
+}
+```
+
+---
+
+## Module
+
+Dans une application React, on utilise un fichier pour un module. 
+
+Par convention, on utilise le répertoire `src/components` pour y placer les composants d'une application. Le fichier est nommé d'après son composant.
+
+Par exemple, le fichier `src/components/Note.jsx` :
+
+```jsx
+import React from 'react';
+
+const Note = ({ note }) => {
+  return (
+    <li>{note.content}</li>
+  )
+}
+
+export default Note;
+```
+
+Le fichier qui définit le composant `App`, peut venir importer le module 
+
+```jsx
+import Note from './components/Note';
+
+const App = ({ notes }) => {
+  ...
+}
+```
+
+---
+
+## Formulaire 
+
+### Initialisation useState 
+
+```jsx
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes)
+
+  // eventHandler qui se déclenche à la soumission du formulaire
+  const addNote = (event) => {
+    // empêche le rechargement lors de la soumission du formulaire
+    event.preventDefault()
+    // on récupère le formualire via le event.target
+    console.log('button clicked', event.target)
+  }
+
+  return (
+    <div>
+      <h1>Notes</h1>
+      <ul>
+        {notes.map(note => 
+          <Note key={note.id} note={note} />
+        )}
+      </ul>
+      // on lie le handler sur l'élément form pour récupérer le submit
+      <form onSubmit={addNote}>
+        <input />
+        // le bouton déclenche la soumission
+        <button type="submit">save</button>
+      </form>   
+    </div>
+  )
+}
+```
+
+### Composant contrôlé 
+
+Permet de lier une valeur d'un input à une valeur du `state`. De ce manière l'affichage est synchronisé.
+
+En passant la valeur du state sur l'attribut `value` de l'input, il afficheras la valeur définis dans le stage, mais le champ ne pourras pas être modifé.
+
+Le composant `App` contrôle le comportement de l'input.
+
+Pour permettre l'édition de l'input, il est nécessaire d'ajouter un handler, qui viens surveiller les changements sur l'input et permet de le synchroniser avec le state du composant. `onChange` permet de surveiller les changements qui se produise sur l'input.
+
+```jsx
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes)
+
+  // ajout d'un state qui contient la valeur qui sera afficher dans l'input lié
+  const [newNote, setNewNote] = useState(
+    'a new note...'
+  ) 
+
+  const addNote = (event) => {
+    event.preventDefault()
+    console.log('button clicked', event.target)
+  }
+
+  // ajout du handler qui surveille l'input 
+  const handleNoteChange = (event) => {
+    console.log(event.target.value)
+    // event.target.value permet de récupérer la valeur saisie dans l'input
+    // il fait référence à l'input surveiller par le handler
+    setNewNote(event.target.value)
+  }
+
+  return (
+    <div>
+      <h1>Notes</h1>
+      <ul>
+        {notes.map(note => 
+          <Note key={note.id} note={note} />
+        )}
+      </ul>
+      <form onSubmit={addNote}>
+        <input
+          // en attribut value, on lui passe la valeur du state => l'input est lié à la valeur du state 
+          value={newNote} 
+          // on surveille les changement de l'input avec le handler
+          onChange={handleNoteChange}
+          />
+        <button type="submit">save</button>
+      </form>   
+    </div>
+  )
+}
+```
+
+### Gestion du formulaire 
+
+On peut venir compléter la fonction charger de traiter la soumission du formulaire
+
+```jsx
+const addNote = (event) => {
+  event.preventDefault(); // on empêche de recharger la page 
+
+  // on créer un objet qui contient les données de la nouvelle note 
+  const noteObject = {
+    content: newNote, // on récupère la valeur saisie dans l'input 
+    date: new Date().toISOString(),
+    important: Math.random()< 0.5,
+    id: notes.length + 1, // on définis l'id comme la valeur suivante de l'id 
+  }
+
+  // on passe dans le state une copie du nouvel objet 
+  setNotes(notes.concat(noteObject))
+  // on reset l'input du formulaire
+  setNewNotes('');
+}
+```
+
+### Filtrage des éléments affichés 
+
+On ajoute un nouveau state qui garde une trace des notes à afficher 
+On viens modifier le composant pour qu'il stocke une liste des notes à afficher. Les éléments afficher dépendant de l'état du composant.
+
+On retrouve un bouton qui permet de déclencher le changemetn d'affichage. Le texte du bouton dépend de la valeur d'état `showAll`
+
+```jsx
+import { useState } from 'react'
+import Note from './components/Note'
+
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes)
+  const [newNote, setNewNote] = useState('') 
+  const [showAll, setShowAll] = useState(true) // ajout du nouveau state 
+
+  // ...
+
+  // selon la valeur du state avec un opérateur conditionnel 
+  // - affichage de toutes les notes
+  // - on affiche que les notes importantes
+  const notesToShow = showAll
+    ? notes
+    : notes.filter(note => note.important === true) // on peut l'ecrire : notes.filter(note => note.important)
+
+  return (
+    <div>
+      <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all' }
+        </button>
+      </div>
+      <ul>
+
+        {notesToShow.map(note =>
+          <Note key={note.id} note={note} />
+        )}
+      </ul>
+      // ...
+    </div>
+  )
+}
+```
