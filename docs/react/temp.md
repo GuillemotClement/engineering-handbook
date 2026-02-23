@@ -158,170 +158,7 @@ const App = () => {
 
 ## ARRAY
 
-### forEach - itérer un tableau 
 
-Prends une callback, et exécute une instruction sur chaque éléments du tableau.
-
-```js
-const t = [1, -1, 3]; // déclaration du tableau 
-
-console.log(t.length) // 3 est affiché
-console.log(t[1])     // -1 est affiché => affiche le deuxième élément
-
-// parcours le tableau, et execute l'instruction pour chaque élément
-t.forEach(value => {
-  console.log(value)  // les chiffres 1, -1, 3, 5 sont affichés, chacun sur une ligne
-})
-```
-
-### concat() - ajouter un éléments dans un tableau 
-
-Avec React, on utilise des structures de données immuables. Pour cette raison, on priviligie cette méthode pour "ajouter" des éléments à un tableau.
-
-Cette méthode créer un nouveau tableau dans lequel le contenu de l'ancien tableau et le nouvel élément sont inclus. La méthode retourne ce nouveau tableau 
-
-```js
-const t = [1, -1, 3]
-
-const t2 = t.concat(5)
-
-console.log(t)  // [1, -1, 3] est affiché => premier tableau
-console.log(t2) // [1, -1, 3, 5] est affiché => second tableau 
-```
-
-### map() - créer un nouveau tableau 
-
-La méthode créer un nouveau tableau pour lequel la fonction donnée en paramètre est utilisée pour créer des éléments. 
-
-```js
-const t = [1, 2, 3]
-
-const m1 = t.map(value => value * 2) // multipli chaque valeur du tableau
-console.log(m1)   // [2, 4, 6] est affiché
-```
-
-On peut également l'utiliser pour transformer le tableau 
-
-```js
-const m2 = t.map(value => '<li>' + value + '</li>')
-console.log(m2)  
-// [ '<li>1</li>', '<li>2</li>', '<li>3</li>' ] est affiché
-```
-
-On peut donc l'utiliser pour itérer un tableau, et simplifier le passage des props à des composants enfant. 
-
-Par exemple, on as  un tableau d'objet. 
-```jsx
-const parts = [
-	{
-		name: "Fundamentals of React",
-		exercises: 10,
-	},
-	{
-		name: "Using props to pass data",
-		exercises: 7,
-	},
-	{
-		name: "State of a component",
-		exercises: 14,
-	},
-];
-```
-
-Ce tableau, est ensuite envoyer à un composant enfant, qui est chargé d'afficher des composant enfants, permettant d'afficher les données.
-
-Il est également nécessaire de passer un attributs `key` pour que react gère l'affiche. Il vaut mieux utiliser un id, cette valeur doit être unique.
-
-```jsx
-// dans le compposant App 
-return (
-	<div>
-		<Header course={course} />
-		<Content parts={parts} /> // on passe le tableau d'objet 
-		<Total total={total} />
-	</div>
-);
-```
-
-On distribue ensuite les données aux enfants :
-```jsx
-// il reçoit via l'objet props, le tableau d'objet parts 
-const Content = (props) => {
-	return (
-		<>
-			// on itérère avec .map pour envoyer chaque objet au composant enfants
-			{props.parts.map((part) => (
-				<Part part={part} key={part.name} />
-			))}
-		</>
-	);
-};
-
-// dans le composant enfant on affiche ensuite les données 
-const Part = (props) => {
-	return (
-		<p>
-			{props.part.name} {props.part.exercises}
-		</p>
-	);
-};
-```
-
-
-
-###  reduce() 
-
-La méthode prend un tableau de plusieurs valeurs, et permet de réduire à une seule et unique valeur. Si la valeur intial n'est pas fournis, Js utilise la valeur du premier élément du tableau comme valeur initial de `accu`.
-
-```js
-tableau.reduce((accu, current) => {
-  // logique ici
-}, valeurInitiale)
-```
-
-- `accu` : c'est la variable qui stocke l'ensemble des valeurs. Celle qui est retourner à la fin 
-- `current`: contient l'objet ou l'élément du tableau sur lequel on itère 
-- `valeurInitiale`: la valeur qui sera contenu dans `accu` au début de l'opération.
-
-Par exemple, on as un tableau d'objet. On souhaite faire le cumul des valeurs pour obtenir un total :
-
-```js
-const parts = [
-	{
-		name: "Fundamentals of React",
-		exercises: 10,
-	},
-	{
-		name: "Using props to pass data",
-		exercises: 7,
-	},
-	{
-		name: "State of a component",
-		exercises: 14,
-	},
-];
-```
-
-On peut utiliser la méthode `reduce`, pour itérer le tableau d'objet, et cumuler chaque valeur pour obtenir le total 
-
-```js
-const total = parts.reduce((accu, current) => accu + current.exercises, 0);
-```
-
-### déstructuration 
-
-La déstructuration permet de récupérer simplement des éléments d'un array. 
-
-```js
-const t = [1, 2, 3, 4, 5]
-
-const [first, second, ...rest] = t; // destructuration
-
-console.log(first, second)  // 1 2 est affiché
-console.log(rest)          // [3, 4, 5] est affiché
-```
-
-Les variables `first` et `second` viennent récupérer les deux première valeurs du tableau. Les restes est groupé dans la variable `rest`.
 
 
 
@@ -1567,3 +1404,331 @@ Par défaut, la callback est exécuté après le rendu du composant.
 
 Le deuxième paramètre est utilisé pour spécifier la fréquence d'exécution de la callback. Si c'est un tableau vide, la callback est déclencher au premier rendu uniquement.
 
+---
+
+## REST 
+
+Avec REST, on se réfère à des objets de données individuels, tels que les notes d'une application en tant que ressource.
+Chaque ressource est associé à une adresse unique - son URL.
+
+Par convention, on peut localiser une note individuelle à l'url de la ressource `/notes/3`, ou 3 est l'identifiant de la ressource.
+
+L'url `/notes` pointe vers une collection de ressources contenant toutes les notes.
+
+Les requêtes sont extraites du serveur avec des requêtes HTTP GET, par exemple `HTTP GET /notes/3` retourne la ressource avec l'id 3.
+
+
+### Création de ressource 
+
+La création d'une ressource pour stocker une note se fait avec une requête POST sur l'url `/notes`. Les données de la nouvelle ressource sont envoyées dans le body de la requête.
+
+On viens modfier le handler qui permet de créer une nouvelle ressource, pour envoyer l'enregistrement dans le `json-server` pour stocker celle ci :
+
+```jsx
+addNote = event => {
+  event.preventDefault()
+
+  const noteObject = {
+    content: newNote,
+    date: new Date(),
+    important: Math.random() < 0.5,
+  }
+
+  axios
+    .post('http://localhost:3001/notes', noteObject)
+    .then(response => {
+      // on ajoute dans le state une nouvelle copie de l'objet avec la nouvelle ressource incluse
+      setNotes(notes.concat(response.data))
+      // on vide l'input
+      setNewNote('')
+    })
+}
+```
+
+Le serveur se charge de créer l'id. L'objet est envoyer vers le serveur avec la méthode axios `post()`. 
+
+On viens traite la réponse du serveur, en ajoutant la nouvelle ressource dans le state `notes` pour mettre à jour le listing.
+
+### Update de ressource 
+
+On viens modifier l'importance d'une note. On viens modifier le composant `Note` pour changer son importance. On ajoute un bouton qui permet de modifier l'importance d'une note.
+
+```jsx
+// on passe un nouveau handler
+const Note = ({ note, toggleImportance }) => {
+  const label = note.important
+    ? 'make not important' : 'make important'
+
+  return (
+    <li>
+      {note.content} 
+      <button onClick={toggleImportance}>{label}</button>
+    </li>
+  )
+}
+```
+
+Dans le composant parent, on viens définir ce handler, et ajouter dans les props du composant 
+
+```jsx
+const App = () => {
+  const [notes, setNotes] = useState([]) 
+  const [newNote, setNewNote] = useState('')
+  const [showAll, setShowAll] = useState(true)
+
+  // ...
+
+  // implémentation du handle qui se charge de faire l'update
+  const toggleImportanceOf = (id) => {
+    const url = `http://localhost:3001/notes/${id}`
+    // on récupère la note devant être modifié
+    const note = notes.find(n => n.id === id)
+    // on créer une copie de la note en récupérant toutes ces valeurs avec ...note
+    // on modifier uniquement la prop important
+    const changedNote = { ...note, important: !note.important }
+    // on lance la requête pour faire la mise à jour 
+    axios.put(url, changedNote).then(response => {
+      // on envoie la nouvelle note, et on modifie uniquement la note modifié dans le state
+      // si l'id est le même que la note itéré, on passe les nouvelle données
+      // sinon, on retourne la note non modifié
+      setNotes(notes.map(n => n.id !== id ? n : response.data))
+    })
+  }
+
+  // ...
+
+  return (
+    <div>
+      <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all' }
+        </button>
+      </div>      
+      <ul>
+        {notesToShow.map(note => 
+          <Note
+            key={note.id}
+            note={note} 
+            // on passe le handler qui utilise l'id de la note pour indiquer qu'elle ressource est à modifier
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
+        )}
+      </ul>
+      // ...
+    </div>
+  )
+}
+```
+
+On viens créer une copie de la note entière, car si on ne passe que la référence, toute la note ne sera pas modifié dans le state. 
+
+### Extraction dans un module 
+
+Le composan App commence à devenir complexe avec la gestion des requêtes. Dans l'esprit du principe de responsabilité unique, on viens extraite la logique de communication dans un nouveau module.
+
+On place cette logique dans un folder `/src/services/`, et on ajoute un fichier `notes.js` 
+
+```js
+import axios from 'axios'
+const baseUrl = 'http://localhost:3001/notes'
+
+// création des fonctions 
+const getAll = () => {
+  return axios.get(baseUrl)
+}
+
+const create = newObject => {
+  return axios.post(baseUrl, newObject)
+}
+
+const update = (id, newObject) => {
+  return axios.put(`${baseUrl}/${id}`, newObject)
+}
+
+// exportation des méthodes dans un objet
+export default { 
+  getAll: getAll, 
+  create: create, 
+  update: update 
+}
+```
+
+Dans ce module, les méthodes retourne directement les promesses retourné par axios.
+
+Dans le composant `App.js`, on viens importer le module, et pouvoir accéder aux fonctions 
+
+```jsx
+import noteService from './services/notes'
+
+useEffect(() => {
+  noteService
+    .getAll()
+    .then(response => {
+      setNotes(response.data)
+    })
+}, [])
+
+const toggleImportanceOf = id => {
+  const note = notes.find(n => n.id === id)
+  const changedNote = { ...note, important: !note.important }
+
+  noteService
+    .update(id, changedNote)
+    .then(response => {
+      setNotes(notes.map(note => note.id !== id ? note : response.data))
+    })
+}
+
+const addNote = (event) => {
+  event.preventDefault()
+  const noteObject = {
+    content: newNote,
+    date: new Date().toISOString(),
+    important: Math.random() > 0.5
+  }
+
+  // on utilise les méthodes déclarer dans le nouveau module, en faisant référence à noteService qui contient les méthodes du module.
+  noteService
+    .create(noteObject)
+    .then(response => {
+      setNotes(notes.concat(response.data))
+      setNewNote('')
+    })
+}
+```
+
+Lorsque le composant App utilise les fonctions, il reçoit un objet contenant la réponse complète de la requête HTTP.
+
+Le composant App n'utilise que la propriété `response.data` de l'objet de réponse. On peut donc venir refactoriser le module, et au lieu de retourner la réponse HTTP entière, on viens retourner que la données qui nous interesse.
+
+Les méthodes retournent toujours une promesse, mais avec uniquement les donnée nécessaire.
+
+```jsx
+import axios from 'axios'
+const baseUrl = 'http://localhost:3001/notes'
+
+const getAll = () => {
+  const request = axios.get(baseUrl)
+  // on retourne uniquement la response.data de la reponse du serveur 
+  return request.then(response => response.data)
+}
+
+const create = newObject => {
+  const request = axios.post(baseUrl, newObject)
+  return request.then(response => response.data)
+}
+
+const update = (id, newObject) => {
+  const request = axios.put(`${baseUrl}/${id}`, newObject)
+  return request.then(response => response.data)
+}
+
+export default { getAll, create, update }
+```
+
+On peut ensuite mettre à jour le composant `App` avec ces nouvelles méthodes 
+
+```jsx
+const App = () => {
+  // ...
+
+  useEffect(() => {
+    noteService
+      .getAll()
+
+      .then(initialNotes => {
+        setNotes(initialNotes)
+      })
+  }, [])
+
+  const toggleImportanceOf = id => {
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+
+    noteService
+      .update(id, changedNote)
+
+      .then(returnedNote => {
+        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+      })
+  }
+
+  const addNote = (event) => {
+    event.preventDefault()
+    const noteObject = {
+      content: newNote,
+      date: new Date().toISOString(),
+      important: Math.random() > 0.5
+    }
+
+    noteService
+      .create(noteObject)
+
+      .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+        setNewNote('')
+      })
+  }
+
+  // ...
+}
+```
+
+### Promise et erreur 
+
+Pour traiter les promesses qui échoue, on vient utiliser une méthode `catch` dans le gestionnaire de promesse.
+
+```js
+axios
+  .get('http://example.com/probably_will_fail')
+  .then(response => {
+    console.log('success!')
+  })
+  .catch(error => {
+    console.log('fail')
+  })
+```
+
+Si la requête échoue, le handler avec la méthode `catch()` est appelé. Cette méthode est placé à la fin d'une chaîne de promesse.
+
+Lorsque que l'application effectue une requête HTTP, sous le capot, on créer une chaîne de réponse : 
+
+```js
+axios
+  .put(`${baseUrl}/${id}`, newObject)
+  .then(response => response.data)
+  .then(changedNote => {
+    // ...
+  })
+    .catch(error => {
+    console.log('fail')
+  })
+```
+
+On viens donc modifier notre composant App pour ajouter un gestionnaire d'erreur :
+
+```jsx
+const toggleImportanceOf = id => {
+  const note = notes.find(n => n.id === id)
+  const changedNote = { ...note, important: !note.important }
+
+  noteService
+    // on fait la requête
+    .update(id, changedNote).then(returnedNote => {
+      setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+    })
+    // si l'update échoue, on passe dans le catch
+    .catch(error => {
+      alert(
+        `the note '${note.content}' was already deleted from server`
+      )
+      // en cas d'erreur, on filtre la note supprimé du state
+      setNotes(notes.filter(n => n.id !== id))
+    })
+}
+```
+
+Si une erreur survient, un message d'alerte s'affiche alors pour l'utilisateur.
+
+La méthode `filter()` permet de supprimer les données dans notre cas. Elle retourne un tableau comprenant uniquement les élément de la liste pour lquels la fonction passée en paramètre renvoie vrai => ici, si l'id de la note est diffénrends de l'id de la note que l'on souhaite update.
