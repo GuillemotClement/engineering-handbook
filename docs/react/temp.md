@@ -1411,3 +1411,159 @@ const App = (props) => {
   )
 }
 ```
+
+---
+
+## Obtenir des données du serveur 
+
+On peut utiliser [json-server](https://github.com/typicode/json-server) pour simuler des interactions avec un serveur qui retourne des données. L'extension vient stocker toutes les donénes qui seraient stockées dans un "base de donnée". 
+
+Pour l'utiliser, on viens créer un fichier `db.json`. On peut ensuite lancer le serveur avec cette commande : 
+
+```bash 
+npx json-server --port 3001 --watch db.json
+```
+
+### Récupérer des données 
+
+Pour simplifier les requêtes, on utilise `Axios`. Pour installer la dépendances 
+
+```bash
+npm install axios
+```
+
+On peut également venir installer `json-server` en tant que dépendances de développement, c'est à dire qu'elle est utilisée uniquement durant le développement.
+
+```bash
+npm install json-server --save-dev
+```
+
+On ajoute ensuite un script dans le package.json 
+```json 
+{
+  // ... 
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "server": "json-server -p 3001 db.json" # ajout du script pour lancer le server de dev
+  },
+}
+```
+
+On lance ensuite le script via la commande : 
+
+```bash 
+npm run server
+```
+
+### Axios et promesses 
+
+#### Promesse 
+
+Une promise est un objet qui représente une opération asynchrone. Elle peut avoir 3 états distincts :
+1. Promise est en attente : cela signifie que la valeur finale n'est pas encore disponible 
+2. Résolu : l'opération est terminée et la valeur final est disponible. 
+3. Reject: l'opératon à échouer, une erreur a empêché la détermination de la valeur finale
+
+
+
+Pour utiliser Axios 
+```js
+// importation de la lib 
+import Axios from 'axios';
+
+// requête GET => ancienne syntaxe 
+// axios retourne une promesse 
+const promise = axios.get('http://localhost:3001/notes');
+
+promise.then(response => {
+  console.log(response)
+})
+
+// syntaxe courte 
+
+// la callback prends les données contenues dans la réponse, les stocke dans une variable `notes` et les affiches.
+axios.get('http://localhost:3001/notes').then(response => {
+  const notes = response.data;
+  console.log(notes);
+})
+
+// il existe une façon plus lisible de formater les appel de méthode chaînés
+axios
+  .get('http://localhost:3001/notes')
+  .then(response => {
+    const notes = response.data
+    console.log(notes);
+  })
+```
+
+Les données reçu d'un serveur sont du texte brut. Axios est capable d'analyser les données dans un tableau JS car le serveur a spécifié le format de donnée `application/json` en utilisant l'en-tête `content-type`.
+
+Depuis un composant, on peut venir faire une requête pour récupérer les données :
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client'
+import axios from 'axios';
+
+import App from './App'
+
+axios.get('http://localhost:3001/notes').then(response => {
+  const notes = response.data // on récupère la données 
+  ReactDOM.createRoot(document.getElementById('root')).render(<App notes={notes} />)
+})
+```
+
+### useEffect 
+
+C'est le hook qui permet de gérer les donnée issue d'un appel API.
+
+```jsx
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import Note from './components/Note'
+
+
+const App = () => {
+  const [notes, setNotes] = useState([])
+  const [newNote, setNewNote] = useState('')
+  const [showAll, setShowAll] = useState(true)
+
+  // déclaration du useEffect pour aller chercher les données.
+  useEffect(() => {
+    // la requête est fait avec axios => exécuté directement après le rendu.
+    axios
+      .get('http://localhost:3001/notes')
+      .then(response => {
+        console.log('promise fulfilled')
+        setNotes(response.data)
+      })
+  }, [])
+
+  // ...
+}
+```
+
+Le useEffect peut également être écrit de cette manière 
+
+```jsx
+const hook = () => {
+  axios
+    .get('http://localhost:3001/notes')
+    .then(response => {
+      console.log('promise fulfilled')
+      setNotes(response.data)
+    })
+}
+
+useEffect(hook, []);
+```
+
+Le hook prends en premier paramètre une calback qui est déclencher lors du premier rendu. Par défaut, la callback s'exécute après chaque rendu terminé, mais on peut indiquer des valeurs pour redéclencher le rendu.
+
+Par défaut, la callback est exécuté après le rendu du composant. 
+
+Le deuxième paramètre est utilisé pour spécifier la fréquence d'exécution de la callback. Si c'est un tableau vide, la callback est déclencher au premier rendu uniquement.
+
