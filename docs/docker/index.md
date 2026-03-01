@@ -1,0 +1,1954 @@
+# Docker 
+
+## COMPOSANT PRINCIPAUX 
+
+### Docker Engine 
+
+C'est le logiciel principal qui permet de faire fonctionner les conteneurs. Il fournit une plateforme pour développer, livrer et exécuter des applications dans des conteneurs isolés.
+
+Il contient plusieurs composants qui assurent les fonctionnalités de Docker 
+- **Docker Daemon**: processus qui effectue les opérations principales avec les conteneurs
+- **Docker API** : interface qui permet d’interagir avec Docker Daemon via des appels 
+- **Docker CLI**: permet de travailler avec Docker 
+
+Le Docker engine gère le cycle de vie des conteneurs, de la création, du lancement à la suppression. Il assure l'isolation des conteneurs, et permet de lancer plusieurs conteneur sur un même h^te sans conflit.
+### Docker Daemon 
+
+C'est le processus serveur principal, il réalise toutes les opérations Docker. Il fonctionne en arrière plan et gère les conteneurs, les images, les réseaux et d'autres ressources Docker.
+
+1. Création et gestion des conteneurs: il traite les requêtes pour créer, démarrer, arrêter et supprimer des conteneurs. Il assure l'isolation des conteneurs et distribue les ressources entre eux
+2. Travail avec les images : Il télécharge et stocke les images des conteneurs, qui sont utilisées pour créer des conteneurs. Il gère également le cache des images pour optimiser l'utilisation de l'espace disque.
+3. Gestion réseau: il crée et gère les réseaux Docker, permettant aux conteneurs d’interagir entre eux et avec des systèmes externes. Il supporte différents drivers réseau et paramètres pour garantir flexibilité et sécurité
+4. Gestion du stockage: gère les volumes et autre type de stockage, qui sont utilisés par les conteneurs pour stocker des données. Il assure une gestion fiable et efficace des données à l'intérieur des conteneurs.
+
+Le client envoie des commandes au Docker Daemon, qui les traite et les exécute.
+
+Il joue un rôle dans la sécurité des conteneurs. Il gère les droits d'accès, les paramètres réseau, et l'isolation des conteneurs, permettant de limiter les menaces potentielles et les vulnérabilités. En utilisant les namespaces et les cgroups, il isole les processus et contrôle l'utilisation des ressources par les conteneurs, garantissant leur fonctionnement en toute sécurité.
+
+---
+
+## TERME DE BASE 
+
+### Images 
+Les images sont un template utilisé pour créer un conteneur. Elle contient tout ce qui est nécessaire pour faire tourner une application (os, application, dépendances, fichier de config).
+
+Caractéristique principale :
+- **Structure par couche**: les images sont constitué de plusieurs couches. Une couche de base, et chaque suivante représente des modif par rapport à la précédente. Cela permet de réduire la place et réduit le temps de téléchargement
+- **Réutilisation**: la même image peut servir à créer plusieurs conteneurs 
+- **Portabilité**: on peut utiliser une image entre plusieurs machines 
+
+Pour créer une image, on écrit un `Dockerfile` où l'on vient préciser les configurations de l'application et ses dépendances.
+
+Pour utiliser une image, on peut les récupérer sur Docker Hub permettant de déployer des applis standard comme des serveurs ou des base de données.
+
+```shell
+docker pull <image>
+```
+
+---
+
+### Conteneur 
+
+Un conteneur est une instance en cours d'exécution d'une image. Il permet d'isoler les applications et leurs dépendances dans un environnement d'exécution distinct, ce qui permet de les exécuter indépendament du système hôte et des autres conteneurs.
+
+Ils sont légérs car ils utilisent le noyau du système hôte, au lieu de créer un noyau séparé comme des dans VM.
+
+---
+
+### Registries 
+
+Le registre Docker est un stockage pour les images Docker. Il permet de stocker, gérer et distribuer des images de conteneur.
+
+Par exemple Docker Hub
+
+---
+
+### Orchestration 
+
+C'est le processus de gestion de plusieurs contenaires dans un environnement distribué. Ils permettent d'automatiser le déploiement, le scaling et la gestion des containers
+
+- **Kubernetes**: permet de gérer un cluster de containers sur différents noeuds.
+- **Docker Swarn**
+
+---
+### Network 
+Permet aux conteneurs d'intéragir entre eux et avec le monde extérieur. Docker fournit plusieurs types de réseaux pour différents scénario.
+- **Bridge** : réseau par défaut, les conteneurs dans un réseau en bridge peuvent intéragir entre eux
+- **Host**: le conteneur utilise les interfaces réseau de la machine hôte 
+- **Overlay**: utilisé pour créer des réseaux entre plusieurs daemon, nécessaire pour l'orchestration 
+- **None**: désactive toutes les interface du conteneur, pour des tâches isolées
+
+---
+### Volume 
+Méchanisme de stockage persistant des données des conteneurs. Il permettent de sauvegarder les données en dehors du conteneur pour éviter leur perte lors du redémarrage ou de la suppression du conteneur 
+
+Le volume c'est le disque dur virtuel qu'on peut connecter à une machine virtuelles ou à un conteneur. Il est généralement stocké sur le système hôte sous forme de fichier ordinaire
+
+
+---
+## DEMARRAGE DOCKER 
+
+```shell
+# vérifier la version de docker 
+sudo docker --version
+
+# lancement du conteneur de test 
+docker run hello-world
+
+# vérifier l'état du daemon
+sudo systemctl status docker 
+
+# lister les réseaux existant 
+docker network ls 
+
+# lister les volumes 
+docker volume ls 
+```
+
+---
+
+## COMMANDE PRINCIPALE 
+
+### Travailler avec des conteneurs
+|Commande|Description|
+|---|---|
+|docker run|Lancer un nouveau conteneur|
+|docker ps|Liste des conteneurs en cours d'exécution|
+|docker stop|Arrêter un conteneur en cours d'exécution|
+|docker start|Démarrer un conteneur arrêté|
+|docker restart|Redémarrer un conteneur|
+|docker rm|Supprimer un conteneur arrêté|
+|docker logs|Voir les logs d’un conteneur|
+|docker exec|Exécuter une commande à l'intérieur d'un conteneur|
+
+```shell
+# lancer un nouveau conteneur en arrière plan 
+docker run -d --name my_container nginx
+
+# arrête un conteneur 
+docker stop my_container
+
+# démarrer un conteneur arrêté 
+docker start my_container
+
+# redémarrer un conteneur 
+docker restart my_container
+
+# supprimer un conteneur 
+docker rm my_container
+
+# voir les logs d'un conteneur 
+docker logs my_container
+
+# exécuter une commande dans un conteneur 
+docker exec -it my_container /bin/bash
+```
+Il permet de 
+
+---
+
+### Travailler avec une images
+|Commande|Description|
+|---|---|
+|docker pull|Téléchargement d’une image depuis Docker Hub|
+|docker build|Construction d’une image à partir de Dockerfile|
+|docker images|Liste des images locales|
+|docker rmi|Suppression des images|
+|docker tag|Association d’un nouveau tag à une image|
+
+```shell
+# télécharger une image 
+docker pull nginx:latest
+
+# construction d'une image => dans le repertoire actuel avec un tag
+docker build -t my_image .
+
+# liste des images locale
+docker images
+
+# suppression des images
+docker rmi my_image
+
+# associer un tag à une image
+docker tag my_image my_repo/my_image:latest
+```
+
+---
+
+### Travail avec les réseaux 
+
+|Commande|Description|
+|---|---|
+|docker network ls|Liste de tous les réseaux Docker|
+|docker network create|Création d'un nouveau réseau|
+|docker network inspect|Voir les détails d'un réseau|
+|docker network connect|Connecter un container au réseau|
+|docker network disconnect|Déconnecter un container du réseau|
+
+```shell
+# lister les réseau
+ docker network ls
+ 
+ # créer un nouveau réseau 
+ docker network create my_network
+ 
+ # voir les détails d'un réseau 
+ docker network inspect my_network
+ 
+ # connecter un container au réseau 
+docker network connect my_network my_container
+
+# déconnecter un container au réseau 
+ docker network disconnect my_network my_container
+```
+
+---
+
+### Travailler avec les volumes 
+|Commande|Description|
+|---|---|
+|docker volume ls|Liste de tous les volumes Docker|
+|docker volume create|Créer un nouveau volume|
+|docker volume inspect|Afficher les détails d’un volume|
+|docker volume rm|Supprimer un volume|
+
+```shell
+# lister les volumes
+docker volume ls
+
+# créer un nouveau volume 
+docker volume create my_volume
+
+# afficher les détails d'un volume 
+docker volume inspect my_volume
+
+# supprimer un volume 
+docker volume rm my_volume
+```
+
+---
+
+## DOCKER HUB
+
+Service cloud qui permet de télécharger des images et de les extraires. C'est une plateforme qui permet de partager des images et d'utiliser des solutions crées par d'autres.
+
+- Répertoire privés et publics: permet de stocker des images en public ou en accès limités 
+- Automated builds : intégrations avec des systèmes de contrôle de version comme GitHub pour la construction automatique d'images à chaque modif du code 
+- Webhooks: configuration d'actions automatique qui s'exécutent lors de la mise à jour des images 
+
+### Recherche d'images 
+
+1. Accéder à Docker Hub 
+2. Recherche une image par mot clé (Nginx par exemple )
+3. Affichage des résultats. Les images officielles sont marquées comme `Official` et sont pris en charge par Docker.
+
+On peut également utiliser la CLI pour rechercher une image 
+```shell 
+docker search nginx
+```
+
+La commande affiche une liste d'image. 
+
+### Repositories
+
+Les repo dans Docker Hub sont des endroits où les images Docker sont stockées. Il est possible de créer des repo publics ou privée selon les besoins.
+
+Pour créer un nouveau reop, il faut le créer sur le Docker Hub. On vient ensuite construire une image localement avec un Dockerfile.
+```shell
+# création du repo 
+docker build -t yourusername/repositoryname:tag .
+
+# login
+docker login 
+
+# téléchargement de l'image dans le repo 
+docker push yourusername/repositoryname:tag
+```
+
+Il est possible de configurer le builds automatiquement du repo. De cette manière, à chaque modifications dans le code source, Docker Hub créera et téléchargera automatiquement une nouvelle image.
+
+### Téléchargement d'une image 
+
+#### docker pull 
+
+Cette commande permet de télécharger sur la machine l'image 
+```shell 
+docker pull [OPTIONS] NAME[:TAG|@DIGEST]
+
+# téléchargement d'une image NGINX 
+docker pull nginx:latest 
+
+# téléchargement d'une version spécifique 
+docker pull ubuntu:20.04
+```
+
+- `NAME`: le nom de l'image 
+- `TAG`: optionnel, par défaut le tag `latest` est utilisé 
+- `@DIGEST`: optionel, identifiant SHA256 de l'image 
+
+#### docker images - Afficher les images téléchargées 
+Cette commande affiches les images télécharger sur la machine 
+```shell 
+docker images 
+```
+
+### Utilisation d'image 
+
+#### Nginx 
+
+Par exemple, on souhaite utiliser `nginx` pour monter un serveur web. 
+
+Une fois l'image télécharger, on peut venir démarrer le serveur dans un conteneur 
+```shell 
+docker run -d -p 8080:80 nginx
+```
+
+#### MySQL 
+Dans cet exemple, on lance un conteneur avec MySQL, on définit un mot de passe pour `root` et on redirige le port 3306 du conteneur vers le port 3306 de l'hôte 
+```shell 
+docker run -d -p 3306:3306 --name my_sql -e MYSQL_ROOT_PASSWORD=my-secret-pw mysql:latest
+```
+
+#### Redis 
+Redis est un système de mise en cache. 
+```shell 
+docker run -d -p 6379:6379 --name my_redis redis:latest 
+```
+
+### docker push 
+Commande qui permet d'envoyer des images Docker locale sur Docker Hub. Avant de publier une image, il faut que celle ci soit marqué avec un tag incluant le nom d'utilisateur Docker Hub 
+
+```shell 
+# build de l'image
+docker build -t myapp:latest .
+
+# tag de l'image 
+docker tag myapp:latest <username>/myapp:latest 
+
+# publication de l'image 
+docker push <username>/myapp:latest 
+```
+
+### docker pull 
+Cette commande permet de télécharger des images depuis Docker Hub. Elle permet d'accéder à des images publiées par d'autres utilisateurs
+
+```shell
+# rechercher d'une image 
+docker search nginx 
+
+# téléchargement de l'image 
+docker pull <username>/myapp:latest 
+docker pull nginx:latest 
+```
+
+---
+
+## CAS D'UTILISATION DOCKER 
+
+### Microservice 
+
+Docker permet d'implémenter une architecture de microservice en emballant chaque service dans un conteneur séparé. 
+
+### CI/CD 
+Docker aide à créer un environnement identiques pour toutes les étapes du développement. Cela garantit que l'application fonctionnera de la même manière partout.
+
+### Portabilité et cohérence
+
+Docker permet d'emballer une application avec toutes ses dépendances dans un conteneur qui onctionne de manière garantie dans n'importe quel environnement 
+Il permet de 
+
+### Garantis la sécurité 
+
+Docker garantit l'isolation des containers, ce qui réduit les risques. Les container fonctionne de manière indépendante, limitant leur impact sur le système
+
+### Test et automatisation 
+
+Docker permet de créer des environnement de tests isolés sans affecter le système principale
+
+### Calculs dans le cloud et mise à l'échelle
+
+Docker simplifie la mise à l'échelle via l'intégration avec des plateforme cloud.
+
+---
+
+## CONTAINER 
+
+### docker run 
+
+Cette commande permet de lancer un nouveau conteneur en utilisant une images existante. 
+
+```shell
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+```
+
+- `OPTIONS`: paramètre pour configurer le conteneur (ports, volumes, variables d'environnement)
+- `IMAGE`: nom de l'image à partir duquel le conteneur sera crée
+- `COMMAND`: commande qui sera exécutée à l'intérieur du conteneur 
+- `ARG`: argument pour la commande 
+
+#### Lancement simple 
+
+```shell
+docker run hello-world
+```
+
+Cette commande télécharger l'image `hello-world` depuis Docker Hub et la lance. Le conteneur exécute la commande définir dans l'image et affiche le message à l'écran.
+
+#### Lancement en mode background 
+
+Par défaut, les conteneurs se lance en mode intéractif, et leur sortie est affichée dans le terminal. Le mode background est le mode détaché, les sortie ne seront pas affiché.
+
+```shell
+docker run -d nginx
+```
+
+La commande démarre un serveur nginx en mode détaché. Docker retourne l'identifiant du conteneur, que l'on peut utiliser pour gérer le conteneur plus tard.
+
+#### Attribuer un nom au conteneur 
+
+Pour simplifier la gestion des conteneur, on peut lui attribuer un nom avec le parametre `--name`
+```shell
+docker run -d --name my_nginx nginx
+```
+
+En ajoutant un nom, on peut y faire reference dans d'autre commande Docker.
+
+#### Demarrer en mode interactif 
+On peut lancer un conteneur en mode interactif avec la l'option `-i` et `-t`
+```shell
+docker run -it ubuntu bash
+```
+
+La commande denarre un conteneur base sur une image ubuntu et ouvre un terminal interactif Bash a l'interieur du conteneur. On peux ensuite executer ses commandes dans ce terminal.
+
+#### Lancer un conteneur avec une variable env 
+```shell
+docker run -e MY_VAR=HelloDocker ubuntu
+```
+
+On passe dans le conteneur la variable d'environnement
+
+#### Lancer un conteneur en montant un volume 
+```shell
+docker run -v /host/data:/container/data ubuntu
+```
+
+On viens passer le volume `/host/data` dans le container dans le repo `/container/data` avec l'option `-v`
+
+---
+
+### docker start 
+Permet de démarrer des containers qui ont été arrêtés auparavant. Cela signifie que l'on peut réutiliser un container déjà créé sans avoir besoin de le recréer à chaque fois que nécessaire 
+
+```shell
+docker start [options] container [container...]
+```
+
+- `container`: le nom ou identifiant du container à lancer 
+```shell
+# lancer un container 
+docker start my_container 
+
+# lancer plusieurs container 
+docker start container1 container2
+
+# lance un container avec affichage des sortie 
+docker start -a my_container
+```
+
+---
+
+### docker stop 
+
+Cette commande permet d'arrpeter des container en cours d'exécution. Elle donne au conteneur le temps de s'arrêter correctement en envoyant le signal SIGNTERM et SIGKILL si le container ne s'arrête pas dans le délai imparti
+
+```shell
+docker stop [option] container [container...]
+
+# arrêter un container 
+docker stop my_container 
+
+# arrêter plusieurs container 
+docker stop container1 container2
+
+# arrête avec délais en seconde
+docker stop -t 30 my_container
+```
+
+---
+
+### docker restart 
+
+Cette commande permet de redémarrer  les conteneurs. Permet d'appliquer rapidement des changements ou résoudre des erreurs 
+```shell
+docker restart [options] container [container...]
+
+# redémarrer un container 
+docker restart my_container
+
+# redémarrer plusieurs container 
+docker restart container1 container2
+
+# redémarrer avec timeout en seconde
+docker restart -t 20 my_container
+```
+
+---
+
+### docker rm 
+Cette commande permet de supprimer des container arrêtés. Cela permet de libérer les ressources utilisées par le container.
+Avant la supression, il doit être arrêté.
+
+```shell
+# Suppression d'un conteneur avec les volumes
+docker rm -v old_service
+```
+
+---
+
+### docker ps 
+
+Cette commande affiche la liste des conteneurs en cours d'exécution et fournit des informations à leur sujet. 
+
+Elle affiche :
+- **Container ID**: identifiant du conteneur 
+- **Image**: image de base du conteneur 
+- **Command**: commande exécuté dans le container 
+- **Created**: durée depuis la création du container 
+- **Status**: état actuel du conteneur 
+- **Ports** : ports redirigés
+- **Name**: nom du conteneur 
+
+```shell
+docker ps [options]
+
+# utilisation de base 
+docker ps 
+
+# liste les conteneur arrête et en exe
+docker ps -a
+
+# filtrage par status 
+docker ps -f "status=exited"
+
+# filtrage par nom 
+docker ps -f "name=my_container"
+
+# filtrage par image
+docker ps -f "ancestor=nginx"
+
+# formatage de sortie 
+docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"
+
+# affiche les identifiant des conteneur en cours
+docker ps -q
+
+# affiche les conteneur démarré dans les 24h
+docker ps --filter "since=24h"
+
+# affiche les conteneur dans un état particulier et mise en forme de la sortie 
+docker ps -f "status=running" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+# recherche et suppression des conteneur arrêtés 
+docker rm $(docker ps -a -f "status=exited" -q)
+
+# génération rapoort d'état 
+if [ $(docker ps -q -f "name=my_container) ]; then
+	echo "Le conteneur est en cours exécution"
+else
+	docker start my_container
+fi
+```
+
+- **{{.ID}}**: identifiant du conteneur 
+- **{{.Image}**: image du conteneur 
+- **{{.Commande}}**: commande exécuté dans le conteneur 
+- **{{.CreatedAt}}**: date de création
+- **{{.RunningFor}}**: durée de fonctionnement
+- **{{.Status}}**: état actuel
+- **{{.Ports}}**: ports redirigés
+- **{{.Names}}**: nom du conteneur 
+
+--- 
+
+### docker logs 
+
+Affiche les logs d'un conteneur. 
+```shell
+docker logs [options] container
+
+# affiche touts les logs du container 
+docker logs my_container 
+
+# affichage des logs en temps réel 
+docker logs -f my_container 
+# suivre les flux de request et response
+docker logs -f web_server_container
+
+# limitation du nombre de ligne affiché 
+docker logs --tail 100 my_container
+
+# affiche les logs depuis un certain moment 
+docker logs --since "2023-07-20T15:00:00" my_container
+
+# -- until permet d'afficher des logs jusqu'à un moment précis
+docker logs --until "2023-07-20T16:00:00" my_container
+docker logs --until 10m my_container
+
+# afficher les message du flux de sortie standard
+docker logs --stdout my_container 
+# affiche les message du flus de sortie erreur 
+docker logs --stderr my_container 
+```
+
+### docker exec - Interaction avec un conteneur en cours d'exécution 
+
+Cette commande permet d'exécuter des commandes et d'ouvrir des sessions interactives dans un conteneur en cours d'exécution, de la même manière que si on travaillait directement avec un serveur.
+
+```shell
+docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
+```
+
+- `CONTAINER`: nom ou identifiant du container 
+- `COMMANDE`: commande à exécuter dans le conteneur 
+- `ARG...`: arguments pour la commande 
+
+```shell
+# exécute la commande ls /app dans le conteneur ce qui affiche le contenu du conteneur 
+docker exec my_container ls /app 
+
+# ouverture d'une session interactive avec un terminal bash 
+docker exec -it my_container /bin/bash
+
+# exécution de commande en mode détaché. Permet d'exécuter une commande sans avoir besoin d'attendre qu'elle se termine.
+# la commande vient crér un fichier vide dans le repertoire /app
+docker exec -d my_container touch /app/newFile.txt
+
+# transmettre une variable d'environnement 
+# la variable MY_VAR est transmises au conteneur et lance la commande env pour afficher toutes les variable env dans le conteneur
+docker exec -e MY_VAR=value my_container env
+
+# mise à jour des paquets et installation de vim dans le container 
+docker exec my_container apt-get update && apt_get install -y vim 
+```
+
+On pourras de cette manière créer des scripts pour automatiser des tâches : 
+```bash 
+#!/bin/bash 
+for container in $(docker ps -q); do 
+    docker exec $container uptime 
+done
+```
+Ce script exécute la commande `uptime` sur tout les conteneur en cours d'exécution et affiche leur durée de fonctionnement
+
+---
+
+## GESTION DES RESSOURCES DES CONTENEURS 
+
+Limiter les ressources des conteneurs permet de : 
+- éviter qu'un conteneur prenne toutes les ressources et ralentissent les autres conteneurs ou le système hôte 
+- optimiser la puissance du système 
+- réduis les soucis avec les conteneurs qui pourraient potentiellement surcharger le système 
+
+### Limiter l'utilisation du CPU 
+Par `CPU`, on entend un coeur de processur. Un processeur quadricoeur aura 4 `CPU`.
+
+#### --cpu-shares 
+Ce paramètre définit une valeur relative de priorité d'utilisation du CPU pour le conteneur. La valeur par défaut est de 1024.
+
+Cette valeur relative signfie qu'un conteneur avec `--cpu-shares=512` aura la moitié de la priorité sur un conteneur avec un `--cpu-shared=1024`.
+
+```shell
+# le second conteneur aura une priorité plus élevé que le premier 
+docker run -d --name low_priority_container --cpu-shares=512 nginx 
+
+docker run -d --name hight_priority_container --cpu-shares=1024 ngin 
+```
+
+#### --cpus 
+Ce paramètre définit le nombre de CPU accessible au conteneur. 
+```shell
+docker run -d --name limited_cpu_container --cpus="1.5" nginx 
+```
+
+#### --cpu-quota & --cpu-period
+Ces paramètres permettent de configurer avec plus de précision l'utilisation du CPU.
+`--cpu-period` définit un intervale de temps en ms, et `--cpu-quota` définit le temps maximum d'utilisateur sur cette période 
+
+```shell
+docker run -d --name custom_cpu_quota_container --cpu-period=5000 --cpu-quota=2500 nginx
+```
+
+### Limiter l'utilisateur de la mémoire 
+Permet de gérer la quantité de mémoire vide qu'un conteneur peur utiliser. 
+
+#### --memory
+Ce paramètre définit le plafond supérieur de mémoire qu'un conteneur peut utiliser. Si le conteneur dépasse cette limite, le système le termine.
+```shell
+docker run -d --name limited_memory_container --memory="512m" nginx
+```
+
+#### --memory-swap
+La Swap, ou espaces d'échanges est une zone sur le disque dur utilisé par l'OS pour étendre la RAM disponible. Lorsque la RAM est saturé, le système déplace temporairement des données inactives vers cette zone, libérant ainsi de la RAM pour les applications en cours d'exécution.
+
+
+Définit la limite totale pour la mémoire vide et la swap. Par exemple, avec `--memory` définit à 512 et `--memory-swap` à 1Gb, le conteneur pourras utiliser 512MB de mémoire vive et 512MB de swap supplémentaire
+```shell
+docker run -d -name swap_limited_container --memore="512m" --memory-swap="1g" nginx
+```
+
+On utilise `1g` de swap, car memory-swap doit être la somma des deux types de mémoires.
+
+#### --memory-swap=-1 
+Ce paramètre interdit l'utilisation de la swap 
+```shell 
+docker run -d --name no_swap_container --memory="512m" --memory-swap="-1" nginx 
+```
+
+---
+
+## PORT FORWARDING 
+
+La redirection de ports permet aux applications dans les conteneurs d'être accessible depuis l'extérieur. C'est essentiels pour se connecter au serveurs web, au base de données ou d'autres services lancés dans des conteneurs depuis la machine hôte ou d'autre réseaux.
+
+Par défaut, les conteneurs fonctionnent dans un réseau isolé. Pour rendre un service dans un conteneur accessible, Docker redirige les ports du conteneur vers les ports de la machine hôte.
+
+### Redirection de port 
+
+```shell 
+docker run -p [HOST_PORT]:[CONTAINER_PORT] [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+# redirection du port hôte 8080 vers le poort 80 du conteneur 
+docker run -d -p 8080:80 nginx
+```
+
+- `HOST_PORT`: port de la machine hôte par lequel le trafic va passer 
+- `CONTAINER_PORT` : port dans le conteneur où le trafic sera redirigé 
+- `OPTIONS`: paramètres supplémentaire pour configurer le conteneur 
+- `IMAGE` : image à partir de laquelle le conteneur sera créé. 
+- `COMMAND`: commande exécutée à l'intérieur du conteneur 
+- `ARG`: arguments pour la commande 
+
+### Redirection multiple des ports 
+Docker permet de rediriger plusieurs ports en même temps.
+
+Dans cette commande, le port 80 du conteneur est rediriger vers le 8080 de l'hôte et le port 443 du conteneur est redirigé vers le port 8443 de l'hôte.
+```shell 
+docker run -d -p 8080:80 -p 8443:443 nginx
+```
+
+### Redirection avec spécification d'adresse IP 
+On peut préciser une adresse IP à laquelle sera lié le port redirigé. C'est utile dans le cas ou l'hôte dispose de plusieurs interfaces réseaux et que l'on souhaite limiter l'accès au conteneur.
+
+Dans cet exemple, le port 80 du conteneur est rediriger vers le port 8080 uniquement sur l'interface `127.0.0.1` de l'hôte. L'accès au service sera possible uniquement depuis l'hôte 
+```shell
+docker run -d -p 127.0.0.1:8080:80 nginx
+```
+
+### Redirection d'une plage de ports 
+Dans cette exemple, on redirege les port de 7000 à 8000 du conteneur sur les ports correspondants de l'hôte.
+```shell 
+docker tun -d -p 7000-888:7000-8000 someimage
+```
+
+### Scénario pratique 
+
+```shell
+# accéder au serveur web 
+docker run -d -p 8080:80 nginx 
+
+# Accès base de donnée 
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecret postgres 
+
+# Tests et développement - l'application est lancé sur les port 8080 & 8443 pour pouvoir y accéder depuis la machine hôte via le navigateur
+docker run -d -p 8080:80 -p 8443:443 myapp 
+```
+
+---
+
+## VOLUMES 
+Le montage des volumes permet aux conteneurs de manipuler des données sur la machine hôte. Cela permet de conserver les données à long terme, partager entre les conteneurs et effectuer des sauvegardes ou restaures les données.
+
+Les volumes sont un moyen de conserver des données afin qu'elles soient indépendantes des conteneurs. Même si le conteneurs est supprimé, les données sont stockées dans les volumes.
+Ces volumes peuvent être connectés aux conteneur, ce qui permet de stocker les données séparément et de les réutiliser.
+
+### Types de volumes 
+
+#### Anonymous Volumes 
+- Crées automatiquement par Docker si aucun volumes n'est indiqué pour un conteneur 
+- Utilisés pour le stockage temporaire de données 
+
+#### Named Volumes 
+- Créer et gérés par Docker 
+- Peuvent être connectés à plusieurs conteneurs et sont conservés même après leurs suppréssions ou arrêts 
+
+#### Bind Volumes 
+- Relient un répertoire de la machine hê à un répertoire dans le conteneur  
+
+### Utilisation
+
+```shell 
+docker run -v <host_path>:<container_path> [OPTIONS] IMAGE [COMMAND] [ARG...]
+```
+
+#### -v - Bind Mount 
+
+`-v` ou `--volume` est utilisé pour créer un volume ou un `Bind Mount`.
+```shell 
+docker run -d -v /host/data:/container/data nginx
+```
+
+#### --mount
+Fournit une méthode de montage plus fléxible et détaillée, prenant en charge des paramètres supplémentaires 
+```shell 
+docker run -d --mount type=bind, source=/host/data,target=/container/data nginx
+```
+
+### Création et utilisation des volumes 
+
+#### Création d'un volume nommé 
+Les volumes nommés sont crées et gérés par Docker. Ils sont conçus pour le stockage à long terme des données qui doivent être conservées entre les redémarrages ou la supressions des conteneurs 
+
+```shell
+docker volume create my_volume 
+```
+
+##### Lancement d'un conteneur avec montage de volume 
+Dans cet exemple, le volume `my_volume` est monté dans le répertoire `/data` à l'intérieur du conteneur `my_container`. Toutes les données écrites dans `/data` seront sauvegardées dans le volume et resteront accessibles même après la supression du conteneur 
+```shell 
+docker run -d -v my_volume:/data --name my_container nginx 
+```
+
+#### Volumes anonymes 
+Ils sont automatiquement crées par Docker et associés à un conteneur spécifique. Ils sont utiles pour les données temporaires qui ne doivent pas être conservées après la supression du conteneur.
+
+Dans cet exemple, Docker créer automatiquement un volume anonyme et monte dans le répertoire `/data` dans le conteneur 
+```shell 
+docker run -d -v /data --name my_container nginx 
+```
+
+#### Bind Volume 
+Ces volumes permettent de monter les répertoires de l'hôte dans les conteneurs. Ils permettent de partager des données entre les conteneurs et le système hôte. 
+Ces volumes sont utilisé durant le développement lorsque le code source est stocké sur l'hôte.
+
+Dans cet exemple, le répertoire `/host/data` de l'hôte est monté dans le repertoire `/container/data` dans le conteneur `my_container`.
+```shell 
+docker run -d -v /host/data:/container/data --name my_container nginx 
+```
+
+### Exemples d'utilisation des volumes 
+
+#### Sauvegarde des données de la base de données 
+L'utilisation de volumes pour les BDD permet de conserver les données même lors du redémarrage et des mise à jours de conteneur. 
+
+Dans cet exemple, les donnée PG sont sauvegardées dans le volumes `db_data`, ce qui garantit leur conservation en cas de reload ou suppression du conteneur.
+```shell 
+docker volume create db_data
+docker run -d -v db_data:/var/lib/postgresql/data --name postgres_container postgres 
+```
+
+#### Partage de données entre conteneur 
+Il est parfois nécessaire de partager des données entre plusieurs conteneurs. 
+
+On vient créer un volume et lancer deux conteneurs qui utiliseront ce volume. Les deux conteneurs auront accès aux données du volume `shared_data` ce qui leur permet d'échanger des données 
+```shell 
+docker volume create shared_data 
+docker run -d -v shared_data:/data --name container1 nginx 
+docker run -d -v shared_data:/data --name container2 nginx 
+```
+
+#### Développement et test 
+Lorsque l'on travail sur des projets, on utilise des répertoire montés pour partager le code entre le conteneur et l'hôte. Cela permet de modifier le code code sur l'hôte et au conteneur d'utiliser immédiatement les mises à jour.
+
+Dans l'exemple, le répertoire `/path/to/source` sur l'hôte est monté dans le répertoire `/app` dans le conteneur. Le conteneur peut accéder au code source du projet.
+
+```shell 
+docker run -d -v /path/to/source:/app --name dev_container node 
+```
+
+### Gestion des volumes 
+
+#### volume ls - Affichage des volumes 
+Affiche une liste de tous les volumes disponible sur l'hôte 
+```shell 
+docker volume ls
+```
+
+#### volume inspect - Afficher des informations sur le volume 
+Cette commande permet d'obtenir des détails sur le volume : emplacement sur le system file de l'hôte et des infos sur le conteneur qui utilisent ce volume
+```shell 
+docker volume inspect my_volume 
+```
+
+#### volume rm - Supprimer un volume 
+Cette commande supprime un volume. Si ce volume est utilisé, la commande échouera 
+```shell 
+docker volume rm my_volume
+```
+
+### Sauvegarde des données 
+Pour garantir la sécurité des données, il est important de créer des copies de sauvegarde des volumes et de les restaure si nécessaire.
+
+#### Sauvegarde d'un volumes 
+Dans cet exemple, le contenu du volume `my_volume` est archivé dans un fichier `my_volume_backup.tar.gz` qui est suavegardé dans le répertoire `/backup` sur l'hôte 
+```shell 
+docker run --rm -v my_volume:/volume -v /backup:/backup busybox tar czf /backup/my_volume_backup.tar.gz /volume
+```
+
+#### Restauration d'un volume 
+Cet exemple vient restaurer le volume `my_volume` à partir de la sauvegarde qui est stockée dans le fichier 
+```shell 
+docker run --rm -v my_volume:/volume -v /backup:/backup busybox tar xzf /backup/my_volume_backup.tar.gz -C /volume
+```
+
+---
+
+## DOCKER IMAGE 
+
+Templates immuable utilisé pour créer des conteneurs. Ils contients tous les composants nécessaire pour exécuter une application dans un environnement isolé. 
+Lorsque qu'un conteneur est lancé, Docker crée une instance de l'image et la démarre.
+
+- **Immutable**: tout modification dans un conteneur n'affecte pas l'image d'origine. Pour changer le contenu d'une image, il faut en créer une nouvelle.
+- **Structure en couche**: les images sont constituées de couches. Chaque couche représente un changement par rapport à la précédente. Cela permet d'utiliser efficacement l'espace en réutilisant les couches.
+- **Identifiaction**: chaque image possède son identifiant et peut avoir un ou plusieurs tags.
+
+### Structure d'une images 
+
+Les images ont une structure en couches, où chaque couches est un system de fichier. Ces couches sont stockées dans le cache Docker, et peuvent être réutilisés par d'autre images.
+Par exemple, une première couche peut être le système d'exploitation, la deuxième Python et la troisième une application.
+
+Composant de la structure : 
+
+- **Base Layer**: couche initiale de l'image, souvent utilisé comme base pour créer d'autres images. Par exemple Ubuntu, Alpine Linux ...
+- **Intermediate Layers**: couches crées à partir des commandes exécutées dans un Dockerfile (installation de paquets, copie de fichier). Chaque couche ajoute des modifications à la précédente.
+- **Final Layer**: la dernière couche, créer à partir des instruction `CMD`, `ENTRYPOINT` ou des modifications dans le conteneur. Cette couche est temporaire et n'existe que pendant l'exécution du conteneur.
+
+### Fonctionnement des couches 
+
+Lorsque docker crée une image, il exécute chaque instruction du Dockerfile et ajoute une nouvelle couche pour chaque changement.
+
+Exemple de création de couches : 
+
+- **Image de base**: on commence avec une image de base, par exemple `ubuntu:20.04`.
+- **Installation de paquet**: la commande `RUN apt-get update && apt-get install -y python3` vient créer une nouvelle couche avec python d'installé 
+- **Copie de fichiers**: la commande `COPY . /app` ajoute les fichiers de l'application dans une nouvelle couche 
+- **Définir un repertoire de travail** : la commande `WORKDIR /app` vient créer une couche qui définit le repertoire de travail pour les commandes suivante
+
+Avantage d'utiliser des couches : 
+
+- **Réutilisation** : les couches peuvent être réutilisées par d'autres images. Par exemple, si deux images utilisent la même couche de base, Docker la télécharge une fois, économisant de l'espace et du temps 
+- **Cache**: Docker met en cache les couches, ce qui accélère le processus de création des images. Si une couche n'as pas changé, Docker l'utilise depuis le cache au lieu de reconstruire.
+- **Modularité**: la structure en couche permet de développer des images de manière modulaire. On peut mettre à jour ou modifier des couches individuelles sans affecter toute l'image 
+
+### docker images 
+Cette commande affiche la liste des images stockées sur la machine. Elle montre des données telles que le nom du repository, le tag, l'identifiant de la machine, la date de création et la taille. 
+
+```shell 
+docker image [OPTIONS] [REPOSITORY[:TAG]]
+
+# lister les images stockées
+docker images 
+
+# filtrer par repository
+docker images nginx 
+
+# filtrer par tag 
+docker images ubuntun:20.04
+
+# afficher toutes les images 
+docker images -a 
+
+# formater la sortie 
+docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}"
+```
+
+- `OPTION`: les paramètres supplémentaires pour filtrer et formater la sortie 
+- `REPOSITORY:TAG`: otpionnel, filtre par le nom du repo et/ou le tag 
+
+### docker rmi 
+Cette commande permet de supprimer des images Docker. Cela permet de libérer de l'espace et garder le système en ordre.
+
+```shell 
+docker rmi [OPTIONS] IMAGE [IMAGE...]
+
+# supprimer une image 
+docker rmi nginx 
+
+# supprimer une image avec son id 
+docker rmi <id>
+
+# suppression forcé => si un conteneur bloque l'image 
+docker rmi -f myapp:1.0 
+
+# supression multiple 
+docker rmi nginx ubuntu:20.04 myapp:1.0 
+
+# supprimer les images inutilisés 
+docker image -q 
+docker rmi $(docker images -q)
+
+# supprimer les images sans tags 
+docker rmi $(docker images -f "dangling=true" -q)
+```
+
+- `OPTIONS`: paramètre supplémentaire pour gérer le processus de suppression 
+- `IMAGE` : nom, tag, ou identifiant de l'image à supprimer 
+
+---
+
+## DOCKER BUILD 
+
+Cette commande permet de créer une image Docker depuis un Dockerfile. Elle prends les instruction du fichier, les exécute étape par étape, formant une image à partir des couches. 
+Elle assemble l'image depuis le Dockerfile et du contexte de build. Le contexte de build est constitué des fichiers que Docker utilise pour créer une image. Cela peut être un dossier sur la machine ou d'un repo Github.
+
+```shell 
+docker build [OPTIONS] PATH | URL | - 
+
+# utilise le dockerfile du repotoire actule et créer une image avec un tag latest 
+docker build -t myimage:latest 
+```
+
+- `PATH`: chemin vers le repertoire contenant le Dockerfile et le contexte de build 
+- `URL`: url d'un repo distant 
+- `-` : lecture du dockerfile depuis l'entrée standard (stdin)
+
+### -t 
+Le paramètre `-t` ou `--tag` permet d'attribuer un nom et un tag à l'image créée.
+```shell 
+docker build -t myimage:latest .
+```
+
+### -f 
+Le paramètre `-f` ou `--file` permet de spécifier un Dockerfile alternatif s'il diffère du dockerfile standard 
+```shell 
+docker build -f Dockerfile.dev -t myimage:dev .
+```
+
+### --build-arg 
+Ce paramètre est utilisé pour transmettre des arguments de construction définis dans le Dockerfile à l'aide de la directive `ARG`
+```shell 
+docker build --build-arg APP_VERSION=1.0 -t myimage:1.0 .
+```
+
+### --no-cache 
+Permet d'exécuter une création sans utiliser le cache. Permet de s'assurer que toutes les commandes sont exécutées à nouveau 
+```shel 
+docker build --no-cache -t myimage:latest .
+```
+
+### --target 
+Permet de spécifier une étape cible dans une création multi-étape 
+```shell 
+docker build --target builder -t myimage:builder .
+```
+
+### --rm 
+Indique à Docker de supprimer les conteneurs intermédiaire avec une création d'image réussies (activé par défaut )
+```shell 
+docker buld --rm -t myimage:latest .
+```
+
+### Build avec argument 
+On vient créer un dockerfile permettant de passer des variables 
+```dockerfile 
+FROM node:14 
+
+ARG APP_VERSION 
+ENV APP_VERSION=${APP_VERSION}
+
+WORKDIR /app 
+
+COPY package.*.json ./ 
+RUN npm install 
+
+COPY . . 
+
+EXPOSE 3000 
+
+CMD ["node", "app.js"]
+```
+
+On lance ensuite cette commande pour passer la variable pendant le build 
+```shell 
+docker build --build-arg APP_VERSION=1.0 -t mynodeapp:1.0
+```
+
+Avec cette commande, l'argument est passé dans le Dockerfile et permet de spécifier la version de l'app pendant la construction.
+
+### Construction multi-étape 
+La construction multi-étapes est utilisée pour créer des images qui incluent seulement les composants nécessaires. Cela permet de réduire la taille de l'image finale. 
+
+```dockerfile 
+# Etape de construction 
+FROM node:14 AS builder 
+
+WORKDIR /app 
+
+COPY package.*.json ./ 
+RUN npm install 
+
+COPY . . 
+RUN npm run build 
+
+# former l'image final avec un ensemble minimal de fichiers 
+FROM nginx:alpine 
+
+COPY --from=builder /app/buil /usr/share/nginx/html 
+```
+
+On peut ensuite lancer la commande pour builder l'image. La première image est créer, puis ensuite l'application. Après la construction, l'application est transférée dans l'image final, qui utilise Nginx pour servir le contenu prêt. 
+
+---
+
+## DOCKERFILE 
+Fichier texte qui contient une série de commande que Docker utilise pour construire une image. Il sert de recettte décrivant comment l'image doit être assemblée, de la couche de base à l'état final. 
+
+Les commandes doivent être idempotentes, leur exécution produit toujours le même résultat.
+
+Les commandes sont exécutées de haut en bas. Chaque commande crée un nouvelle couche dans l'image.
+
+Presque chaque instruction ajoute une nouvelle couche à l'image. Ces couches sont mises en cache, ce qui permet d'optimiser le processus de construction.
+
+
+### FROM 
+Permet de définir l'image de base à partir de laquelle sera créée la nouvelle image. C'est la première instruction que l'on retrouve dans le dockerfile, et détermine le point de départ pour construire l'image 
+```dockerfile 
+FROM <image>[:<tag] [AS <name>]
+```
+
+- `<image>` : nom de l'image de base 
+- `<tag>` : optionnel; définit la version de l'image de base à utiliser. Par défaut `latest`
+- `AS <name>`: optionnel; attribution d'un nom pour cette étape de build (utilisé dans le multi-stage build)
+
+```dockerfile 
+# image de base ubuntu
+FROM ubuntu:20.04 
+
+# image Node 
+FROM node:14 
+
+# multi stage build pour optimisation 
+FROM node:14 AS builder 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install
+COPY . . 
+RUN npm run build 
+
+FROM nginx:alipine
+# ici on indique que l'on transfert uniquement le résultat final (le dossier build) du premier build vers le second
+COPY --from=builder /app/build /usr/share/nginx/html 
+```
+
+Dans l'exemple, on vient créer deux image. 
+La premiere est utilisée pour construire l'application, et la seconde sert à créer un serveur qui vient servie les fichiers statiques.
+
+Avec le multi-stage, l'image final contient seulement le minimum de fichiers et programmes ce qui la rend légère et plus rapide à envoyer.
+
+Dans le premier "chantier", on viens construire une image avec Node. Dans le second, on repart d'un nginx et on lui passe le résultat de la premiere image.
+Une fois construit `Node` n'existe plus dans l'image que l'on déploie. On obtient juste un serveur nginx qui sert les fichiers statiques. Cela permet d'obtenir des images de production performantes et sécurisée
+
+### RUN 
+Cette instruction permet d'exécuter des commandes dans le conteneur et créer une nouvelle couche dans l'image. 
+
+Cette instruction est utilisée pour installer des packages, configurer l'environnement et exécuter d'autres commandes nécessaires à la prépration de l'image. 
+
+```dockerfile 
+RUN <command>
+
+# installation dans une image ubuntu
+RUN api-get update && apt-get install -y curl git 
+
+# compilaton de code 
+RUN gcc -o myapp myapp.c 
+```
+
+On peut venir combiner les commandes pour diminuer la taille de l'image et accélérer la construction. Il est recommandé de combiner plusieurs commandes dans une seule instruction `RUN`.
+
+```dockerfile 
+RUN apt-get update \
+    && apt-get install -y curl git \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+### COPY 
+Cette instruction copie des fichiers et répertoires depuis le contexte du build vers le system file du conteneur. Cela permet de transférer du code source, des fichiers de configuration et d'autres ressources dans le conteneur.
+
+```dockerfile 
+COPY <src> <dest>
+```
+
+- `src`: chemin vers les fichiers ou répertoire dans le contexte du build 
+- `dest`: chemin de destination dans le conteneur 
+
+```dockerfile 
+# copie du repertoire actuel dans le repo de travail du conteneur 
+COPY . /app 
+
+# copie de fichier individuel 
+COPY package.json /app/package.json 
+COPY server.js /app/server.js 
+```
+
+##### .dockerignore 
+Ce fichier permt d'exclure les fichiers inutiles du processus de copie. Il fonctionne de la même manière qu'une `.gitignore`
+```.dockerignore 
+node_modules 
+dist 
+*.log 
+```
+
+### CMD 
+Cette instruction définit une commande qui sera exécutée au démarrage du conteneur. Contrairement à `RUN` qui s'exécute au moment du build, cette instruction s'exécute lorsque le conteneur démarre à partir de l'image créée.
+
+```dockerfile 
+# préférable pour garantir un bon traitement des signaux 
+CMD ["executable", "param1", "param2"]
+# forme shell qui exécute la commande dans un shell 
+CMD command param1 param2
+
+# lancement d'une application Node.js 
+CMD ["node", "app.js"]
+
+# lancement d'un script shell 
+CMD /usr/bin/myscript.sh 
+```
+
+#### Différence entre ENTRYPOINT et CMD  
+
+`CMD` définit une commande par défaut, qui peut être remplacée au démarrage du conteneur. `ENTRYPOINT` définit une commande immuable qui sera toujours exécutée au démarrage du conteneur. 
+
+```dockerfile 
+ENTRYPOINT ["python", "script.py"]
+CMD ["arg1"]
+```
+
+Dans l'exemple, `ENTRYPOINT` lance le script Python, alors que `CMD` fournit des arguments qui peuvent être modifés au démarrage du conteneur.
+
+
+### Instruction principale 
+
+- **MAINTAINER**: spécifie l'auteur du Dockerfile 
+- **RUN**: exécute des commandes dans le conteneur et crée une nouvelle couche 
+- **ADD**: copie des fichiers et répertoires, prends en charge l'extraction de construction des archives et le téléchargement de fichiers à partir d'URL 
+- **WORKDIR**: définit le répertoire de travail pour les commande suivantes 
+- **ENV**: configure des variables d'environnement 
+- **ENTRYPOINT**: spécifie une commande exécutée au démarrage du conteneur, avec la possibilité de passer des arguments 
+- **EXPOSE**: indique les ports utilisés par le conteneur 
+- **VOLUME** : crée un point de montage pour les volume externes 
+
+### Création d'un dockerfile 
+
+On souhaite crée un Dockerfile pour une application Node js. 
+
+On commnce par créer un nouveau fichier `Dockerfile` à la racine du projet : 
+```dockerfile
+# on utilise une image de base Node 
+FROM node:14 
+
+# on configure le repertoire de travail 
+WORKDIR /app 
+
+# on copie le package.json et le package-lock.json 
+COPY package*.json ./ 
+
+# on installe les dépendances à partir du package.json 
+RUN npm install 
+
+# on copie les fichiers du projets dans le workdir du conteneur 
+COPY . . 
+
+# on expose le port que l'application va utiliser 
+EXPOSE 3000 
+
+# on définit la commande pour démarrer l'app 
+CMD ["node", "app.js"]
+```
+
+Une fois le Dockerfile temriné, on vient construire l'image : 
+```shell 
+docker build -t my-node-app .
+```
+
+On peut ensuite lancer le conteneur 
+```shell 
+docker run -d -p 3000:3000 my-node-app 
+```
+
+### Définir des variables d'environnement 
+On peut venir définir des variables d'environnement dans le dockerfile
+```dockerfile
+ENV NODE_ENV=production 
+```
+
+### Utiliser plusieurs commandes RUN 
+Il est parfois nécessaire de combiner plusieurs commandes dans une instruction `RUN` pour réduire le nombre de couches, diminuer la taille de l'image et accélérer le build 
+```dockerfile
+RUN api-get update && apt-get install -y \
+    curl \
+    git \ 
+    && rm -rf /var/lib/apt/lists/*
+```
+
+L'utilisation de `\` permet d'écrire une commande sur plusieurs lignes. Elle sera interprété comme une seule commande. 
+
+L'opérateur `&` permet d'exécuter des commande successivement.
+
+### Optimisation de l'ordre des commandes 
+Pour une utilisation efficase du cache Docker, on commence par copier les fichiers qui changent rarement (par exemple `package.json`), et on installe les dépendances avant d'ajouter le reste des fichiers du projet.
+
+### Dockerfile avancée 
+```dockerfile
+# on utilise une image de base minimalise 
+FROM node:14-alpine
+
+# définition du repo de travail 
+WORKDIR /usr/src/app 
+
+# copie des package et installation des dépendances 
+COPY package.*.json ./ 
+RUN npm install --only=production 
+
+# copi du code source 
+COPY . . 
+
+# spécification du port 
+EXPOSE 8080 
+
+# définition de la variable env 
+ENV NODE_ENV=production 
+
+# lancement de l'app 
+CMD ["node", "server.js"]
+```
+
+---
+
+### Optimisation du Dockerfile 
+
+#### Utilisation d'image de base minimale 
+Le choix de l'image de base influence la taille final de l'image Docker. L'utilisation des images de base minimale comme `alpine` permet de réduire la taille de l'image. 
+```dockerfile 
+# utilisation d'ubuntu alpine 
+FROM alpine:3.12
+```
+
+#### Minimisation du nombre de layers 
+Chaque instruction dans un Dockerfile ajoute une nouvelle couche à l'image. Combiner plusieurs commandes dans une seule instruction `RUN` réduit le nombre de couches, ce qui permet de réduire la taille globale.
+
+```dockerfile 
+# Avant optimisation 
+RUN apt-get update 
+RUN apt-get install -y curl 
+RUN apt-get install -y git 
+RUN rm -rf /var/lib/apt/lists/* 
+
+# Après optimisation 
+RUN apt-get update && apt-get install -y curl git && rm -rf /var/lib/apt/lists/*
+```
+
+La suppression du cache du gestionnaire de paquets réduit la taille de l'image en supprimant les fichiers temporaire créées pendant l'installation 
+
+#### Utilisation du .dockerignore 
+Ce fichier permet d'exlure des fichiers et répertoires inutile du contexte de construction, réduisant la taille de l'image et accélérant le processus de construction 
+```.dockerignore
+node_modules 
+dist 
+*.log 
+Dockerfile*
+.dockerignore 
+```
+
+#### Construction multi-stage 
+La construction multi stage permet d'utiliser plusieurs images intermédiaire pour créer une image finale légère qui contient uniquement les fichiers et dépendances nécessaire 
+
+```dockerfile 
+FROM node:14 AS builder 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install 
+COPY . . 
+RUN npm run build 
+
+# étape finale 
+FROM nginx:alpine 
+COPY --from=builder /app/build /usr/share/nginx/html 
+```
+
+#### Optimisation de l'installation des paquets 
+L'installation uniquement des paquets nécessaire et utiliser les options des gestionnaires de paquets pour une installation minimale permet de réduire la taille de l'image. 
+
+```dockerfile 
+RUN apt-get update && apt-get install -y --no-install-recommends curl git && \ 
+    run -rf /var/lib/apt/lists/* 
+```
+
+#### Compression et minimisation des données 
+L'utilisation d'outils pour compresser et minimiser les données aide à réduire la taille de l'image 
+```dockerfile 
+RUN gzip /path/to/large/file.log
+```
+
+#### Supression des lib et dépendances inutilisées 
+Supprimer les blibliothèque inutile après l'installation des paquets nécessaire aide à maintenir l'image légère 
+```dockerfile 
+RUN pip install --no-cache-dir -r requirement.txt
+```
+
+### Choix d'une image de base 
+
+Lors du choix de l'image de base, il faut prendre en compte plusieurs factures 
+ 
+- **Taille de l'image**: les images plus petites se téléchargent plus rapidement, occupent moins d'espace disque et peuvent accélérer le déploiement des applications 
+- **Support et mise à jour**: l'utilisation d'images officielles avec des mises à jour régulières offre un niveau de sécurité supérieur, des correctifs de vulnérabilités et une stabilité de fonctionnement 
+- **Compatibilité**: l'image de base doit inclure les lib et dépendances nécessaire à l'application pour fonctionner correctement 
+
+#### Image de base populaire 
+
+- **Alpine Linux** : image très légère idéale pour des applications qui nécessite un système d'expoitation minimal. 
+- **Debian/Ubuntu**: image complète qui incluent des outils et lib. Convient aux application qui nécessite un environnement complet ou une lib Linux standard 
+- **Offcial Language Image**: images officielle pour les language de dev. Elles contiennent tout l'environnement nécessaire pour développer et exécuter des applications dans le langague correspondant.
+
+#### Configuration de l'image de base 
+Après avoir choisis l'image, il faut venir la configurer en fonction des besoin de l'application. La configuration inclut l'installation des package, la copie des fichiers de l'appli et la configuration de l'environnement.
+
+```dockerfile 
+# image de base alpine linux 
+FROM alpine:3.12 
+# installation des package 
+RUN apk add --no-cache python3 py3-pip 
+# configuration repo de travail 
+WORKDIR /app 
+# copie des fichiers de l'app 
+COPY . . 
+# installation des dépendances 
+RUN pip3 install -r requirements.txt 
+# spécifie la commande pour lancer l'app 
+CMD ["python3", "app.py"]
+```
+
+### Tag et versions des images 
+
+Le tagging est le processus d'attribution d'un tag à une image. Cela permet de simplifier la gestion des versions.
+
+Le taf permet d'identifier une version spécifique d'une image. Ils permettent de suivre les changements plus facilement et aident à choisir les bonnes versions pour différents environnement.
+
+#### Attribuer un tag 
+
+```shell 
+# attribution du tag
+docker build -t myapp:1.0 .
+
+# tag multiple 
+docker tag myapp:1.0 myapp:latest 
+
+# précision du tag lors du lancement du conteneur 
+docker run -d myapp:1.0
+```
+
+#### Tagging 
+
+##### Label sémantique 
+
+La version sémantique (Semantic Versioning) est une pratique standard d'attribution de versions qui permet d'aider à comprendre le niveau des changements dans une image. 
+
+On utilise le format `<major>.<minor>.<patch>` ou : 
+ 
+- `major`: changement majeurs, incompatibles avec les versions précédents 
+- `minor` : nouvelle fonctionnalités, compatible avec les versions précédentes 
+- `patch`: correction de bugs et autre modifcations mineures 
+
+```shell 
+dockeer build -t myapp:2.1.3 
+```
+
+##### Label d'état 
+
+On peut également utiliser les labes pour indiquer l'état d'une image (beta, alpha, stable, prod)
+```shell 
+docker build -t myapp:1.0-beta .
+```
+
+##### Mise à jour des tags 
+Lorsque l'on vient mettre à jour une image, il est conseillé de modifier les tags pour faciliter le suivi des changements. Le tag `latest` est souvent utilisé pour indiquer la dernière version d'une image 
+
+```shell 
+docker build -t myapp:2.0 .
+docker tag myapp:2.0 myapp:latest 
+```
+
+#### Utilisation des tags 
+Lors du développement, on utilise généralement des images avec des tags indiquant la versin actuelle ou l'état de développement 
+```shell
+docker build -t myapp:dev .
+docker run -d myapp:dev 
+```
+
+Dans les environnement de test, on utilise des images avec des tags qui indiquent des versions spécifiques ou un état 
+```shell 
+docker build -t myapp:1.1-beta .
+docker run -d myapp:1.1-beta 
+```
+
+Pour les environnement de production, il est important d'utiliser des versions stables et validées des images, indiquées par des tags ou des version sémantique 
+```shell
+docker build -t myapp:1.1.0-stable .
+docker run -d myapp:1.1.0-stable 
+```
+
+#### Best pratique 
+
+- Toujours suivre le versionning sémantique pour toutes les images. Cela permet de distinguer clairement les niveaux de modifications et facilite la gestion des versions 
+- Utiliser des tags qui reflète l'état ou l'objetif de l'image 
+- Le tag `latest` peut être utile pour le dev et les tests mais en production, il vaut mieux utiliser des versions spécifiques pour éviter des modification imprévisible 
+- Documenter comment et pourquoi les tags sont utilisés dans le projet. 
+
+Exemple de flow 
+
+1. Création et assignations des tags 
+```dockerfile 
+# version 1.0.0 
+FROM node:14 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install 
+COPY . . 
+EXPOSE 3000 
+CMD ["node", "app.js"]
+```
+
+2. Construction et tag 
+```shell 
+docker build -t myapp:1.0.0.0 .
+docker tag myapp:1.0.0 myapp:stable 
+```
+
+3. Mise à jour de l'image et tag 
+```dockerfile 
+# Dockerfile version 1.1.0 
+FROM node:14 
+WORKDIR /app 
+COPY package.*.json ./ 
+RUN npm install 
+COPY . .
+RUN rm -rf /app/tests /app/docs 
+ENV NODE_ENV=production 
+EXPOSE 3000 
+CMD ["node", "app.js"]
+```
+
+4. Build et tag 
+```shell 
+docker build -t myapp:1.1.0 
+docker tag myapp:1.1.0 myapp:latest 
+```
+
+---
+
+## DOCKER COMPOSE 
+
+C'est un outil qui permet de définir et lancer des application Docker multi-conteneurs. On lui décrit l'architecture de l'application, et lui s'occupe de lancer l'application avec les différents conteneurs.
+
+Il permet de définir tous les composant d'une application dans un fichier (serveur web, bdd, cache, autres service). 
+
+La configuration est écrite dans un fichier `docker-compose.yaml` ou `compose.yaml`.
+
+```shell 
+# lancer l'application 
+docker compose up 
+
+# arrêter l'application => supprime également les conteneurs, réseaux et volumes 
+docker compose down 
+
+# voirs les logs 
+docker compose logs 
+
+# redémarrer les services 
+docker compose restart
+```
+
+### Ajouter Docker au groupe 
+En faisant cela, il n'est plus nécessaire d'ajouter `sudo` à chaque fois que l'on souhaite lancer une commande Docker. 
+```shell 
+sudo usermod -aG docker $USER
+```
+
+### Création du docker compose 
+
+Dans le fichier `compose.yaml`, on vient définir et gérer les applications multi-éléments. On vient décrire les conteneurs (services) qui doivent être lancés, comment ils interagissent entre eux, et quelles ressources ils nécessient.
+
+Ce fichier contients plusieurs sections, décrivant différents aspects de la configuration d'une application. 
+
+#### version 
+Définis la version de la syntaxe utilisées dans le fichier. Déprécié, il n'est plus nécessaire de le définir. 
+
+#### service 
+Définit les conteneurs qui doit être créer et lancer. Chaque service représente un conteneur individuel et une configuration spécifique
+```yaml 
+services: 
+    web:
+        image: nginx:latest 
+        ports:
+            - "80:80"
+    
+    db: 
+        image: mongo:latest 
+        volumes:
+            - mongo-data:/data/db 
+```
+
+Dans ce fichier, deux services sont définis : `web` et `db`. 
+
+#### volumes 
+Utilisé pour définit les volumes qui peuvent être attachés au conteneurs pour le stockage des données. Permet de préserver les données lorsque les conteneurs sont redémarrés 
+
+#### network 
+Permet de définir les réseaux personnalisés où travailleront les conteneurs. Cela permet d'assurer la configuration des connexions réseaux. 
+Si aucun n'est définis, Docker créer un réseau par défaut, et tous les services y seront connectés.
+
+#### image 
+Permet de spécifier l'image utilisée pour créer le conteneur 
+```yaml 
+services:
+    web: 
+        image: nginx:latest 
+```
+
+#### build 
+Permet d'indiquer le chemin vers le Dockerfile qui doit être utilisé pour construire l'image 
+
+```yaml 
+services:
+    app:
+        build: ./app 
+```
+
+#### ports 
+Permet de définir les ports qui doivent être ouverts et redirigé vers la machine hôte vers le conteneur 
+```yaml 
+services:
+    web: 
+        image: nginx:latest 
+        ports: 
+            - "80:80"
+```
+
+#### volumes 
+Permet de monter les volumes dans le conteneurs, permettant de conserver les données entres les redémarrage des conteneurs 
+```yaml 
+services:
+    app: 
+        image: myapp:latest 
+        environnement:
+            - NODE_ENV=production 
+            - API_KEY=123456789
+```
+
+#### depends_on 
+Indique si le service dépend d'un autre service et démarre ensuite 
+
+```yaml 
+services:
+    web:
+        image: nginx:latest 
+        depends_on:
+            - db 
+    
+    db:
+        image: mongo:latest 
+```
+
+#### command 
+Permet de redéfinir la commande exécutée lors du démarrage du conteneur 
+```yaml 
+services:
+    app:
+        image: myapp:latest 
+        command: python app.py
+```
+
+#### networks
+Permet de connecter un service à un ou plusieurs réseaux 
+```yaml 
+services:
+    web: 
+        image: nginx:latest 
+        networks:
+            - front-end 
+
+    db: 
+        image: mongo:latest 
+        networks:
+            - back-end
+
+```
+
+#### Exemple 
+
+```yaml 
+version: '3.8'
+
+services:
+    web: 
+        image: nginx:latest 
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf 
+        depends_on:
+            - app 
+        networks:
+            - front-end 
+
+    app:
+        build: ./app 
+        volumes:
+            - ./app:/usr/usr/app 
+        environnement:
+            - NODE_ENV=production 
+        networks:
+            - front-end 
+            - back-end 
+
+    db:
+        image: mongo:latest 
+        volumes:
+            - mongo-data:/data/db 
+        networks:
+            - back-end 
+
+volumes:
+    mongo-data:
+
+networks:
+    front-end:
+    back-end:
+```
+
+### docker compose up
+
+Cette commande permet de lancer les conteneurs définis dans le fichier `compose.yml`. Elle lance tous les services spécifié dans la configration, configure les réseaux et monte les volumes. 
+Tous les services sont lancés en parallèle et affiches les logs de tous les conteneurs lancée en temps réel.
+
+```shell 
+docker compose up [options] [SERVICE...]
+```
+
+- `options` : paramètre supplémentaire pour configurer le composertement 
+- `services`:  les services à lancer. Si pas spécifie, tous les services sont lancés.
+
+```shell 
+# lance tous les services
+docker compose up  
+
+# lance un service spécifique 
+docker compose up web 
+
+# lance en mode détaché 
+docker compose up -d 
+```
+
+#### --build 
+Force le Docker compose à reconstruire les images avant de démarrer les conteneurs. A utiliser lorsque le code source, le dockerfile ou une dépendances à été ajouter dans le conteneur. 
+
+```shell 
+docker compose up --build 
+```
+
+#### --force-recreate 
+Force la reconstruction des conteneurs, même si la configuration n'a pas changé 
+
+```shell 
+docker compose up --force-recreate
+```
+
+#### --no-recreate 
+Supprime les conteneurs qui ne sont pas définis dans le `compose` actuel mais qui ont été crées par des exécutions précdente. 
+
+```shell 
+docker compose up --remove-orphans
+```
+
+#### -V 
+`--renew-anon-volumes` Force à recréer les volumes anonymes au lieux de les réutiliser 
+
+```shell 
+docker compose up -v 
+```
+
+### docker compose down 
+Utilisé pour arrêter et supprimer toutes les ressources créés par la commande `docker compose up`. 
+Cela inclut l'arrêts des conteneurs, la supression des réseux et volume (si spécifié) et la suppression des images (optionel) 
+
+```shell 
+docker compose down [options]
+```
+
+- `option`: paramètre supplémentaire pour configurer le comportement de la commande 
+
+```shell 
+# stop et supprime les ressources 
+docker compose down
+
+# Supprime les volumes 
+docker compose down --volumes 
+
+# supprime les images 
+docker compose down --rmi all 
+```
+
+#### -v 
+Permet de supprimer les volumes crées et utilisées par les services. 
+```shell 
+docker compose down --volumes 
+```
+
+#### --rmi 
+Supprime les images utilisées pour créer des conteneurs. (`all` => supprime toutes les images pour le projet, `local` => supprime toutes les images local)
+```shell 
+dokcer compose down --rmi all 
+```
+
+#### --remove-orphans 
+Supprime les conteneurs qui ne sont pas définis dans le compose mais été créer par des exécution précédente 
+```shell 
+docker compose down --remove-orphans 
+```
+
+## Variables d'environnement 
+
+Il est possible d'utiliser un fichier `.env` pour définir des variables d'environnements qui seront utiliser par le docker compose dans le fichier `compose.yaml`.
+
+### Utilisation dans le compose 
+
+```compose
+services:
+    web:
+        image: nginx:${NGINX_VERSION}
+        ports:
+            - "${HOST_PORT}:80"
+``` 
+
+Dans le fichier `.env`, on viens définir les valeurs de ses variables d'environnements.
+
+```env 
+NGINX_VERSION=latest
+HOST_PORT=8080
+DB_USER=admin
+DB_PASSWORD=secret 
+```
+
+Docker compose viens automatiquement charger les variables depuis le fichier `.env` s'il se trouve dans le même répertoire que le `compose` 
+
+### Transmission des variables 
+
+Il est possible de transmettre directement via la CLI les variables d'environnement.
+
+```shell
+export NGINX_VERSION=latest
+export HOST_PORT=8080
+docker compose up 
+``` 
+
+On peut également venir spécifier le fichier `.env` 
+
+```shell
+docker compose --env-file .env.dev up 
+``` 
+
+### Variables d'environnement intégrées 
+
+Docker compose supporte des variables d'environnement intégrées, comme `${PWD}` qui représente le répertoire de travail actuel.
+
+```compose
+services:
+    app:
+        image: myapp:latest
+        volumes:
+            - ${PWD}/app:/app
+```
+
+### Exemple pratique 
+
+#### Configuration d'un serveur web et d'une base de données 
+
+On viens créer un fichier `.env` avec les paramètres pour le serveur web et la base de données 
+
+```.env 
+NGINX_VERSION=1.19.3
+HOST_PORT=8080
+DB_USER=myuser
+DB_PASSWORD=password
+```
+
+On viens ensuite définir le compose 
+
+```compose 
+services:
+    web:
+        image: nginx:${NGINX_VERSION}
+        ports:
+            - "${HOST_PORT}:80
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+
+    db:
+        image: postgres:latest
+        environnement:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data
+```
+
+#### Séparation des environnements de dev et de production 
+
+On vient créer deux fichier `.env` pour les environnements : `.env.dev` et `.env.prod` 
+
+```.end
+# env.dev 
+NGINX_VERSION=latest
+HOST_PORT=8080
+DB_USER=devuser
+DB_PASSWORD=devpassword
+
+# env.prod
+NGINX_VERSION=1.19.3
+HOST_PORT=80
+DB_USER=produser
+DB_PASSWORD=prodpassword
+``` 
+
+On viens ensuite créer le fichier `compose` 
+
+```compose 
+services:
+    web:
+        image: nginx:${NGINX_VERSION}
+        ports:
+            - "${HOST_PORT}:80"
+    db:
+        image: postgres:latest
+        environnement:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - postres_data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data:
+```
+
+Pour lancer le docker compose pour le dévelopmment : 
+```shell
+docker compose --env-fil .env.dev up 
+```
+
+Pour lancer le docker de prod 
+
+```shell
+docker compose --env-fil .env.prod up 
+```

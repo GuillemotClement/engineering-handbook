@@ -1,3 +1,37 @@
+## Quick 
+
+### Création d'une modale 
+
+Ajout d'une méthode js qui viens ouvrir la modale. Elle pointe sur un endpoint en Ajax qui li gère l'affichage, puis ensuite le traitement de la modale.
+
+```js
+<script>
+  function openModalFormKit(){
+    const url = "ajax.php?do=php/article/ajax/action=general&todo=formKit"; // définis du endpoint
+    const fd = new FormData(); // pour passer de la data
+    fd.append('maVariable', <?= $maVarialbe ?>); // passer une clé valeur dans le body envoyer de la requête
+    loadUrl('popup', url, fd);
+  }
+</script>
+```
+
+On viens aussi ajouter sur un bouton le déclenchement de l'ouverture de la modale :
+```html
+<button 
+  class="btn btn-success" 
+  onclick="openModalFormKit()"
+>
+  Ajouter un kit
+</button>
+``` 
+
+Dans le fichier `php/article/ajax/general.php`, on viens définir le case pour gérer l'affichage de la modale 
+
+
+
+
+
+
 
 ## Vue d'ensemble
 

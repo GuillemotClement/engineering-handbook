@@ -266,3 +266,37 @@ Postgres gère pleins de type de temps différents que l'on peut combiner dans u
 - `hour`
 - `minute`
 - `second`
+
+
+
+
+
+---
+
+## TABLE
+
+### Update d'une table 
+
+```sql 
+-- pg
+ALTER TABLE <name_table>
+ADD COLUMN <name_columne> <type>
+
+-- SQLServer 
+ALTER TABLE <name_table>
+ADD <name_col> <type>
+
+-- ajout colonne boolean avec SQL Server 
+ALTER TABLE <name_table>
+ADD Actif BIT DEFAULT(1);
+```
+
+### UPDATE 
+Permet de mettre à jour la valeur d'un champ d'une table 
+
+```sql 
+-- SQL Server - la requête viens mettre à jour toutes les valeurs NULL à 1 pour rendre actif  
+UPDATE TypesClientsCat
+SET TypesClientsCat.Actif = 1
+WHERE TypesClientsCat.Actif IS NULL;
+```

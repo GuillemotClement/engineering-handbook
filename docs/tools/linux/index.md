@@ -127,6 +127,8 @@ De cette manière, on place le projet dans le folder des projets. On viens `pull
 
 Le symlink fera la syncronisation automatique, et le folder qui est fournis par Nginx aura la mise à jour.
 
+Les liens symboliques contiennent le chemin de l'objet original, et non l'objet lui même. Si le fichier ou le dossier original est déplacé ou supprimé, le lien devient cassé car il ne point plus vers un objet existant.
+
 ```shell
 ln -s <path_projet_parent> <path_esclave>
 
@@ -2062,3 +2064,1602 @@ Ce sont les actions exécutées sur un paquet
 - `ACCEPT`: autoriser le paquet
 - `DROP`: jeter le paquet 
 - `REJECT`: jeter le paquet tout en envoyant une notification 
+
+### SELinux 
+
+Module de sécurité qui permet de renforcer la gestion des droits d'accès en ajoutant le concept de contrôle obligatoire. 
+Il permet à un admin de configurer des restrictions plus strictes pour les users et les processus, afin de minimiser les dégâts potentiels en cas d'attaques.
+
+Il peut fonctionne dans trois modes : 
+- **Enforcing** : actif, applique la politique de sécurité et bloque les processus qui ne respectent pas les règles
+- **Permissive**: enregistre les violations dans les logs, mais ne bloque pas les actions 
+- **Disabled**: désactivé 
+
+#### Vérification du status
+##### getenforce 
+
+Retourne le mode actuel 
+```shell
+getenforce
+```
+
+##### setstatus 
+Permet d'obtenir un rapport plus détaillé sur le statut. Elle indique l'état actuel, le mode actif et la politique utilisée.
+```shell
+$ sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+```
+
+#### Changer les modes 
+
+Pour passer en mode permissive 
+```shell
+$ sudo setenforce 0
+```
+
+Pour réactiver le contrôle strict 
+```shell
+$ sudo setenforce 1
+```
+
+a finir 
+
+### ACL 
+
+### Surveillance des users 
+
+### Configuration pare feu, SELinux et ACL de base 
+
+---
+
+## SYSTEME DE FICHIERS
+
+Le système de fichier organise et gère l'accès aux données sur les supports. Il définit comment les données sont stockées, lues et écrites.
+
+Il existe plusieurs systèmes de fichiers :
+- **ext4**: système standard pour les distributions Linux
+- **NTFS**: système utilisé par Windows
+- **FAT32**: populaire pour les supports externes et clé USB 
+- **XFS, btrfs** : alternative plus avancées pour Linux avec des fonctionnalités comme les snapshots
+
+Lorsque l'on branche un disque ou une clé USB sous Linux, le système de fichier doit être monté pour que le système puisse commencer à travailler avec.
+
+### lsblk - Lister les périphériques
+Cette commande permet de lister les périphériques de bloc. Elle affiche un tableau de tous les périphériques de bloc du système, incluant les disque durs, SSD, clé USB et partitions.
+
+```shell
+lsblk
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  500G  0 disk
+├─sda1   8:1    0   50G  0 part /
+├─sda2   8:2    0  200G  0 part /home
+└─sda3   8:3    0  250G  0 part
+sdb      8:16   1   16G  0 disk
+└─sdb1   8:17   1   16G  0 part /media/usb
+
+# affiche le type du systeme file et UUID
+lsblk -f 
+
+# affiche uniquement les colonnes 
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT
+```
+
+- **NAME**: nom du périphérique. 
+- **SIZE**: taille du périphérique 
+- **TYPE**: type de périphérique. `disk` correspond à un disque physique, et `part` une partition
+- **MOUNTPOINT** : chemin où le périphérique est monté dans le système de fichier 
+
+
+### blkid - Identifier les périphériques
+
+Cette commande permet d'identifier les périphériques en fonction de leur système de fichier et de leur UUID.
+
+```shell
+$ blkid
+
+/dev/sda1: UUID="1111-2222-3333-4444" TYPE="ext4"
+/dev/sda2: UUID="5555-6666-7777-8888" TYPE="ext4"
+/dev/sda3: UUID="9999-AAAA-BBBB-CCCC" TYPE="swap"
+/dev/sdb1: UUID="AAAA-BBBB" TYPE="vfat" LABEL="USB_DISK"
+```
+
+- **UUID**: identifiant unique de la partition
+- **TYPE**: type du system file 
+- **LABEL**: étiquette de la partition
+
+Les UUID sont important sur Linux car les périphérique peuvent changer dynamiquement de nom au démarrage. 
+Avec cet id, on peut utiliser une identification stables pour monter les périphérique.
+
+### Travailler avec des périphérique non montés
+
+Parfois, lorsque l'on branches un disque ou une clé, elle n’apparaît pas comme montée. Cela peut arriver si le system file n'est pas actif.
+
+On connecte une clé USB, et le résultat de la commande est : 
+
+```shell
+$ lsblk
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sdb      8:16   1   16G  0 disk
+```
+
+Cela signifie que le périphérique `sdb` n'a pas de partition active. Il faut utiliser la seconde commande pour savoir si un system file est dessus 
+
+```shell
+blkid /dev/sdb
+```
+
+Si rien ne s'affiche, le périphérique n'est pas encore formaté.
+
+### Formatage 
+
+Lorsque l'on formate une partition, on créer une "page blanche" pour les données. Il supprime tout le contenu de la partition et créer un nouveau système de fichiers qui détermine comment les fichiers seront organisées et comment y accéder.
+
+On vient faire un formatage :
+- **Préparer un nouvel appareil**
+- **Changer le system file**
+- **Effacer les anciennes données**
+
+#### mkfs
+
+L'outil `mkfs` permet de formater des partitions.
+
+```shell
+mkfs.<type_de_système_de_fichiers> <dispositif>
+
+# exemple 
+mkfs.ext4 /dev/sdb1
+```
+
+Dans cet exemple, on formate la partition `/dev/sdb1` en `ext4`.
+
+Le tool fonctionne avec la plupart des types de systèmes de fichiers courant : 
+
+| Système de fichiers | Commande    | Application                                                                                         |
+| ------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| **ext4**            | `mkfs.ext4` | Le système de fichiers principal pour Linux, prenant en charge de grands fichiers et disques.       |
+| **xfs**             | `mkfs.xfs`  | Haute performance, adapté aux grands fichiers et aux charges serveur.                               |
+| **vfat** (FAT32)    | `mkfs.vfat` | Idéal pour l'échange de données entre Linux, Windows et MacOS.                                      |
+| **ntfs**            | `mkfs.ntfs` | Pour la compatibilité avec Windows (bien que l'édition depuis Linux puisse parfois poser problème). |
+
+Pour obtenir la liste complète des systèmes pris en charge :
+```shell
+mkfs -t help
+```
+
+#### Formatage d'une partition en ext4
+
+On commence par vérifier le périphérique
+
+```shell
+lsblk
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  100G  0 disk
+├─sda1   8:1    0   50G  0 part /
+├─sda2   8:2    0   45G  0 part /home
+└─sda3   8:3    0    5G  0 part [SWAP]
+sdb      8:16   0  200G  0 disk
+└─sdb1   8:17   0  200G  0 part
+```
+
+On souhaite formater la partition `/dev/sdb1`
+
+Avant de formater, le périphérique ne doit pas être monté. 
+```shell
+sudo umount /dev/sdb1
+```
+
+On vient ensuite lancer le formatage.
+```shell
+sudo mkfs.ext4 /dev/sdb1
+
+mke2fs 1.45.7 (28-Jan-2021)
+Creating filesystem with 52428800 4k blocks and 13107200 inodes
+Filesystem UUID: 5634f623-7b2d-4d6b-b8f5-abcdef123456
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, ...
+```
+
+On vient ensuite vérifier que le system file à bien été créer : 
+```shell
+sudo blkid /dev/sdb1
+
+# sortie 
+/dev/sdb1: UUID="5634f623-7b2d-4d6b-b8f5-abcdef123456" TYPE="ext4"
+```
+
+La sortie de la commande vient montrer que `ext4` est bien installé sur le périphérique 
+
+### Choix du système de fichiers 
+
+Selon les besoins, il est conseillé d'utiliser un format plutôt qu'un autre : 
+- **ext4**: choix universel pour Linux
+- **XFS**: pour les besoin de haute performance avec de gros fichiers ou sur des serveurs 
+- **FAT32**: si on doit utiliser un périphérique à la fois sur Windows et Mac. La taille max du fichier est limié à 4Go 
+- **NTFS**: pour la compatibilité avec Windows, mais les perf peuvent être inférieur à `ext4` sous Linux
+
+### Vérification et correction du system file 
+
+Le system file peut subit des dommages qui provoque des pertes de données ou d'autres types de problèmes.
+Ces problèmes peuvent apparaître à la suite de :
+- **Coupure d'alimentation soudaine**: l'appareil s'éteint sans terminer l'écriture des données
+- **Erreur de stockage**: une défaillance matériel d'un disque 
+- **Erreurs logicielle**: un bug dans un driver
+
+Après ce type d'évènement, le system file peut se retrouver dans un état dégradé, et le system peut demander de vérifier son état.
+
+#### fsck 
+Tool qui permet de vérifier l'intégrité du system file et corriger les erreurs détectées. Il peut être utilisé :
+- En cas de défaillance des fichiers 
+- Si le système ne démarre plus 
+- Prévention régulière 
+
+```shell
+fsck [options] <périphérique>
+```
+
+- `-y`: confirmer automatiquement les corrections.
+- `-n`: vérification sans correction
+- `-t`: indique le type de system file 
+- `-r`: active le mode intéractif
+
+Après avoir exécuté la commande, les fichiers perdu sont placés dans le dossier `lost+found` à la racine du system file.
+#### Vérification du system file 
+
+```shell
+# vérification sans correction 
+fsck -n /dev/sdb1
+
+# exemple de sortie 
+#Inodes qui faisaient partie d'une liste orpheline corrompue détectés. Erreurs du système de fichiers détectées. Exécute fsck pour réparer.
+
+#correction automatiue 
+fsck -y /dev/sdb1 
+```
+
+#### Utilisation sur un system file utilisé
+
+Si on essaie d'utiliser l'outil sur une partition déjà montée, on reçoit un avertissement `fsck: cannot check a mounted filesystem.`.
+
+Cela arrive car la vérification peut entraîner des corruptions de données. Il existe plusieurs manière de résoudre ce problème
+
+- Monté le périphérique en lecture seule
+```shell
+mount -o remount,ro /dev/sdb1
+```
+- Utiliser un live CD: on démarre le système depuis un disque ou une clé USB pour effectuer la vérification sur un périph déjà monté
+- Utiliser le mode recovery: on redémarre le système en mode recovery 
+
+#### Vérification du fichier racine /
+
+Pour exécuter une vérification sur une partition `/` :
+```shell
+# passer en mode user unique 
+systemctl isolate rescue.target
+
+# lancement fsck
+fsck -y /
+```
+
+---
+
+### Montage et démontage des system file 
+
+Le montage est le processus de connecter un system file d'un périphérique à l'arborescence des fichiers Linux.
+Sous Linux tous les périphériques sont intégrés dans la structure des fichiers à un dossier spécifique appelé point de montage.
+
+#### mount - Monter un system file 
+
+```shell
+mount [options] <périphérique> <point de montage>
+
+sudo mount /dev/sdb1 /mnt/usb
+```
+
+- `periphérique`: c'est l'endroit où le périphérique est conecté au système (`/dev/sdb1`)
+- `point de montage` : le dossier ou les données du périphérique sont accessibles (par exemple `mnt/disk`)
+
+Une fois monté, les fichiers du périphérique sont accessible dans le dossier `/mnt/usb`.
+
+##### Spécifier le system file 
+
+```shell
+sudo mount -t ext4 /dev/sdb1 /mnt/usb
+```
+
+- `-t`: permet de spécifier le system file  
+
+##### Montage en lecture seule 
+Pour protégé les données du périphérique contre toute modification, on utilise `-o ro`
+```shell
+sudo mount -o ro /dev/sdb1 /mnt/usb
+```
+
+##### Montage avec spécification de l'encodage 
+Pour les disques `FAT32` ou `NTFS`, il peut être nécessaire de spécifier l'encodage
+```shell
+sudo mount -o iocharset=utf8 /dev/sdb1 /mnt/usb
+```
+
+####  umount - Démonter un system file 
+Le démontage permet de déconnecter un périphérique. C'est important que Linux ferme toutes les connexions avec le disque et termine l'écriture.
+
+```shell
+umount <périphérique ou point de montage>
+
+# périphérique connecté 
+sudo umount /mnt/usb
+sudo umount /dev/sdb1
+```
+
+##### Echec du démontage
+Parfois la commande peut retourner une erreur `Device is busy`. Cela signifie qu'un programme utilise encore le périphérique.
+
+Dans ce cas, on utilise la commande pour montrer les processus bloquant 
+```shell
+fuser -v /mnt/usb
+```
+Une fois identifié, on peut venir kill le processus 
+```shell
+kill <ID de processus>
+```
+
+On peut ensuite venir démonter le périphérique
+
+#### Montage automatique 
+
+Lorsque l'on doit connecter un périphérique à chaque démarrage du système, on peut utiliser le fichier `/etc/fstab`.
+C'est un fichier de configuration qui contient une liste des périphérique que Linux doit automatiquement connecter.
+On peut y définir des paramètres comme le type de system file, le point de montage et les droits d'accès.
+
+Pour ajouter un périphérique, on commence par récupérer son UUID 
+```shell
+sudo blkid
+```
+
+On ouvre ensuite le fichier de configuration : 
+```shell
+sudo nvim /etc/fstab
+```
+
+Et on ajoute une nouvelle ligne : 
+```txt
+UUID=1234-5678 /mnt/usb ext4 defaults 0 2
+```
+
+- `UUID`: identifiant unique 
+- `/mnt/usb`: point de montage 
+- `ext4`: format 
+- `defaults`: paramètre par défaut du montage 
+- `0` et `2` : paramètres pour la vérification du périphérique au démarrage
+
+On fois ajouter, on viens tester les paramètres en montant le périphérique 
+```shell
+sudo mount -a
+```
+
+----
+
+### Archivage et compression des fichiers 
+
+L'archivage c'est le processus de regroupement de plusieurs fichiers dans un seul conteneur, et la compression c'est la réduction de sa taille.
+C'est utile pour : 
+- **Stockage des données**: en emballant des fichiers dans une archives, on peut faciliter le déplacement et les copie comme un seul fichier.
+- **Transmission de donnée**: avec la compression, les données prennent moins de place, ce qui accélère le transfert sur le réseau 
+- **Backup**: l'archivage permet de protéger les données et simplifier leur restauration 
+
+#### tar - Création et gestion des archives 
+
+Utilitaire qui permet d'archiver des fichiers sous Linux. Il ne compresse pas les fichiers, mais il les assemble dans un fichier unique.
+
+```shell
+tar [options] <archive> <fichiers/dossiers>
+```
+
+- `-c` : création de la nouvelle archive
+- `-v`: affichage détaillé des opérations (affiche les fichiers ajoutés)
+- `-f`: spécifie le nom de l'archive 
+- `-x`: extraction des fichiers de l'archive
+- `-t`: affichage du contenu de l'archive 
+
+##### Création d'une archive 
+```shell
+tar -cvf archive.tar file1.txt file2.txt
+```
+
+La commande vient créer une `archive.tar` à partir des fichiers `file1.txt` et `file2.txt`
+
+##### Archivage d'un dossier 
+```shell
+tar -cvf project.tar /home/user/project
+```
+
+Cette commande créer une archive `project.tar` qui inclut tout le dossier `/home/user/project`
+
+##### Extraction d'une archive 
+```shell
+tar -xvf archive.tar
+```
+
+Décompresse l'archive `archive.tar` dans le répertoire actuel 
+
+##### Affichage du contenu d'une archive 
+```shell
+tar -tvf archive.tar
+```
+
+Affiche la liste des fichiers et des dossiers dans l'archive
+
+#### gzip - compression 
+
+Il permet de réduire les données en utilisant des algo de compression.
+
+```shell
+gzip [options] <fichier>
+```
+
+##### Compression d'un fichier 
+```shell
+gzip file1.txt
+```
+
+La commande transforme le fichier en `file1.txt.gz`
+
+##### Décompression d'un fichier 
+```shell
+gunzip file1.txt.gz
+```
+
+Restaure le fichier d'origine `file1.txt`
+
+##### Archivage et compression avec tar et gzip
+```shell
+tar -czvf archive.tar.gz file1.txt file2.txt
+```
+
+Cette commande créer une archive `archive.tar.gz` qui combine et compresse les fichier `file1.txt` et `file2.txt`
+
+##### Extraction d'une archive compressée 
+```shell
+tar -xzvf archive.tar.gz
+```
+
+Décompresse et extrait le contenu de l'archive `archive.tar.gz`
+
+#### zip - création d'archives compressées
+
+`zip` crée immédiatement une archive compressée qui peut par défaut être utilisée sur Windows et d'autres systèmes.
+
+```shell
+zip [options] <archive> <fichiers/dossiers>
+```
+
+##### Création d'une archive zip 
+
+```shell
+zip archive.zip file1.txt file2.txt
+```
+
+Crée une archive `archive.zip` qui inclut les fichiers `file1.txt` et `file2.txt`
+
+##### Archivage d'un dossier
+
+```shell
+zip -r project.zip /home/user/project
+```
+
+Crée une archive `project.zip` qui inclut tout le dossier `/home/user/project`.
+
+`-r` : ajout récursif des fichiers et dossier => permet d'ajouter ce qui est présent dans le dossier
+
+|Outil|Archivage|Compression|Approche|Utilisation principale|
+|---|---|---|---|---|
+|`tar`|✅|❌|Paquet de fichiers|Fusion des fichiers dans une archive sans compression|
+|`gzip`|❌|✅|Compression|Réduction de la taille des fichiers ou des archives individuelles|
+|`zip`|✅|✅|Tout-en-un|Créer des archives transportables|
+
+---
+
+### Sauvegarde 
+
+Les systèmes et les humains ne sont pas fiables, et les fichiers disparaissent. La sauvegarde permet d'éviter ce genre de problème.
+
+#### rsync - copie de données 
+
+`rsync` est un outils pour  copier et synchroniser des données. Sa principale force réside dans sa rapidité et son efficacité.
+Au lieu de copier, `rsync` ne copie que les fichiers modifiés. Cela lui permet d'être efficace pour effectuer des sauvegarde régulière de grande quantité de données.
+
+```shell
+rsync [options] source destination
+```
+
+- `source` : le chemin vers le fichier ou dossier que l'on souhaite copier 
+- `destination`: l'endroit où l'on veux envoyer ces données
+
+Options principales :
+- `-a`: (archive); inclut la copie de toutes les métadonnées (permissions, timestamps, etc)
+- `-v`: (verbose); active une sortie détaillée pour que l'on puisse voir ce qui se passe 
+- `--progress`: montre la progression du transfert 
+- `--delete`: supprime côté destination les fichiers qui ne sont plus présent côté source. Utile pour une synchro complète 
+- `-z` compress; compresse les données avant de les transmettre, ce qui accélère le processus (important pour les opération réseau)
+
+##### Copie de données locales 
+
+Dans un folder `/backup`, on viens y stocker les sauvegardes. On viens coper le contenu d'un repo dans ce nouveau repo 
+```shell
+rsync -av /home /backup
+```
+
+On viens copier les données du `/home` dans le nouveau dossier `/backup`.
+- `-a`: permet de préserver la structure et les permissions des fichiers
+- `-v` : fournit les info sur les processus en cours
+
+Si on relance la commande, elle ne copiera que les fichiers modifés ou nouveaux
+
+##### Sauvegarde distante 
+
+On souhaite envoyer une sauvegarde vers un serveur distant. Pour cela `rsync` prends en charge l'utilisation de SSH 
+
+```shell
+rsync -av /backup user@remote_server:/remote_backup
+```
+
+- `user`: le nom de l'utilisateur pour le serveur distant 
+- `remote_server`: l'adresse du serveur 
+- `/remote_backup`: le chemin sur le serveur où l'on souhaite sauvegarder les données
+
+#### scp - copie simple 
+
+`scp` (secure Copy Protocol) est un outil pour copier des fichiers entre une machine locale et une machine distante. Cet outil est plus simple que `rsync` et convient pour les cas où une synchronisation complète n'est pas nécessaire.
+
+```shell
+scp [options] source destination
+```
+
+- `-r` : copie récursive 
+- `-C`: compresse avant transfert 
+- `-P`: spécifie un post SSH si différent du 22 
+
+##### Copie un fichier sur une machine distante 
+
+```shell
+scp document.txt user@remote_server:/remote_folder
+```
+
+Cette commande permet de copier `document.txt` dans le dossier `/remote_folder` sur le serveur via SSH
+
+Le processus inverse est également possible 
+```shell
+scp user@remote_server:/remote_folder/document.txt /home/user/documents
+```
+
+#### Différence entre rsync et scp 
+
+|**Particularité**|**rsync**|**scp**|
+|---|---|---|
+|**Vitesse**|Seuls les fichiers modifiés, plus rapide pour de gros volumes|Copie tout, même si les fichiers n'ont pas changé|
+|**Synchronisation**|Support complet de la synchronisation|Ne supporte pas la synchronisation|
+|**Compression des données**|Option disponible `-z`|Option disponible `-C`|
+|**Simplicité d'utilisation**|Plus complexe à configurer|Interface simple|
+
+#### Configurer une sauvegarde 
+
+On souhaite configurer un processus complet de sauvegarde d'un projet sur un serveur distant.
+- Les fichiers du projet sont stockés dans le dossier `/home/user/project`. On souhaite qu'il soient sauvegardés sur le serveur `backup.server.com` dans le dossier `/backups/project`
+- Pour que la copie soit rapide, on utilise `rsync`
+
+On viens configurer un script de sauvegarde dans un fichier nommé `backup.sh`
+
+```bash 
+#!/bin/bash
+
+SOURCE="/home/user/project"
+DESTINATION="user@backup.server.com:/backups/project"
+
+# Effectue une sauvegarde avec rsync
+rsync -av --delete "$SOURCE" "$DESTINATION"
+
+# Affiche un message de fin
+echo "Sauvegarde terminée !"
+```
+
+On rend le script exécutable 
+```shell
+chmod +x backup.sh
+
+# on peut lancer ensuite le script 
+./backup.sh
+```
+
+On peut également l'ajouter à `cron` pour une exécution automatique.
+
+### Formatage des disques, montage et sauvegarde avec rsync 
+
+On ajoute un nouveau disque sur un ordinateur, mais celui ci n'est pas encore vide et pas prêt à être utilisé sur le système.
+
+On commence par s'occuper du formatage. 
+
+1. Vérifier les périphérique connectés
+
+On viens identifier où se trouve le nouveau disque :
+```shell
+lsblk
+
+# sortie 
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  100G  0 disk
+├─sda1   8:1    0   50G  0 part /
+├─sda2   8:2    0   50G  0 part /home
+sdb      8:16   0  500G  0 disk
+```
+
+Ici `sdb` est le nouveau disque. Pour le moment il n'a pas de partition.
+
+2. Création du system file 
+
+Pour notre nouveau disque, on choisit le format `ext4`.
+```shell
+sudo mkfs.ext4 /dev/sdb
+```
+
+Après cette commande, le système sera prêt à travailler avec le disque. 
+
+3. Montage du nouveau disque 
+Le nouveau disque est maintenant formaté avec le bon system file.
+
+On viens créer un point de montage, ici on créer un dossier `/mnt`
+
+```shell
+# création de l'emplacement où le disque sera connecté => généralement un dossier
+sudo mkdir /mnt/newdisk
+
+# montage du disque 
+sudo mount /dev/sdb /mnt/newdisk
+
+# check si ok => affiche le disque dans la liste
+df -h
+```
+
+Pour éviter d'ajouter le disque manuellement à chaque fois, on l'ajoute au fichier `etc/fstab`.
+
+```shell
+# on récupère l'UUID
+sudo blkid /dev/sdb
+
+# sortie 
+/dev/sdb: UUID="abcd-1234-efgh-5678" TYPE="ext4"
+
+# ajoute de la ligne dans `etc/fstab`
+UUID=abcd-1234-efgh-5678 /mnt/newdisk ext4 defaults 0 2
+```
+
+Le disque sera maintenant monté automatiquement à chaque démarrage du système.
+
+4. Archivage des données 
+
+On as un  dossier `/mnt/newdisk/data` que l'on souhaite archiver et compresser avant de le sauvegarder.
+
+```shell
+# création de l'archive 
+tar -cvf data_backup.tar /mnt/newdisk/data
+
+# compression de l'archive 
+gzip data_backup.tar
+```
+
+Le fichier `data_backup.tar.gz` est créer, et est plus simple à transférer comme il est compresser.
+
+5. Sauvegarde avec rsync 
+
+Le fichier est maintenant compresser et prêt pour la sauvegarde. On utilise `rsync` pour le transférer vers un autre serveur ou un emplacement sur le disque.
+
+```shell
+# copie local 
+rsync -av /mnt/newdisk/data /mnt/backup/
+
+# copie distante 
+rsync -av /mnt/newdisk/data username@remote_server:/backup/
+
+# avec scp 
+scp data_backup.tar.gz username@remote_server:/backup/
+```
+
+---
+
+## SERVEUR WEB 
+
+Un serveur web est un programme qui reçoit des requête HTTP, les traite et répond avec le contenu correspondant (page HTML, fichier, erreur 404).
+Il sert de pont entre les utilisateurs et le contenu
+
+### Nginx 
+
+Installation :
+```shell
+# mise à jour de la liste des paquets
+sudo apt-get update
+
+# installation nginx 
+sudo apt-get install nginx 
+
+# vérification du statut serveur
+sudo systemctl status nginx 
+```
+
+Si le statut est `active (running)`, on peut accéder à `http://localhost` pour afficher la page d'accueil de Nginx.
+
+#### Configuration de base 
+
+Le fichier de configuration de Nginx se trouve :
+```shell
+sudo nvim /etc/nginx/nginx.conf
+```
+
+Une fois la configuration modifié, on vient check la configuration si il n'y a pas d'erreur de syntaxe 
+
+```shell
+sudo nginx -t
+```
+#### Gestion du serveur 
+
+```shell
+# démarrage 
+sudo systemctl start nginx 
+
+# stop 
+sudo systemctl stop nginx 
+
+# restart 
+sudo systemctl restart nginx 
+
+# reload 
+sudo systemctl reload nginx 
+```
+
+#### Configurer un site 
+
+On commence par créer un répertoire pour le nouveau site 
+
+```shell
+# création du repo du projet 
+sudo mkdir -p /var/www/hello
+```
+
+Dans ce dossier, on place les fichier du projet. On vient ensuite ajouter la nouvelle configuration 
+
+```shell
+sudo nvim /etc/nginx/sites-available/hello
+```
+
+On vient y ajouter cette configuration :
+
+```nginx 
+server {
+    listen 80;
+    server_name hello.local;
+
+    root /var/www/hello;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+On vient ensuite activer la configuration 
+
+```shell
+# création du lien symbolique 
+sudo ln -s /etc/nginx/sites-available/hello /etc/nginx/sites-enabled/
+# check config
+sudo nginx -t
+# reload nginx 
+sudo systemctl reload nginx
+```
+
+On viens ensuite ajouter une entrée dans `/etc/hosts` afin de configurer le nom de domaine `hello.local` sur la machine.
+
+Ce fichier permet de configurer le DNS local.
+
+```shell
+sudo nvim /etc/hosts
+
+127.0.0.1 hello.local
+```
+
+On peut ensuite vérifier si le domaine est accessible `http://hello.local`
+
+---
+
+### Hôtes virtuels
+
+Les hôtes virtuels permettent à un serveur de gérer plusieurs sites (avec différents domaines) tout en ayant qu'une seul serveur physique.
+
+Il existes deux types d'hôtes virtuels :
+- **Basé sur l'ip**: chaque site reçoit une adresse IP unique. 
+- **Basé sur le nom de domaine**: plusieurs sites peuvent partager une seule adresse IP. Le serveur utilise le nom d'hôte de la requête du client pour comprendre quel site afficher. C'est l'option la plus courante pour la plupart des projets.
+
+
+#### Configuration d'un hôte virtuel dans Nginx 
+
+Pour créer un nouvel hôte, il faut créer un fichier de configuration. Ce fichier contient des informations sur la façon dont le serveur doit gérer les requêtes pour un domaine spécifique.
+
+On viens créer un nouveau dossier :
+
+```shell
+sudo nvim /etc/nginx/sites-available/example.com
+```
+
+On viens y ajouter le bloc de configuration : 
+
+```nginx
+server {
+	# indique que le serveur écoute le port 80
+    listen 80;
+    # définit le nom de domaine auxquels le serveur doit répondre
+    server_name example.com www.example.com;
+
+	# indique le répertoire racine ou sont stockés les fichiers du site
+    root /var/www/example.com;
+    # spécifie le fichier d'entrée
+    index index.html;
+
+	# configuration  du routage des requêtes, 404 si non trouvé
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+Une fois le fichier de configuration ajouté, on viens activer l'hôte virtuel avec des liens symbolique
+
+```shell
+# ajout du lien symbolique 
+sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+
+# check config 
+sudo nginx -t
+
+# reload du serveur 
+sudo systemctl reload nginx 
+```
+
+On viens ensuite ajouter les fichiers du site : 
+```shell
+sudo mkdir -p /var/www/example.com
+sudo nvim /var/www/example.com/index.html
+```
+
+On ajoute ensuite le HTML simple : 
+
+```html
+<h1>Bienvenue sur example.com !</h1>
+<p>Votre serveur Nginx est prêt à fonctionner.</p>
+```
+
+On enregistre, et en se rendant sur `http://example.com`, on voit le contenu du fichier HTML dans le navigateur.
+
+En cas d'erreur, on peut venir vérifier :
+
+```shell
+sudo tail -f /var/log/nginx/error.log
+```
+
+---
+
+### Configuration HTTPS 
+
+Pour configurer le HTTPS, on utilise `Let's Encrypt` et `Certbot`. Ils permettent d'obtenir des certificat SSL pour le serveur web.
+
+```shell
+sudo apt-get update
+sudo apt-get upgrade
+
+# installation Certbot 
+sudo apt-get install certbot python3-certbot-nginx
+
+# configuration HTTPS pour le site 
+sudo certbot --nginx
+```
+
+Certbot vient scanner les hôtes virtuels (les bloc `server` dans la configuration). Il vient demander pour quel domaine on souhaite configurer le HTTPS.
+Le domaine doit pointer vers le serveur via DNS (par exemple, avec un enregistrement A)
+
+##### Renouvellement automatique
+
+Les certificats Lets Encrypt sont valides pendant 90 jours, il est donc nécessaire de les renouveler régulièrement. 
+Certbot peut le faire automatiquement, mais il faut s'assurer que tout est bien configurer.
+
+```shell
+# vérification expiration 
+sudo certbot certificates 
+```
+
+Lors de installation, Certbot ajoute automatiquement une tâche Cron ou un Systemd Time pour vérifier les mise à jours. Pour s'assurer que tout fonctionne bien, on vient ajouter une tâche de test dans Cron 
+
+```shell
+sudo contab -e
+```
+
+Et on vient ajouter la ligne suivante 
+
+```txt
+0 0 * * * certbot renew --quiet
+```
+
+Cette commande vérifie et renouvelle les certificats tous les jours à minuit. L’option `--quiet` supprime l'affichage d'information inutiles.
+
+#### Renouvellement manuel 
+
+Pour renouveler les certificats manuellement 
+```shell
+sudo certbot renew
+```
+
+#### Activation de la redirection HTTP - HTTPS
+
+Le site peut toujours être accessible via HTTP. Il faut venir configurer une redirection automatique de toutes les requêtes vers le HTTPS
+
+Certbot peut configurer automatiquement la redirection lors de l'émission du certificat. Si l'option n'est pas activé, il faut l'ajouter manuellement dans le fichier de configuration du virtual host 
+
+```nginx
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    return 301 https://$host$request_uri;
+}
+```
+
+On redémarre ensuite 
+```shell
+sudo systemctl restart nginx 
+```
+
+---
+
+### Gestion des certificats et configuration des mise à jour automatiques
+
+#### Vérification des certificats actuels
+
+Le commande permet de savoir quels certificats est déjà installés sur le serveur.
+
+```shell
+sudo certbot certificates 
+
+# sortie
+Found the following certs:
+  Certificate Name: example.com
+    Domains: example.com www.example.com
+    Expiry Date: 2023-12-31 10:00:00+00:00 (VALID: 89 days)
+    Certificate Path: /etc/letsencrypt/live/example.com/fullchain.pem
+    Private Key Path: /etc/letsencrypt/live/example.com/privkey.pem
+```
+
+On retrouve les infos :
+- nom du certificat
+- domaine couverts par le certificat
+- date d'expiration
+- chemin vers les fichiers du certificat et de la clé privé
+
+#### Mise à jour automatique des certificats 
+
+La commande permet d'automatiser la mise à jour des certificats. Elle vérifie tous les certificats et met à jour automatiquement ceux qui approchent de leur expiration.
+
+```shell
+sudo certbot new 
+```
+
+
+---
+
+### Déploiement avec hôte virtuel et SSL 
+
+On souhaite déployer deux sites sur un serveur web : 
+- example.com 
+- test.com 
+
+Pour chaque site, on configure un hôte virtuel, on active HTTPS et on viens débueger et vérifier.
+
+On commence par installer Nginx 
+
+```shell
+sudo apt-get update
+sudo apt-get install nginx
+```
+
+On installe ensuite Certbot
+
+```shell
+sudo apt-get install certbot python3-certbot-nginx
+```
+
+On viens ensuite créer les répertoire pour les fichiers des sites 
+
+```shell
+sudo mkdir -p /var/www/example.com
+sudo mkdir -p /var/www/test.com
+```
+
+On créer ensuite un fichier HTML de test pour chacun 
+
+```shell
+sudo nano /var/www/example.com/index.html
+
+sudo nano /var/www/test.com/index.html
+```
+
+On configure ensuite les hôtes virtuels. Pour chaque site, on viens créer un fichier de configuration 
+
+```shell
+sudo nano /etc/nginx/sites-available/example.com
+```
+
+On y ajoute cette configuration
+
+```nginx
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    root /var/www/example.com;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+```shell
+sudo nano /etc/nginx/sites-available/test.com
+```
+
+```nginx
+server {
+    listen 80;
+    server_name test.com www.test.com;
+
+    root /var/www/test.com;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+On active ensuite la configuration 
+
+```shell
+sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/test.com /etc/nginx/sites-enabled/
+```
+
+On redémarre ensuite le serveur 
+
+```shell
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+On vient ensuite configurer HTTPS pour les sites 
+
+```shell
+sudo certbot --nginx
+```
+
+On peut ensuite vérifier dans le navigateur si le domaine `https://example.com` et `https://test.com` sont visible
+
+Si quelque chose ne fonctionne pas, on peut aller checker les logs :
+```shell
+sudo tail -f /var/log/nginx/error.log
+```
+
+On peut ensuite ajouter le renouvellement automatique des certificats avec Certobt et Cron 
+
+```shell
+sudo certbot renew --dry-run
+```
+
+---
+
+## GREP - Recherche dans un fichier 
+
+`grep` est un outil CLI utiliser pour rechercher des lignes qui correspondent à un motif donné dans des fichiers texte.
+
+```shell
+grep [options] "modèle" fichier
+
+# on cherche les ligne avec le mot error dans le fichier définit
+grep "error" /var/log/syslog
+
+# ignore la casse
+grep -i "error" application.log
+
+# retourne tout ce qui ne contient pas debug
+grep -v "debug" system.log
+
+# affiche les numéro de ligne 
+grep -n "error" server.log
+
+# recherche récursive
+grep -r "keyword" /home/user/documents
+
+# limiter au 10 premiere lignes 
+grep "error" log.txt | head -n 10
+
+# compter les lignes avec erreur 
+grep -c "error" log.txt
+
+
+```
+
+- `[options]` : paramètre supplémentaire 
+- `modèle` : text ou expression régulière rechercher 
+- `fichier` : nom du fichier ou des fichier où la recherche est effectuée
+
+- `-i`: ignorer la casse 
+- `-v` : recherche inversé: retourne ce qui ne correspond pas au motif 
+- `-n` : affiche la ligne avec son numéro 
+- `-r` ou `-R` : recherche récursive; permet de rechercher dans les sous dossier 
+
+### Combinaison avec d'autres commandes 
+
+En utilisant les pipe `|`, on peut combiner plusieurs commandes.
+
+```shell
+# filtrer les erreur de périphérique 
+dmesg | grep "usb"
+
+# appliquer un filtre  
+cat /var/log/syslog | grep "memory"
+
+# recherche dans les processus 
+ps aux | grep "nginx"
+```
+
+### Expression régulière 
+
+`grep` prends également en compte les expressions régulière.
+
+```shell
+# les lignes qui commencent par error
+grep "^error" logfile.txt
+
+# lignes qui se terminent par .conf
+grep "\.conf$" filelist.txt
+```
+
+- `^`: signifie début de ligne 
+- `$`: fin de ligne 
+- `\`: échappe le caractère pour que le `.` soit traité comme un point
+
+---
+
+## SED - Transformation de texte 
+
+`sed` (Stream Editor) est un outil qui permet de manipuler du texte et qui permet d'ajouter, de modifier, de supprimer ou transformer des fichiers texte et des flux de données.
+
+Il modifie le texte à la volée, sans toucher au fichier original.
+
+```shell
+sed [options] 'modèle/action' fichier
+```
+
+- `modèle`: le texte ou expression régulière rechercher 
+- `action`: opération que l'on souhaite effectuer 
+- `fichier`: fichier contenant les lignes à modifier
+
+### Remplacer du texte
+
+On as un fichier `example.txt` avec le contenu :
+```txt
+Hello world!
+Welcome to Linux.
+Linux is awesome.
+```
+
+On souhaite remplacer le mot "Linux" par sed
+
+```shell
+sed 's/Linux/sed/' example.txt
+```
+
+- `s`: action de remplacement 
+- `/Linux/`: ancien mot
+- `sed/` : le nouveau mot 
+
+On obtient ce résultat : 
+```txt
+Hello world!
+Welcome to sed.
+sed is awesome.
+```
+
+Pour un remplacement global, on utilise l'option `g`. Toute les occurrences seront remplacés
+
+```shell
+sed 's/Linux/sed/g' example.txt
+```
+
+Pour ignorer la casse, on utilise l'option `I` ou `i`
+
+```shell
+sed 's/linux/sed/gi' example.txt
+```
+
+Par défaut, le tool affiche juste le résultat dans la console, sans modifier le fichier. Pour enregistrer les changements directement dans le fichier, :
+
+```shell
+sed -i 's/Linux/sed/g' example.txt
+```
+
+Le fichier sera mis à jour avec la modification
+
+### Suppression de lignes 
+
+On souhaite supprimer toutes les lignes contenant le mot "Linux"
+
+```shell
+sed '/Linux/d' example.txt
+```
+
+Pour supprimer une ligne en fonction du numéro :
+
+```shell
+sed '2d' example.txt
+
+# supprimer plusieurs lignes 
+sed '2,3d' example.txt
+```
+
+### Utiliser les regex
+
+On peut utiliser des regex pour rechercher des correspondances plus complexes 
+
+```shell
+sed 's/^error:.*/Issue Detected/' logs.txt
+```
+
+On remplace toutes les lignes qui commence par "error" par "Issue Detected". 
+- `.*` : signifie tout ce qui suit 
+
+### Insérer et ajouter des lignes 
+
+```shell
+sed '/Linux/i\# Apprendre, c'est amusant' example.txt
+```
+
+Cette commande permet d'insérer avant chaque ligne contenant "Linux"
+
+Pour insérer une ligne après une correspondance 
+
+```shell
+sed '/Linux/a\# sed le rend plus facile' example.txt
+```
+
+---
+
+## AWK - formatage des données 
+
+Permet de sélectionner rapidement des colonnes, de filtrer des lignes, de formater les données et d'effectuer des opérations arithmétique.
+
+Le concept de l'outil est de bosser avec les données à l'aide de modèles et d'actions.
+
+```shell
+awk 'modèle {action}' fichier
+```
+
+- `modèle`: condition vérifié pour chaque ligne du fichier 
+- `action`: opérations effectuées sur les lignes correspondant au modèle
+- Si le modèle est absent l'action est appliqué à chaque ligne
+
+```shell
+awk '{print $1}' data.txt
+```
+
+Cette commande imprime la première colonne `$1` pour chaque ligne du fichier `data.txt`
+
+### Sélection de colonne 
+
+C'est la façon la plus simple d'utiliser l'outil. On sélectionne une ou plusieurs colonnes d'un fichier. Un champ est représenté comme `$n` ou `n` est le numéro de la colonne, en commençant par 1.
+
+Pour afficher la première et la troisième colonne 
+
+```shell
+awk '{print $1, $3}' data.txt
+```
+
+On as ce contenu dans notre fichier 
+
+```txt
+John 25 Engineer
+Jane 30 Designer
+Mike 28 Developer
+```
+
+On obtient ce résultat 
+
+```txt
+John Engineer
+Jane Designer
+Mike Developer
+```
+
+### Traitement conditionnel des lignes 
+
+Les conditions permettent de ne traiter que les lignes qui répondent à certains critères 
+
+Par exemple, afficher les lignes où la valeur dans la deuxième colonne est supérieur à 27 
+
+```shell
+awk '$2 > 27 {print $1, $2}' data.txt
+
+# résultat
+Jane 30
+Mike 28
+```
+
+### Opération arithmétique 
+
+On peut venir faire des calculs à la volée. Par exemple, ajouter 10 à la valeur de la deuxième colonne 
+
+```shell
+awk '{print $1, $2+10}' data.txt
+
+# résultat 
+John 35
+Jane 40
+Mike 38
+```
+
+### Comptage de ligne 
+
+Le tool connait automatiquement le nombre de lignes traitées. Cette information est stockée dans la variable `NR`
+
+Pour compter le nombre de ligne dans le fichier 
+
+```shell
+awk 'END {print NR}' data.txt
+
+# résultat 
+3
+```
+
+### Formatage de la sortie 
+
+Il prend en charge une sortie formatée à l'aide de la fonction `printf`.
+
+Affichage des données avec alignement 
+
+```shell
+awk '{printf "%-10s %-5s %-10s\n", $1, $2, $3}' data.txt
+
+# résultat 
+John       25    Engineer
+Jane       30    Designer
+Mike       28    Developer
+```
+
+### Variable 
+On peut utiliser des variables pour stocker des données et simplifier le travail 
+
+Par exemple, on calcul la somme de la deuxième colonne 
+```shell
+awk '{sum += $2} END {print "Âge Total :", sum}' data.txt
+
+# résultat 
+Âge Total : 83
+```
+
+### Expression régulière 
+
+On peut aussi utiliser les regex pour rechercher des lignes 
+
+Par exemple, on veux afficher les lignes ou la première colonne contient la lettre `J`
+```shell
+awk '/J/ {print $0}' data.txt
+
+# résultat 
+John 25 Engineer
+Jane 30 Designer
+```
+
+--- 
+## TRIE ET FILTRAGE DES FICHIER
+
+### SORT - Trie et filtrage des fichiers 
+
+Cette commande permet de trier les lignes dans un fichier texte. Elle fonctionne avec n'importe quel format de texte.
+
+Par défaut, le trie est par ordre alphabétique.
+
+```shell
+sort [options] fichier
+```
+
+On as ce fichier texte 
+```txt
+Charlie
+Alice
+Bob
+David
+```
+
+On utilise la commande pour trier ligne
+
+```shell
+sort names.txt 
+
+# résultat 
+Alice
+Bob
+Charlie
+David
+```
+
+```shell
+# trie inverser
+sort -r names.txt
+
+# trie numérique 
+sort -n numbers.txt
+
+# trie en appliquant un trim
+sort -b fichier.txt
+
+# triage sur colonne 
+sort -k2 -n visits.log
+```
+
+
+---
+
+### uniq - suppression des lignes dupliquées
+
+Cette commande permet de supprimer les lignes duppliquées dans un fichier. Elle ne fonctionnent qu'avec des doublons consécutifs. 
+Il faut au préalable trier les lignes.
+
+```shell
+uniq [options] fichier
+
+uniq colors.txt
+
+# triage et suppression des doublons 
+sort colors.txt | uniq
+
+# comptage des répétitions 
+sort colors.txt | uniq -c
+
+# trie + comptage 
+sort access.log | uniq -c | sort -rn
+```
+
+---
+
+### cut - Extraction de lignes 
+
+Permet d'extraire certaines parties des lignes comme des colonnes spécifiques dans un fichier CSV ou plages de caractères 
+
+```shell
+cut [options] fichier
+
+# extraction de la premiere colonne 
+cut -d',' -f1 data.csv
+```
+
+- `-d` : séparateur => ici la virgule 
+- `-f1`: champ ou colonne à extraire
+
+--- 
+
+## TELECHARGEMENT DE FICHIER 
+
+### CURL - Transfert de fichier
+
+Outil CLI qui permet de transférer des données via des protocoles réseau. Il supporte plus de 20 protocoles. 
+
+```shell
+curl [options] URL 
+```
+#### Télécharger une page web 
+
+```
+# télécharger une page internet => permet de récupérer le code HTML
+curl http://www.google.com
+
+# enregistrer le résultat dans un fichier 
+curl -o google.html http://google.com 
+```
+
+Le `-o` indique à curl de rediriger la sortie dans un fichier. Le code HTML sera télécharger dans le fichier `google.html`.
+
+#### Télécharger un fichier 
+
+On peut utiliser le CLI pour télécharger des fichiers depuis internet (comme un `.zip`)
+
+```shell
+curl -O http://example.com/file.zip
+```
+
+- `-O` sauvegarde le fichier avec son nom d'origine, indiqué dans l'URL
+
+#### Authentification HTTP 
+
+Parfois, l'accès au fichier ou une ressource API est protégé par un login ou un mot de passe. C'est utile pour travailler avec des API privée, comme GitHub 
+```shell
+curl -u username:password http://example.com/private-data
+```
+
+#### Téléchargement via API 
+On peut utiliser curl pour faire des requête vers des API
+```shell
+curl -X GET "https://api.exchangerate-api.com/v4/latest/USD"
+```
+
+- `-X`: indique la méthode de requête
+
+---
+
+### WGET - Téléchargement de fichier
+
+Il est spécialement conçu pour le téléchargement de gros fichier, et prends en charge la reprise de téléchargement.
+
+```shell
+wget [options] URL
+
+# téléchargement d'un fichier simple 
+wget http://example.com/file.zip
+
+# téléchargement avec changement de nom 
+wget -O newfile.zip http://example.com/file.zip
+
+# reprise de téléchargement 
+wget -c http://example.com/largefile.iso
+
+# télécharger un site entier 
+wget --mirror http://example.com
+
+```
+
+---
+
+## MISE A JOUR SYSTEME
+
+### APT GET - Système debian 
+
+`apt-get` c'est l'outil CLI qui permet d'intéragir avec APT (Advanced Packaging Tool), qui est un gestionnaire de paquets utilisé dans Debian et Ubuntu.
+
+```shell
+# vérifie les nouveauté 
+sudo apt-get update 
+
+# mise à jour des paquets vers la dernière versions
+sudo apt-get upgrade
+
+# mets à jour et ajoute ou supprime des dépendances nécessaire pour l'update
+sudo apt-get dist-upgrade
+
+# installer un paquet 
+sudo apt-get install <paquet>
+
+# supprimer un paquet 
+sudo apt-get remove <paquet>
+
+# supprimer les fichiers de config 
+sudo apt-get purge <paquet>
+
+# nettoyer des paquets supprimés
+sudo apt-get autoremove 
+
+# nettoyer le cache des paquets téléchargés
+sudo apt-get clean 
+
+```

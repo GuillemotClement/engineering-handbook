@@ -1,3 +1,7 @@
+# Rust
+
+
+
 ## CARGO 
 
 ```shell
@@ -86,7 +90,29 @@ Le masquage permet également de changer le type de la valeur.
 let espaces = espaces.len(); // contient un valeur numérique
 ```
 
+---
 
+## TYPE DE DONNEES 
+
+Le compilateur Rust doit connaître tous les types de toutes les variables au moment de la compilation. Il peut également déduire quel type utiliser en se basant sur sa valeur, et sur la façon dont elle est utilisée.
+
+Dans le cas où plusieurs types sont envisageable, par exemple, lorsque l'on convertis une chaîne en type numérique, il est nécessaire d'ajouter une annotation de type 
+
+```rust 
+let supposition: u32 = "42".parse().expect("Ce n'est pas un nombre");
+```
+
+Si l'annotation n'est pas utilisé, Rust affiche une erreur.
+
+### Type sclalaires 
+
+
+
+
+
+
+
+---
 
 
 ## FONCTION

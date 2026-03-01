@@ -1,3 +1,5 @@
 .venv/database
 ./docs/.obsidian/*
 todo.md
+docs/.obsidian/*
+.obsidian
