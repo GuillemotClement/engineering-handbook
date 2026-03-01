@@ -1952,3 +1952,82 @@ Pour lancer le docker de prod
 ```shell
 docker compose --env-fil .env.prod up 
 ```
+
+---
+
+## Volumes et réseaux 
+
+### Volumes 
+Les volumes permettent de conserver des données en dehors des conteneurs, même après l'arrêt ou la supression des conteneurs. Il existent deux types de volumes :
+- Volumes nommés : gérées par Docker et sauvegardés dans le repertoire spécial sur le host
+- Volumes montés: montés dans un conteneur depuis un repertoire spécifié sur l'hôte 
+
+```compose
+# volume nommé 
+services:
+    db:
+        image: postgres:latest
+        volumes: 
+            - postgres-data:/var/lib/postgresql/data 
+volumes:
+    postgres-data:
+
+
+# volumes montés 
+services:
+    web: 
+        image: nginx:latest
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+            - ./html:/usr/share/nginx/html
+```
+
+Dans le premier exemple, on retrouve un volume nomé `postgres-data` crée et monté dans le repertoire `/var/lib/postgresql/data` dans le conteneur.
+
+Dans le seconde exemple, le répertoire `nginx.conf`et `html`sont montés dans le conteneur en tant que volumes montés.
+
+### Réseaux 
+Les réseaux permettent aux containers de communiquer entre eux. Chaque container peut être connecté à un ou plusieurs réseaux, ce qui permet d'assurer l'isolation et la gestion du trafic.
+Il existent trois types de réseaux :
+- Réseaux bridge: par défaut, les containers se connectent à un réseau bridge, ce qui leur permet de communiquer sur un même hôte 
+- Réseaux overlay : utilisés pour connecter des containers exécutés sur différents hôtes dans un cluster Docker Swarm 
+- Plugins réseau : permettent d'utiliser des drivers réseaux tiers pour des configuration plus avancées.
+
+```yaml 
+services:
+    web: 
+        image: nginx:latest 
+        networkds:
+            - front-end 
+        
+    app:
+        image: myapp:latest 
+        networks:
+            - front-end 
+            - back-end 
+    
+    db: 
+        image: postgres:latest 
+        networks: 
+            - back-end 
+
+networks:
+    front-end:
+    back-end:
+```
+
+Dans cet exemple, deux réseaux personnalisées front-end et back-end sont crées. Le service app est connectés aux deux réseaux, le service web sur le réseau front-end et le service db sur le réseaux backend.
+
+---
+
+## Mise à l'échelle 
+
+### docker compose scale 
+La mise à l'échelle c'est le processus d'augmentation ou de diminution du nombres d'instances de conteneurs qui exécutent le même service, ce qui permet de gérer la charge et d'assurer la résilence de l'application.
+
+```shell
+docker compose scale SERVICE=NUM
+```
+
+- **SERVICE**: le nom du service à mettre à l'échelle 
+- **NUM**: le nombres d'instances devant être exécutées.
