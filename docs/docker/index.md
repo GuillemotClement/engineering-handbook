@@ -1842,7 +1842,7 @@ Docker compose viens automatiquement charger les variables depuis le fichier `.e
 
 ### Transmission des variables 
 
-Il est possible de transmettre directement via la CLI les variables d'environnement.
+Il est possible de transmettre directement via la CLI les variables d'environnement via la commande `export`. On passe ensuite le nom de la variable d'environnement, et celle ci seront passé ensuite au docker compose au lancement de celui ci.
 
 ```shell
 export NGINX_VERSION=latest
@@ -2031,3 +2031,160 @@ docker compose scale SERVICE=NUM
 
 - **SERVICE**: le nom du service à mettre à l'échelle 
 - **NUM**: le nombres d'instances devant être exécutées.
+
+On pourras pas exemple venir lancer 3 instances d'un service avec la commande :
+```shell
+# ancienne syntaxe 
+docker compose scale web=3
+
+# nouvelle syntaxe 
+docker compose up --scale web=3
+```
+
+Ou `web` correspond au niveau du service dans le docker compose. Avant de lancer la commande, les services doivent être démarrés.
+
+Si un service prévoit une mise à l'échelle sur plusieurs instances, il est nécessaire d'indiquer une plage de ports. Cela permet de réserver sur la machine hôte les ports.
+```yaml
+services:
+    web:
+        image: nginx:latest
+        ports:
+            - "80-90:80"
+``` 
+
+---
+
+## Drivers réseaux 
+
+Les pilotes réseaux permettent aux containers d'intéragir entre eux et avec des réseaux externes.
+
+### Bridge 
+C'est le pilote réseau par défaut. Il crée un réseau interne où les containers peuvent communiquer entre eux. Ce réseau est isolé du réseaux externe de l'hôte.
+
+- Les containers peuvent intéragir entre eux via leur adresse IP 
+- Les réseaux externes ne peuvent pas intéragir directement avec les containers du réseau Bridge, il faut utiliser le port forwarding.
+
+### Host 
+Permet au container d'utiliser directement le réseau de la machine hôte, il aura la même adresse IP que l'hôte, et pourra utiliser toutes ces interfaces réseaux.
+
+- Fonctionnent plus rapidement grâce à la réduction des frais liés à la virtualisation réseau.
+
+```shell
+docker run -d --network host --name my_container nginx
+```
+
+### None 
+Désactive toutes les fonctionnalités réseau du conteneur. 
+
+```shell
+docker run -d --network none --name my_container busybox
+```
+
+### Overlay 
+Utilisé pour crée un réseau distribué qui s'étend sur plusieurs hôtes Docker. Il est généralement utilisé par Docker Swarm ou Kubernetes pour permettre l'intéraction réseau entre les conteneurs sur différents hôte.
+
+Pour l'utiliser, il est nécessaire de créer un cluster.
+```shell
+# init du docker swarm 
+docker swarm init 
+
+# création du réseau overlay 
+docker network create -d overlay my_overlay_network
+
+# lancement du conteneur connectés au réseau
+docker server create --name my_service --network my_overlay_network nginx
+```
+
+### docker network 
+Cette commande permet de créer, configurer et gérer des réseaux.
+
+#### docker network create 
+Permet de créer un nouveau réseau. On peut utiliser les différents drivers `bridge`, `host`, `overlay`, `macvlan`
+
+```shell
+# création d'un réseau avec un driver bridge 
+docker newtwork create --driver bridge my_bridge_network
+
+# réseau avec un driver overlay 
+docker network create --driver overlay my_overlay_network
+
+# driver macvlan
+docker network create --driver macvlan \
+    --subnet=192.168.1.0/24 \
+    --gateway=192.168.1.1 \ 
+    -o parent=eth0 my_macvlan_network
+```
+
+#### docker network ls 
+Permet d'afficher la liste des réseaux créées dans Docker 
+
+```shell
+docker network ls
+
+# sortie
+NETWORK ID          NAME                DRIVER              SCOPE
+0e7e2d58fe94        bridge              bridge              local
+9c84fdfc69ee        host                host                local
+71cfb6a79d9e        none                null                local
+```
+
+#### docker network inspect 
+Permet d'obtenir des info détaillées sur un réseau.
+
+```shell
+docker network inspect my_bridge_network 
+
+# sortie 
+[
+    {
+        "Name": "my_bridge_network",
+        "Id": "0e7e2d58fe94",
+        "Created": "2021-01-01T00:00:00.000000000Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Containers": {
+            "container_id": {
+                "Name": "my_container",
+                "EndpointID": "6c52f8c75c1e",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+```
+
+#### docker network connect 
+Permet de connecter un conteneur déjà démarré à un réseau existant.
+
+```shell
+docker network connect my_bridge_network my_container 
+```
+
+#### docker network disconnect 
+Permet de déconnecter un conteneur d'un réseau 
+```shell
+docker network disconnect my_bridge my_container
+```
+
+#### docker network rm 
+Permet de supprimer un réseau. Ne peut être supprimé qu'après avoir déconnecté tous les conteneurs connectés.
+```shell
+docker network rm my_bridge_network 
+```
