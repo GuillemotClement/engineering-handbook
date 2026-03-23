@@ -1,6 +1,8 @@
-# Glossaire 
+# SQL 
 
-## COMMENTAIRE 
+## OPERATION DE BASE 
+
+### COMMENTAIRE 
 ```sql
 /* Commentaire */ 
 
@@ -14,10 +16,8 @@ SELECT * FROM employee -- WHERE YEAR(join_date) = 2015
 
 - Nom des colonnes et de tables qui contiennent un espace ou des caractères spéciaux entourés de `"`.
 
----
-## REQUETE
 ### SELECT 
-Permet de sélectionner les colonnes à extraire 
+Permet de sélectionner les colonnes à extraire d'une table.
 ```sql
 SELECT colonne1, colonne2, … colonneN
 FROM table
