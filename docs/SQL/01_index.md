@@ -12,7 +12,7 @@
 SELECT * FROM employee -- WHERE YEAR(join_date) = 2015
 ```
 
-## FORMATAGE 
+### FORMATAGE 
 
 Par convention, utiliser ce formation pour écrire des requêtes lisible : 
 
@@ -81,16 +81,25 @@ FROM students;
 ---
 
 ### WHERE 
-Permet de filtrer les données retourner par la requête 
+
+Permet de filtrer les données retourner par la requête. Les lignes retournées par la requête doivent remplir la condition pour être affichées.
+
 ```sql
 SELECT colonne1, colonne2
 FROM table
 WHERE condition;
 
--- exemple 
+-- extraire les étudiants de + de 18 ans
 SELECT name, age
 FROM students
 WHERE age > 18;
+
+-- exclure l'étudiant avec un id de 1 
+SELECT 
+	id,
+	name
+FROM users 
+WHERE id <> 1;
 ```
 
 #### Opérateur de comparaison
@@ -106,45 +115,54 @@ WHERE age > 18;
 
 #### Opérateur logique 
 
+Ces opérateurs permettent de combiner des conditions : 
+- `AND` : les deux conditions sont vraies - 1
+- `OR`: une des deux conditions est vraie - 2
+- `NOT` : inversion de condition, sélection des lignes pour lesquelles la condition est fausse - 3
+
+Les opérateurs logiques sont exécuté dans l'ordre indiqué par les chiffres. L'utilisation des parenthèses permet de modifier l'ordre d'exécution.
+
 ```sql
--- AND 
-SELECT colonne1, colonne2
-FROM table
-WHERE condition AND condition2;
+-- AND - filtrer les étudiants de plus de 18 ans avec la note A
+SELECT name, age, grade
+FROM students
+WHERE age > 18 AND grade = 'A';
 
--- OR 
-SELECT colonne1, colonne2
-FROM table
-WHERE condition OR condition2;
+-- OR - filtrer les note A ou B
+SELECT name, age, grade
+FROM students
+WHERE grade = 'A' OR grade = 'B';
 
--- NOT => inversion 
-SELECT colonne1, colonne2
-FROM table
-WHERE NOT condition;
+-- NOT - filtrer les étudiants qui n'ont pas la note A  
+SELECT name, age, grade
+FROM students
+WHERE NOT grade = 'A';
 
--- combinaison 
-SELECT colonne1, colonne2
-FROM table
-WHERE (condition1 AND condition2) OR condition3;
+-- combinaison - étudiant de plus de 18 avec une note 1 ou avec la note B
+SELECT name, age, grade
+FROM students
+WHERE (age > 18 AND grade = 'A') OR grade = 'B';
 ```
 
 ---
 
 ### ORDER BY 
-Permet de trier le résultats issue de la requête 
-```sql
-SELECT colonne1, colonne2
-FROM table
-ORDER BY colonne1 DESC;
 
--- tier les etudiant dans l'ordre asc de l'âge 
+Permet de trier l'ordre d'affichage des résultats. Sans cette instruction, l'ordre n'est pas garantis. Par défaut, `ASC`.
+
+Il est possible de réaliser un triage sur plusieurs colonne. Dans ce cas, l'ordre se fait sur la première colonne, puis la seconde.
+
+Il est possible de faire le triage sur des résultats de calcul.
+
+```sql
+-- trier les etudiant dans l'ordre asc de l'âge 
 SELECT name, age
 FROM students
 ORDER BY age ASC;
 
--- desc
+-- trier dans l'ordre inverse 
 SELECT name, age
-FROM students
+FROM students 
 ORDER BY age DESC;
 
 -- triage sur colonne multiple
@@ -170,7 +188,7 @@ ORDER BY prix_remisé ASC;
 ```
 
 ---
-
+STEP 2026-03-23
 ### LIMIT 
 Permet de limiter le nombre de résultats retournées par la requête. Généralement utiliser avec `ORDER BY` pour garder des résultats cohérents.
 ```sql
