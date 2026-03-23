@@ -14,36 +14,67 @@ SELECT * FROM employee -- WHERE YEAR(join_date) = 2015
 
 ## FORMATAGE 
 
+Par convention, utiliser ce formation pour écrire des requêtes lisible : 
+
+```sql 
+SELECT  <col_1>,
+		<col_2> 
+FROM <table>
+WHERE <condition> -- condition pour filtrer les lignes 
+GROUP BY <col>
+HAVING <col>
+ORDER BY <tri>; 
+```
+
 - Nom des colonnes et de tables qui contiennent un espace ou des caractères spéciaux entourés de `"`.
 
 ### SELECT 
-Permet de sélectionner les colonnes à extraire d'une table.
-```sql
-SELECT colonne1, colonne2, … colonneN
-FROM table
-```
 
-On peut utiliser des expressions pour retourner directement le résultat 
+Permet de sélectionner les colonnes à extraire d'une table. 
+
+L'ordre réel d'exécution est le `FROM` puis le `SELECT` : 
+1. Le serveur trouve la table définis par le `FROM`
+2. Les conditions sur les lignes sont appliquées, et SQL ne conserve que les lignes qui correspondent aux condition
+3. Les colonnes demandées sont sélectionnées
+
 ```sql
+-- requête basique 
+SELECT colonne1, colonne2, … colonneN -- les colonnes à extraires
+FROM table; -- depuis quelle table on veux récupérer les données
+
+-- récupérer toutes les colonnes d'une table => à éviter
+SELECT * 
+FROM students;
+
+-- utiliser une expression dans une requête 
 SELECT 
-	name, 
-	21-age -- affiche directement le résultat du calcul
+	name,
+	21 - age as 'age_before_majority' -- on affiche directement le résultat 
 FROM students;
 ```
 
-#### Concaténation 
+#### Concaténation de colonne
+
+Permet de concaténer plusieurs colonnes dans le résultat.
+
 ```sql 
 SELECT first_name || ' ' || last_name, grade
 FROM students;
 ```
 
-#### AS 
-Permet de renommer la colonne du résultat.
+#### Alias
+Permet de renommer la colonne dans le résultat 
+
 ```sql
 SELECT 
   first_name AS "Prénom",
   last_name AS "Nom de famille",
   grade AS "Note"
+FROM students;
+
+-- concaténation avec alias 
+SELECT  first_name || ' ' || last_name AS "Nom complet", 
+		grade AS "Note" 
 FROM students;
 ```
 
