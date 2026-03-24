@@ -530,7 +530,7 @@ FROM
 -- 999,999.00 : définit le format avec séparateur de milliers et deux décimales
 ```
 
-
+%% niveau 6 - travail sur chaine  %%
 
 
 ---
