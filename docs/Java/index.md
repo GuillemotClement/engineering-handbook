@@ -186,9 +186,6 @@ x = x + 1;		// À cette ligne, la valeur de x augmente de 1, x vaut maintenant 4
 ```
 
 ---
-
-# Types Java
-
 ## INT
 
 Le type `int` est le type adapté pour stocker des nombres entiers positif ou négatif.
@@ -328,71 +325,39 @@ System.out.println(messy.trim()); // "hello"
 
 Il est possible de convertir une valeur dans un autre type. Si cette conversion n'est pas effectuée, cela provoquera une erreur.
 
-### Conversion int vers string
+Il n'est pas possible d'effectuer des opération arithmétique avec le type `String`, même si la chaîne ne contient que des nombres.
 
-Il n'est pas possible d'effectuer des operations des varaibles de type `String`, meme si la chaine ne contient pas de chiffres.
+### Int => String
 
-#### String.valueOf()
+Il n'est pas possible d'effectuer des opérations des variables de type `String`, même si la chaine ne contient pas de chiffres.
 
-C'est la méthode principale et la plus répandue
+Il existe plusieurs façon de convertir en entier en chaîne de caractère.
 
 ```java
+// valueOf() => méthode principale
 int number = 42;
 String str = String.valueOf(number);  // str == "42"
-```
 
-La méthode convertit un nombre en une chaîne qui correspond au type de l'objet passé en argument.
-
-#### Concaténation avec une chaîne vide
-
-```java
+// concaténation avec une string vide
 int number = 42;
-String str = "" + number;
+String str = "" + number; // "42"
+
+// concaténation avec une string
+int a = 5;
+String name = "Anya" + a; //"Anya5"         
 ```
 
-#### Conversion implicite en chaîne
+### Integer.ParseInt()
 
-Cette conversion se produit automatiquement lorsque l'on concaténe un `String` avec un autre type
-
-```java
-int a = 5;
-String name = "Anya" + a;            //  name contient la chaîne Anya5
-
-int a = 5;
-String city = a + "New York" + a;   //  city contient la chaîne 5New York5
-
-int number = 10;
-String code = "Yo";
-String message = "Hello! " + number + code; //  message contient la chaîne Hello! 10Yo
-```
-
-### Conversion String => int
-
-Dans le cas ou la string ne contient que des nombres, on peut venir la convertir.
-
-#### Integer.parseInt()
+Dans le cas où une chaîne ne contient que des nombres, il est possible de la convertir. La méthode `Integer.parseInt()` permet de réaliser la conversion.
 
 ```java
 int x = Integer.parseInt(stroka);
-```
 
-`x` est la declaration de la variable, et `stroka` est un nombre donne sous forme de string.
-
-```java
 String str = "123";
-int number1 = Integer.parseInt(str);        //  number1 contient le nombre 123;
-
-int number2 = Integer.parseInt("321");      //  number2 contient le nombre 321
-
-int number3 = Integer.parseInt("321" + 0);  //  number3 contient le nombre 3210
-
-int number4 = "321"; //  Ne se compile pas : variable de type int, mais valeur de type String
+int number1 = Integer.parseInt(str); // 123
 ```
 
 ---
 
-## ADRESSAGE MEMOIRE ET VARIABLE
 
-### Organisation de la memoire
-
-Chaque ordinateur dispose d'une memoire vive
