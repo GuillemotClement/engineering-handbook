@@ -188,31 +188,49 @@ ORDER BY prix_remisé ASC;
 ```
 
 ---
-STEP 2026-03-23
 ### LIMIT 
-Permet de limiter le nombre de résultats retournées par la requête. Généralement utiliser avec `ORDER BY` pour garder des résultats cohérents.
-```sql
-SELECT colonne1, colonne2
-FROM table
-ORDER BY colonne ASC
-LIMIT nombre_de_lignes;
-```
 
-Pour limiter le nombre de résultat avec une requête dans `SQL Server`, on utilise `TOP`
+Limite le nombre de résultats retourné par la requête. Utilisé avec `ORDER BY` pour obtenir des résultats cohérents.
+
+Avec `SQL Server`, il faut utiliser l'instruction `TOP`.
 
 ```sql
-$sql = "SELECT TOP 5
-          Annee,
-          Mois
-	      FROM FacturesCloture
-	      ORDER BY IdFactureCloture DESC";
+-- PG - affichage de 3 lignes de la table students
+SELECT *
+FROM students 
+LIMIT 3;
+
+-- affichage des 5 produits les plus chères
+SELECT product_name, price 
+FROM products 
+ORDER BY price DESC 
+LIMIT 5;
+
+-- 5 premiers étudiants de plus de 18 ans 
+SELECT *
+FROM students 
+WHERE age > 18
+LIMIT 5;
+
+-- SQL Server - TOP
+SELECT  TOP 5 
+		Annee, 
+		Mois
+FROM FacturesCloture
+ORDER BY IdFactureCloture DESC
 ```
 
-Dans cette requête, on aura les 5 dernière lignes ajoutée.
+#### Optimisation
 
+Dans le cas où l'on travail avec un système d'affichage de données, `LIMIT` permet d'afficher la première page de manière plus optimisé. On ne charge pas toutes les données directement, mais qu'une partie pour réduire la charge à la connexion d'un utilisateur.
 
-
-
+```sql
+-- récupération des 10 premiers employés, triés par date d'embouche
+SELECT *
+FROM employees 
+ORDER BY hire_date 
+LIMIT 10;
+```
 
 ---
 
