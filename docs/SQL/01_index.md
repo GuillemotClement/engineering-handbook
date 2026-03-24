@@ -233,27 +233,30 @@ LIMIT 10;
 ```
 
 ---
+### OFFSET - sauter des lignes
 
-### OFFSET 
-Permet de sauter des lignes et mettre en place une pagination.
+Permet de sauter des lignes et mettre en place une pagination. 
+
 ```sql 
-SELECT colonne1, colonne2
-FROM table
-OFFSET nombre_de_lignes;
-
 -- afficher à partir de la troisième ligne 
 SELECT *
 FROM students
-OFFSET 2;
+OFFSET 2; -- on saute les deux première lignes
 ```
 
-#### Pagination 
+En combinant avec `LIMIT`, on peut mettre en place un système de pagination. Pour chaque page, on saute les lignes qui ont déjà été affichées.
+
+Par exemple, sur une application, on souhaite sur chaque pages afficher deux lignes. 
+- Première page: on saute 0 lignes
+- Deuxième page: on saute 2 lignes 
+- etc ..
+
 ```sql
--- on affiche deux enregistrement à la fois à partir de la 3 lignes
+-- requète de la première page 
 SELECT *
-FROM students
-LIMIT 2
-OFFSET 2;
+FROM students 
+ORDER BY id 
+LIMIT 2;
 
 -- requête pour afficher la deuxième page
 SELECT *
@@ -268,9 +271,33 @@ FROM students
 ORDER BY id
 LIMIT 2
 OFFSET 4;
+```
 
--- pagination automatique 
-OFFSET = (numero_page - 1) * nb_row_per_page
+Pour mettre en place une pagination automatiquement, on peut utiliser cette formule :
+
+```sql 
+OFFSET = (numero_de_page - 1) * nombre_enregistrements_par_page
+
+-- première page 
+(1 - 1) * 2 = 0
+-- seconde page 
+(2 - 1) * 2 = 2
+-- troisème page 
+(3 - 1) * 2 = 4
+```
+
+#### Optimisation 
+
+L'utilisation de `OFFSET` peut alourdir les requêtes car PG parcourt toutes les lignes qu'il doit sauter avant de retourner le résultat.
+
+Pour optimiser, on peut préférer l'utilisation d'un "curseur". Pour cela, on récupère l'id de la dernière ligne reçue sur la page précédentes, et on démarre la récupération depuis cet id.
+
+```sql 
+SELECT *
+FROM students 
+WHERE id > last_id_afficher
+ORDER BY id
+LIMIT 2;
 ```
 
 ---
