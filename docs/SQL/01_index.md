@@ -86,6 +86,20 @@ SELECT  first_name || ' ' || last_name AS "Nom complet",
 FROM students;
 ```
 
+#### DISTINCT 
+
+Retire tous les doublons des résultats
+
+```sql 
+-- retire les doublons, chaque ville apparait qu'une seule fois
+SELECT DISTINCT 
+	city 
+FROM students 
+ORDER BY 
+	city ASC;
+```
+
+
 ---
 
 ### WHERE 
@@ -399,6 +413,15 @@ WHERE order_date = CURRENT_DATE;
 
 Cette fonction permet de récupérer une partie précise d'une date (année, mois, jour, heure, minute).
 
+Argument disponible :
+- `year`: année 
+- `month`: mois
+- `day` : jour
+- `hour`: heure
+- `minute`: minute 
+- `second`: seconde
+- `dow` : jour de la semaine => 0 pour dimanche
+
 ```sql 
 DATE_PART('<partie>', date);
 
@@ -427,14 +450,89 @@ SELECT
 FROM users;
 ```
 
-Argument possible pour `partie` : 
-- `year`: année 
-- `month`: mois
-- `day` : jour
-- `hour`: heure
-- `minute`: minute 
-- `second`: seconde
-- `dow` : jour de la semaine => 0 pour dimanche
+### AGE() - intervalle date 
+
+Retourne l'intervalle entre une date passer en argument, et la date du jour sous forme de date
+
+```sql 
+SELECT 
+	DATE_PART('year', AGE(birth_date)) AS age 
+FROM students;
+```
+
+### CAST() - conversion de type 
+
+Cette fonction permet de convertir une valeur d'un type de données à un autre. La conversion de type est nécessaire pour comparer des données, faire des opération.
+
+```sql 
+CAST(<valeur> AS <type_cible>)
+
+-- conversion string => num 
+SELECT CAST('123' AS INTEGER); 
+-- conversion num => string 
+SELECT CAST(123 AS TEXT); 
+-- conversion date => string 
+SELECT CAST(NOW() AS TEXT)
+
+-- conversion pour un filtrage
+SELECT * 
+FROM students 
+WHERE CAST(student_id AS INTEGER) = 101;
+```
+
+PG permet d'utiliser une syntaxe raccourcie avec `::` 
+
+```sql 
+<valeur>::<type_cible>
+
+-- string => number 
+SELECT '123'::INTEGER;
+-- num => string 
+SELECT 123::TEXT;
+-- date => string 
+SELECT NOW()::TEXT;
+
+-- conversion pour un filtrage 
+SELECT * 
+FROM students 
+WHERE student_id::INTEGER = 101;
+
+-- récupération des commandes de septembre 2023 et > 300
+SELECT 
+	order_d,
+	order_date::DATE as date,
+	amount
+FROM orders 
+WHERE amount > 300
+	AND order_date::DATE >= '2023-09-01' AND order_date::DATE <= '2023-09-30';
+```
+### TO_CHAR() - formatage 
+
+Permet de formater une valeur. 
+
+```sql 
+TO_CHAR(<valeur>, <fomat_cible>)
+
+-- formatage de date 
+SELECT 
+	TO_CHAR(birth_date, 'DD-MM-YYYY') AS formatted_birth_date
+FROM students;
+
+-- formatage monétaire 
+SELECT 
+	order_id,
+	TO_CHAR(total_price, 'FM$999,999.00') AS formatted_price
+FROM 
+	orders;
+	
+-- FM : enlève les espaces en trop 
+-- $ : ajoute le symbole de la monnaie 
+-- 999,999.00 : définit le format avec séparateur de milliers et deux décimales
+```
+
+
+
+
 ---
 
 ---
