@@ -1,8 +1,6 @@
 # SQL 
 
-## OPERATION DE BASE 
-
-### COMMENTAIRE 
+## COMMENTAIRE
 ```sql
 /* Commentaire */ 
 
@@ -12,21 +10,31 @@
 SELECT * FROM employee -- WHERE YEAR(join_date) = 2015
 ```
 
-### FORMATAGE 
+---
+## REQUETES
 
-Par convention, utiliser ce formation pour écrire des requêtes lisible : 
+### CONVENTION 
+
+Par convention, utiliser ce format pour écrire des requêtes lisible : 
 
 ```sql 
 SELECT  <col_1>,
 		<col_2> 
 FROM <table>
 WHERE <condition> -- condition pour filtrer les lignes 
-GROUP BY <col>
-HAVING <col>
-ORDER BY <tri>; 
+ORDER BY <COLONNE> <SENS>
+LIMIT <nb_lignes>
+OFFSET <nb_lignes>
 ```
 
-- Nom des colonnes et de tables qui contiennent un espace ou des caractères spéciaux entourés de `"`.
+#### Guillemets 
+
+Les noms de colonnes et de tables contenant des espaces ou des caractères spéciaux doivent être entourés de guillemets doubles :
+
+```sql 
+SELECT "first name", age 
+FROM students;
+```
 
 ### SELECT 
 
@@ -302,6 +310,132 @@ LIMIT 2;
 
 ---
 
+## FORMATAGE DES DONNEES
+
+Le formatage permet de transformer les données dans un format lisible, de simplifier l'extraction de données, de préparer des données pour l'export ou l'intégration avec d'autres systèmes et de rendre les rapports et visualisation lisibles et précis.
+
+### CONCAT()
+
+Cette fonction permet de fusionner les donnée de plusieurs champ, ou des chaînes.
+
+```sql
+-- affichage dans une colonne full_name
+SELECT 
+	CONCAT(first_name, ' ', last_name) AS full_name,
+FROM students
+
+-- syntaxe alernative 
+SELECT first_name || ' ' || last_name AS full_name 
+FROM students;
+
+-- création du nom complet en majuscule 
+SELECT 
+	CONCAT(UPPER(first_name), ' ', UPPER(last_name)) AS full_name
+FROM students;
+```
+
+Si la valeur est `NULL`, il sera afficher dans la chaine, par exemple `Otto NULL`. Pour gérer cette valeur, on peut utiliser `COALESCE` qui retourne le seconda paramètre si le premier est `NULL`.
+
+```sql
+-- gestion avec une valeur NULL
+SELECT 
+	CONCAT(first_name, ' ', COALESCE(middle_name, '')) AS full_name
+FROM students
+```
+### UPPER ()
+
+Permet de transformer une chaîne en texte majuscule.
+
+```sql
+SELECT 
+	email,
+	UPPER(email) AS email_upper
+FROM students;
+```
+
+### LOWER()
+
+Permet de transformer une chaîne en minuscule. Cette fonction permet de standardiser les emails par exemple.
+
+```sql 
+SELECT 
+	email,
+	LOWER(email) AS email_lower
+FROM students; 
+
+-- update pour standardiser les emails 
+UPDATE students 
+SET email = LOWER(email);
+```
+
+### NOW() - date complète
+
+Retourne la date et l'heure actuelles du serveur de la base de données. 
+
+```sql
+SELECT NOW();
+-- retourne ce type de résultat :
+2023-11-05 15:23:45.123456+00
+
+-- insertion d'une commande avec la date et l'heure 
+INSERT INTO orders (order_id, order_date, total_amount)
+VALUES (1, NOW(), 150.00);
+```
+
+### CURRENT_DATE - date
+
+Retourne la date du jour sans l'heure. 
+
+```sql
+SELECT CURRENT_DATE; -- 2023-11-05
+
+-- récupérer les lignes du jour 
+SELECT *
+FROM orders 
+WHERE order_date = CURRENT_DATE;
+```
+
+### DATE_PART() - récupération d'une partie de la date 
+
+Cette fonction permet de récupérer une partie précise d'une date (année, mois, jour, heure, minute).
+
+```sql 
+DATE_PART('<partie>', date);
+
+-- retourner l'année
+SELECT DATE_PART('year', NOW()) AS current_year; -- 2025
+
+-- extraction du mois de la date du jour 
+SELECT DATE_PART('month', CURRENT_DATE) AS current_month;
+
+-- selection ds utilisateurs nés cette année
+SELECT 
+	id,
+	first_name,
+	last_name,
+	birth_date, -- champ utilisé dans le filtre
+	grade
+FROM students 
+WHERE DATE_PART('year', birth_date) = DATE_PART('year', CURRENT_DATE);
+
+-- calcule âge user 
+SELECT 
+	user_id,
+	first_name, 
+	last_name,
+	DATE_PART('year', CURRENT_DATE) - DATE_PART('year', birth_date) AS age 
+FROM users;
+```
+
+Argument possible pour `partie` : 
+- `year`: année 
+- `month`: mois
+- `day` : jour
+- `hour`: heure
+- `minute`: minute 
+- `second`: seconde
+- `dow` : jour de la semaine => 0 pour dimanche
+---
 
 ---
 ## TYPE 
@@ -367,6 +501,8 @@ Postgres gère pleins de type de temps différents que l'on peut combiner dans u
 
 ---
 
+
+---
 ## TABLE
 
 ### Update d'une table 
