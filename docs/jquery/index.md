@@ -53,4 +53,23 @@ $('#IdClientError').hide();
 $('#IdClientError').show(); 
 
 // définition de l'élément cacher par défaut 
+
 ```
+
+## Récupération de valeur d'un input 
+
+```js
+function searchAnnuaireEntreprise() {  
+    $('#div_entreprise').html('<div class="text-center mt-4 mb-4"><i class="fa-solid fa-spinner fa-spin me-2"></i>Chargement en cours</div>');  
+  
+    let url = "ajax.php?U=<?= setURL('do=ajax&action=general&todo=searchAnnuaireEntreprise'); ?>";  
+    let fd = new FormData();  
+    fd.append('siret', $('#siret_recherche').val().trim());  
+    fd.append('libelle',$('#annuaire_recherche').val().trim());  
+  
+    loadUrl('#div_entreprise',url,fd);  
+}
+```
+
+- `.val()` : fonction jquery pour récupérer la valeur set dans un input 
+- `.trim()` : fonction pour nettoyer les espace
