@@ -24,3 +24,33 @@
 
 </script>
 ```
+
+## Scroll vers un élément 
+
+```js
+// configuration du comportement du scroll 
+const configScroll = {  
+    behavior: 'smooth',  
+    block: 'center',  
+}  
+// check de la valeur de l'input 
+if ($('#IdClient').val() == "") {
+	// si la valeur est vide, on affiche le message d'erreur   
+    $('#IdClientError').show();  
+    // on scroll l'écran vers l'input 
+    $('#RaisonSociale')[0].scrollIntoView(configScroll);  
+    isInvalidClient = true;  
+}
+```
+
+## Afficher/Cacher un élément 
+
+```js
+// permet de cacher un élément 
+$('#IdClientError').hide();
+
+// permet d'afficher un élément 
+$('#IdClientError').show(); 
+
+// définition de l'élément cacher par défaut 
+```

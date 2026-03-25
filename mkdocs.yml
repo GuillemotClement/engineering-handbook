@@ -1,10 +1,12 @@
 nav:
+  - PHP: PHP/index.md
   - Evode: Evode/index.md
   - SQL: SQL/01_index.md
   - Java: Java/index.md
   - JQuery: jquery/index.md
   - TypeScript: typescript/index.md
   - React: react/index.md
+  - NextJS: NextJS/index.md
   - Docker: docker/index.md
   - Git: git/index.md
   - GitHubAction: GitHubAction/index.md
