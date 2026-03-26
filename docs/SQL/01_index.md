@@ -837,6 +837,16 @@ Postgres gère pleins de type de temps différents que l'on peut combiner dans u
 ---
 ## TABLE
 
+### Création de table 
+
+```sql 
+-- id avec SQL server 
+CREATE TABLE MaTable (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    -- autres colonnes...
+);
+```
+
 ### Update d'une table 
 
 ```sql 
