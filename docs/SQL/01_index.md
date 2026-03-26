@@ -530,7 +530,94 @@ FROM
 -- 999,999.00 : définit le format avec séparateur de milliers et deux décimales
 ```
 
-%% niveau 6 - travail sur chaine  %%
+### LENGTH() - longueur de chaîne 
+
+Retourne le nombre de caractère d'une chaîne.
+
+```sql 
+LENGTH(string)
+
+SELECT 
+	name,
+	LENGTH(name) AS name_length
+FROM students;
+```
+
+### TRIM() - retirer les espaces 
+
+Permet de supprimer les espaces au début et fin de string.
+
+```sql 
+TRIM([LEADING | TRAILING | BOTH] chars FROM string)
+-- généralement utiliser comme cela 
+TRIM(string)
+
+SELECT '[' || TRIM('   Art   ') || ']' AS cleaned;
+```
+
+### SUBSTRING() - extraction de string
+
+Permet d'extraire une substring d'une string.
+
+- `start` : position du premier caractères, début à 1
+- `length`: nombre de caractère à extraire 
+
+```sql
+SUBSTRING(string FROM start FOR length)
+
+-- 3 premieres lettres du nom de famille 
+SELECT 
+	last_name, 
+	SUBSTRING(last_name FROM 1 FOR 3) AS prefix
+FROM students;
+
+-- domaine de l'email 
+SELECT 
+	email, 
+	SUBSTRING(email FROM POSTITION('@' IN email) + 1) AS domaine
+FROM students;
+```
+
+### POSITION() - chercher une substring 
+
+Retourne la position où commence la substring.
+
+```sql
+POSITION(substring IN string)
+
+SELECT 
+	email,
+	POSITION('@' IN email) AS at_position --retourne la position du caractère @
+FROM students;
+```
+
+On peut ensuite l'utiliser avec `SUBSTRING()` pour extraire des partie de string.
+
+### REPLACE() - remplacer une substring 
+
+Remplace les occurrences d'une substring par une autre.
+
+```sql
+REPLACE(string, from_substring, to_substring)
+
+-- remplace les espaces par des underscores 
+SELECT  
+	name,
+	REPLACE(name, ' ', '_') AS fixed_name
+FROM students;
+```
+
+### INITCAP() - première lettre en majuscule 
+
+Transforme la string pour que la première lettre de chaque mot soit en majuscule, les autres en minuscules.
+
+```sql 
+INITCAP(string)
+
+SELECT INITCAP('anna pal') AS full_name; --Anna Pal
+```
+
+
 
 
 ---
