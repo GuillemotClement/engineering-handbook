@@ -88,15 +88,30 @@ FROM students;
 
 #### DISTINCT 
 
-Retire tous les doublons des résultats
+Cette commande permet de retourner uniquement les résultat unique. Elle filtre les doublons.
 
+Lorsque l'on utilise cette commande, elle agit sur les colonnes indiqué dans le `SELECT`.
 ```sql 
 -- retire les doublons, chaque ville apparait qu'une seule fois
-SELECT DISTINCT 
-	city 
-FROM students 
-ORDER BY 
-	city ASC;
+SELECT DISTINCT city 
+FROM students;
+
+-- valeur unique sur plusieurs colonnes 
+-- on obtient les combinaison unique de prénom et de nom
+SELECT DISTINCT first_name, last_name
+FROM students;
+
+-- combinaison unique et tri
+-- on obtient les nom + prénom unique trié par nom de famille
+SELECT DISTINCT first_name, last_name
+FROM students
+ORDER BY last_name ASC;
+
+-- utilisation avec agrégation 
+-- compte le nombre de ville unique
+SELECT 
+	COUNT(DISTINCT city) AS unique_city_count
+FROM students;
 ```
 
 
@@ -167,7 +182,6 @@ WHERE (age > 18 AND grade = 'A') OR grade = 'B';
 ```
 
 ---
-
 ### ORDER BY 
 
 Permet de trier l'ordre d'affichage des résultats. Sans cette instruction, l'ordre n'est pas garantis. Par défaut, `ASC`.
@@ -208,6 +222,29 @@ SELECT product_name, price, ROUND(price * 0.9, 1) AS prix_remisé
 FROM products
 ORDER BY prix_remisé ASC;
 ```
+
+#### NULLS FIRST & NULLS LAST 
+
+Lorsque l'on souhaite trier des colonnes contenant des valeur `NULL`, on peut indiquer comment ranger ces valeurs.
+
+Par défaut, avec `ASC` les nul vont à la fin; et avec `DESC` les nul sont placé au début.
+
+```sql
+ORDER BY colonne ASC NULLS FIRST 
+ORDER BY colonne DESC NULLS LAST 
+
+-- meilleurs notes en premier et les nul à la fin
+SELECT student_id, grade
+FROM grades 
+ORDER BY grade DESC NULLS LAST;
+```
+
+---
+### GROUP BY 
+niveau 8
+
+
+
 
 ---
 ### LIMIT 
@@ -324,11 +361,11 @@ LIMIT 2;
 
 ---
 
-## FORMATAGE DES DONNEES
+### FORMATAGE DES DONNEES
 
 Le formatage permet de transformer les données dans un format lisible, de simplifier l'extraction de données, de préparer des données pour l'export ou l'intégration avec d'autres systèmes et de rendre les rapports et visualisation lisibles et précis.
 
-### CONCAT()
+#### CONCAT()
 
 Cette fonction permet de fusionner les donnée de plusieurs champ, ou des chaînes.
 
@@ -356,7 +393,7 @@ SELECT
 	CONCAT(first_name, ' ', COALESCE(middle_name, '')) AS full_name
 FROM students
 ```
-### UPPER ()
+#### UPPER ()
 
 Permet de transformer une chaîne en texte majuscule.
 
@@ -367,7 +404,7 @@ SELECT
 FROM students;
 ```
 
-### LOWER()
+#### LOWER()
 
 Permet de transformer une chaîne en minuscule. Cette fonction permet de standardiser les emails par exemple.
 
@@ -382,7 +419,7 @@ UPDATE students
 SET email = LOWER(email);
 ```
 
-### NOW() - date complète
+#### NOW() - date complète
 
 Retourne la date et l'heure actuelles du serveur de la base de données. 
 
@@ -396,7 +433,7 @@ INSERT INTO orders (order_id, order_date, total_amount)
 VALUES (1, NOW(), 150.00);
 ```
 
-### CURRENT_DATE - date
+#### CURRENT_DATE - date
 
 Retourne la date du jour sans l'heure. 
 
@@ -409,7 +446,7 @@ FROM orders
 WHERE order_date = CURRENT_DATE;
 ```
 
-### DATE_PART() - récupération d'une partie de la date 
+#### DATE_PART() - récupération d'une partie de la date 
 
 Cette fonction permet de récupérer une partie précise d'une date (année, mois, jour, heure, minute).
 
@@ -450,7 +487,7 @@ SELECT
 FROM users;
 ```
 
-### AGE() - intervalle date 
+#### AGE() - intervalle date 
 
 Retourne l'intervalle entre une date passer en argument, et la date du jour sous forme de date
 
@@ -460,7 +497,7 @@ SELECT
 FROM students;
 ```
 
-### CAST() - conversion de type 
+#### CAST() - conversion de type 
 
 Cette fonction permet de convertir une valeur d'un type de données à un autre. La conversion de type est nécessaire pour comparer des données, faire des opération.
 
@@ -506,7 +543,7 @@ FROM orders
 WHERE amount > 300
 	AND order_date::DATE >= '2023-09-01' AND order_date::DATE <= '2023-09-30';
 ```
-### TO_CHAR() - formatage 
+#### TO_CHAR() - formatage 
 
 Permet de formater une valeur. 
 
@@ -530,7 +567,7 @@ FROM
 -- 999,999.00 : définit le format avec séparateur de milliers et deux décimales
 ```
 
-### LENGTH() - longueur de chaîne 
+#### LENGTH() - longueur de chaîne 
 
 Retourne le nombre de caractère d'une chaîne.
 
@@ -543,7 +580,7 @@ SELECT
 FROM students;
 ```
 
-### TRIM() - retirer les espaces 
+#### TRIM() - retirer les espaces 
 
 Permet de supprimer les espaces au début et fin de string.
 
@@ -555,7 +592,7 @@ TRIM(string)
 SELECT '[' || TRIM('   Art   ') || ']' AS cleaned;
 ```
 
-### SUBSTRING() - extraction de string
+#### SUBSTRING() - extraction de string
 
 Permet d'extraire une substring d'une string.
 
@@ -578,7 +615,7 @@ SELECT
 FROM students;
 ```
 
-### POSITION() - chercher une substring 
+#### POSITION() - chercher une substring 
 
 Retourne la position où commence la substring.
 
@@ -589,11 +626,19 @@ SELECT
 	email,
 	POSITION('@' IN email) AS at_position --retourne la position du caractère @
 FROM students;
+
+-- utilisation avec SUBSTRING
+-- on vient récupérer la position de @ 
+-- on extrait ensuite le domaine sans le @ avec le +1
+SELECT 
+    email,
+    SUBSTRING(email, FROM POSITION('@' IN email) + 1) AS domain
+FROM users;
 ```
 
 On peut ensuite l'utiliser avec `SUBSTRING()` pour extraire des partie de string.
 
-### REPLACE() - remplacer une substring 
+#### REPLACE() - remplacer une substring 
 
 Remplace les occurrences d'une substring par une autre.
 
@@ -607,7 +652,7 @@ SELECT
 FROM students;
 ```
 
-### INITCAP() - première lettre en majuscule 
+#### INITCAP() - première lettre en majuscule 
 
 Transforme la string pour que la première lettre de chaque mot soit en majuscule, les autres en minuscules.
 
@@ -617,13 +662,115 @@ INITCAP(string)
 SELECT INITCAP('anna pal') AS full_name; --Anna Pal
 ```
 
+---
+### FONCTION AGREGATION
+
+Fonction spéciale SQL qui travaillent sur des groupes de lignes et retourne un seul résultat.
+
+SQL exécute une fonction d'agrégation après avoir sélectionné les données dans `SELECT`.
+
+#### COUNT() - compter le nombre de lignes
+
+Retourne le nombre total de ligne dans le résultat, ou le nombre de valeurs non nul dans une colonne précise.
+
+`COUNT(*)` viens compter le nombre de lignes, peut importe si une des valeurs est `NULL`
+
+`COUNT(colonne)` on compte le nombre de ligne où la valeur de la colonne n'est pas `NULL`.
+
+```sql 
+COUNT(colonne)
+
+-- compte le nombre d'étudiants
+SELECT 
+	COUNT(*) AS total_students
+FROM students;
+
+-- compte le nombre d'étudiant avec une note 
+SELECT 
+	COUNT(grade) AS students_with_grades
+FROM students;
+
+-- compte les valeurs unique distinct 
+SELECT 
+	COUNT(DISTINCT age)
+FROM students;
+```
+
+#### SUM()
+
+Additionne toutes les valeurs d'une colonne numérique. Les `NULL` sont ignoré dans la somme.
+
+Si on ajoute une condition dans la requête, seul les lignes qui vérifie la condition seront pris en compte dans la somme.
+
+```sql
+-- total de points cumulé 
+SELECT 
+	SUM(grade) AS total_grades
+FROM students;
+
+-- addition avec conditon
+SELECT 
+	SUM(salary) AS high_salary_total
+FROM salaries
+WHERE salary > 55000;
+
+-- savoir combien la masse salariale dépasse 200 000
+SELECT 
+	SUM(salary) - 2000000 AS surplus 
+FROM salaries;
+```
+
+#### AVG()
+
+Calcule la moyenne des valeurs numérique d'une colonne. Les `NULL` sont ignorés
+
+```sql
+SELECT avg(colonne)
+FROM table;
+
+-- calcul de la note moyenne des étudiants
+SELECT 
+	AVG(grade) AS average_grade
+FROM students;
+
+-- résultat arrondi
+SELECT ROUND(AVG(salary), 2) AS rounded_average_salary
+FROM employees;
+
+-- moyenne avec filtre 
+SELECT 
+	AVG(salary) AS average_salary
+FROM emplyees 
+WHERE id > 2;
+
+-- calculer la moyenne total des ventes 
+SELECT AVG(quantity * price) AS average_total_sale 
+FROM sales;
+```
+
+#### MIN() & MAX()
+
+Retourne la plus grande et la plus petite valeur d'une colonne. Ces fonctions sont utilisable sur des colonnes numérique ou bien textuelle. Dans ce cas, elles sont comparé par ordre alphabétique.
+
+Elle fonctionne aussi sur les dates.
+
+Les valeurs `NULL` sont exclus du résultat.
+
+```sql
+ SELECT 
+	 MIN(age) AS youngest_student,
+	 MAX(age) AS oldest_student
+FROM students;
+```
+
 
 
 
 ---
+## OLD
 
----
-## TYPE 
+
+### TYPE 
 
 ### TIME 
 
