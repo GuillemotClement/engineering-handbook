@@ -121,6 +121,8 @@ FROM students;
 
 Permet de filtrer les données retourner par la requête. Les lignes retournées par la requête doivent remplir la condition pour être affichées.
 
+Il filtre les données avant un groupement.
+
 ```sql
 SELECT colonne1, colonne2
 FROM table
@@ -241,7 +243,94 @@ ORDER BY grade DESC NULLS LAST;
 
 ---
 ### GROUP BY 
-niveau 8
+
+Cette instruction permet de rassembler des lignes qui ont la même valeur dans une ou plusieurs colonnes en groupes logiques.
+Cela permet d'appliquer des fonctions d'agrégation séparément à chaque groupe.
+
+Par exemple, on souhaite connaitre le salaire moyen par département. On utilise `GROUP BY
+ pour créer des groupes par département, puis on applique `AVG()` sur chaque groupe.
+
+**Chaque colonne qui n'est pas dans une fonction d'agrégation doit être listée dans le `GROUP BY`** 
+
+On indique dans le `GROUP BY`les colonnes que l'on souhaite grouper. Toutes les colonnes dans le `SELECT`qui ne sont pas agréger doivent être listé dans le `GROUP BY`.
+
+SQL commence par créer les groupes, puis vient appliquer la fonction d'agrégation sur chaque groupe.
+
+```sql
+SELECT colonne1, fonctionAgr(colonne2)
+FROM table
+GROUP BY colonne1;
+
+-- moyenne des notes par facs
+SELECT
+	faculty,
+	AVG(gpa) AS avg_gpa
+FROM students
+GROUP BY faculty -- on groupe sur la fac
+
+-- groupement sur fac et nom 
+SELECT
+	faculty,
+	name,
+	AVG(gpa) AS avg_gpa
+FROM students 
+GROUP BY faculty, name;
+
+-- compter le nombre d'étudiants et la moyenne des notes par fac
+SELECT 
+	faculty,
+	COUNT(*) AS student_count,
+	AVG(gpa) AS avg_gpa
+FROM students
+GROUP BY faculty;
+```
+
+### HAVING 
+
+Permet de filtrer les données après que les données aient été groupées et que les fonctions d'agrégat est fait leur calcul.
+
+Cet instruction permet de filtrer les données au niveau des groupes.
+
+Elle peut être utilisé sans `GROUP BY`. 
+```sql
+SELECT 
+	colonnes,
+	fonction_aggr
+FROM table 
+GROUP BY colonnes -- grouper
+HAVING condition; -- filtre sur les groupes
+
+-- faculté avec + 100 étudiants
+SELECT
+	faculty,
+	COUNT(*) AS student_count
+FROM students
+GROUP BY faculty 
+HAVING COUNT(*) > 100
+
+-- departement avec le salaire moyen > 50 0000
+SELECT 
+	department,
+	AVG(salary) AS avg_salary 
+FROM employees
+GROUP BY department 
+HAVING AVG(salary) > 50000;
+
+-- filtre sans groupement 
+SELECT 
+	AVG(salary) AS avg_salary 
+FROM employees
+HAVING AVG(salary) > 50000;
+
+-- produits avec un total de vente > 500
+SELECT 
+	product_id
+	SUM(sales_amount) AS total_sales
+FROM sales 
+GROUP BY product_id
+HAVING SUM(sales_amount) > 500;
+```
+
 
 
 
@@ -763,7 +852,64 @@ Les valeurs `NULL` sont exclus du résultat.
 FROM students;
 ```
 
+---
 
+### FONCTION NUMERIQUE 
+
+#### ROUND() - arrondi
+
+Permet de faire un arrondi classique. 
+- `number` : nombre arrondir
+- `digits`: optionnel, indique combien de chiffres après la virgule 
+
+```sql
+ROUND(number, [, digits])
+
+SELECT ROUND(4.67); -- 5
+SELECT ROUND(4.6789 , 2); -- 4.68
+```
+
+#### CEIL() - arrondi supérieur
+
+Permet de faire un arrondis à l'entier supérieur.
+
+Retourne toujours un entier. 
+
+```sql 
+SELECT CEIL(4.1); -- 5
+```
+
+#### FLOOR() - arrondi inférieur 
+
+Permet de faire un arrondis à l'entier inférieur. 
+
+```sql
+SELECT FLOOR(4.9); -- 4
+```
+
+#### MOD() - modulo
+
+Retourne le reste d'une division.
+
+```sql
+MOD(dividend, divisor)
+
+SELECT MOD(17,5); -- 2 
+SELECT MOD(10,3); --1
+
+-- nombre impair 
+SELECT 
+	student_id
+	CASE 
+		WHEN MOD(student_id, 2) = 0 THEN 'Pair' ELSE 'Impair'
+	END AS parite
+FROM students;
+```
+
+
+#### POWER() - puissance
+
+#### SQRT() - racine carrée
 
 
 ---
