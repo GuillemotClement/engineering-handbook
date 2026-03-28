@@ -1,5 +1,17 @@
 # PHP 
 
+## Extension 
+```shell
+# fedora 
+sudo dnf install -y \ php-intl \ php-pgsql \ php-xml \ php-amqp \ php-gd \ php-sodium \ php-curl \ php-zip \ php-pecl-redis6
+
+# verif des extension 
+php -m | grep -E "intl|pdo_pgsql|xsl|amqp|gd|openssl|sodium|iconv|redis|curl|zip"
+
+# relancer 
+sudo systemctl restart php-fpm
+```
+
 ## Composer 
 
 Pour installer les dépendances avec composer, il faut se placer dans le folder qui contient le `composer.json`.

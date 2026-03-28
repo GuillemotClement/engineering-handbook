@@ -11,6 +11,7 @@ nav:
   - Git: git/index.md
   - GitHubAction: githubaction/index.md
   - Homelab: homelab/index.md
+  - Symfony: symfony/index.md
 
 site_name: Engineering Handbook
 site_url: https://engineering-handbook.netlify.app
