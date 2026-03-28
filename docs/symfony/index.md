@@ -378,3 +378,196 @@ public function __toString(): string
 ```
 
 Dans chaque classe `Crud` généré, on peut ensuite ajouter des personnalitation pour l'affichage 
+
+## INTERFACE 
+
+### Twig 
+
+Moteur de templating. Il échappe automatique les input.
+
+Les fichiers se trouvent dans le dossier `templates/`. Les fichier devront utiliser l'extension `base.html.twig`.
+
+### Block 
+
+Un modèle peut définir des blocks. Ce sont des emplacements où les templates enfant qui étendent le modèle ajoute leur contenu.
+
+Les éléments block seront placé dans l'emplacement définit dans le template `extends`.
+
+```twig
+// étends le fichier de base
+{% extends 'base.html.twig' %}
+
+{% block title %}Conférence Guestbook{% endblock %}
+
+{% block body %}
+    <h2>Give your feedback!</h2>
+	// instruction twig pour parcourir la liste
+    {% for conference in conferences %}
+    // affichage d'élément
+        <h4>{{  conference }}</h4>
+    {%  endfor %}
+    
+{% endblock %}
+```
+
+### Retourner un template depuis le controller 
+
+Dans la méthode du controller, on viens retourne un fichier twig. 
+
+```php
+#[Route('/', name: 'homepage')]
+public function index(Environment $twig, ConferenceRepository $conferenceRepository): Response
+{
+	return new Response($twig->render('conference/index.html.twig', [
+		'conferences' => $conferenceRepository->findAll(),
+	]));
+}
+```
+
+- `Environment` : c'est le point d'entrée de twif
+- `ConferenceRepository` : permet d'accéder au méthode permettant de travailler avec l'entité et récupérer des information depuis la base de donnée
+- `render()` : la méthode qui permet de générer le rendu du template. Elle prend en premier argument le fichier à rendre, et en second les donnée passé dans le template. 
+
+### Créer un page detail 
+
+```php
+#[Route('/conference/{id}', name: 'conference')]
+public function show(Environment $twig, Conference $conference, CommentRepository $commentRepository): Response
+{
+	return new Response($twig->render('conference/show.html.twig', [
+		'conference' => $conference,
+		'comments' => $commentRepository->findBy(['conference' => $conference], ['createdAt' => 'DESC'])
+	]));
+}
+```
+
+Symfony est capable de récupérer automatiquement la ressource, en récupérant automatiquement l'identifiant issue de l'url.
+
+On peut ensuite venir créer le fichier de template. L'utilise des `|` permet d'utiliser des filtres twig qui vient transformer la valeur.
+
+```twig
+{% extends 'base.html.twig' %}
+
+{% block titile %}Conférence Guestbook - {{ conference }}{% endblock %}
+
+{% block body %}
+
+    <h2>{{ conference }} Conférence</h2>
+
+    {% if comments|length > 0 %}
+        {% for comment in comments %}
+            {% if comment.photofilename %}
+                <img src="{{ asset('uploads/photos/' ~ comment.photofilename) }}" style="max-width: 200px" />
+            {% endif %}
+
+            <h4>{{  comment.author }}</h4>
+            <small>
+                {{ comment.createdAt|format_datetime('medium', 'short') }}
+            </small>
+
+            <p>{{ comment.text }}</p>
+        {% endfor %}
+    {% else %}
+        <div class="">No comments have benn posted yet for this conferences.</div>
+    {% endif %}
+{% endblock %}
+```
+
+### Navigation 
+
+Pour ajouter des liens dans les template, on ne passe pas directement le chemin du fichier. On utilise la fonction `path()` avec le nom de la route passé en argument.
+
+En second paramètre, on peut passer les paramètre url . Ces données sous transmises sous forme d'objet.
+```twig
+{% for conference in conferences %}
+    <h4>{{ conference }}</h4>
+    <p>
+      <a href="{{ path('conference', { id: conference.id}) }}">View</a>
+    </p>
+{% endfor %}
+```
+
+### Pagination 
+
+Pour mettre ne place la pagination, on ajoute une nouvelle méthode dans le Repository. Cette méthode retourne un nombre limité de ressources pour éviter de surcharger.
+
+```php
+public function getCommentPaginator(Conference $conference, int $offset): Paginator
+	{
+		$query = $this->createQueryBuilder('c')
+			->andWhere('c.conference = :conference')
+			->setParameter('conference', $conference)
+			->orderBy('c.createdAt', 'DESC')
+			->setMaxResults(self::COMMENTS_PER_PAGE)
+			->setFirstResult($offset)
+			->getQuery();
+
+		return new Paginator($query);
+	}
+```
+
+Il faut ensuite mettre à jour la méthode du controller pour ajouter la pagination 
+
+```php
+	#[Route('/conference/{id}', name: 'conference')]
+	public function show(Request $request, Environment $twig, Conference $conference, CommentRepository $commentRepository): Response
+	{
+		$offset = max(0, $request->query->getInt('offset', 0));
+		$paginator = $commentRepository->getCommentPaginator($conference, $offset);
+
+		dump($conference);
+
+		return new Response($twig->render('conference/show.html.twig', [
+			'conference' => $conference,
+			'comments' => $paginator,
+			'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
+			'next' => min(count($paginator), $offset + $commentRepository::COMMENTS_PER_PAGE)
+		]));
+	}
+}
+```
+
+On vient ensuite mettre à jour le template
+
+```twig
+{% if previous >= 0 %}
+      <a href="{{ path('conference',  {id: conference.id, offset: previous}) }}">Previous</a>
+    {% endif %}
+    {% if next < comments|length %}
+      <a href="{{ path('conference', {id: conference.id, offset: next }) }}">Next</a>
+    {% endif %}
+```
+
+### Optimisation du controller
+
+Au lieu d'utiliser un environnement passer dans la méthode du controller, on peut directement utiliser la méthode de la classe parent 
+
+```php
+#[Route('/', name: 'homepage')]
+	public function index(ConferenceRepository $conferenceRepository): Response
+	{
+		return $this->render('conference/index.html.twig', [
+			'conferences' => $conferenceRepository->findAll(),
+		]);
+	}
+```
+
+## SESSION 
+
+### Stocker les sessions en base de données
+
+On commence par modifier les info de session avec le fichier `config/package/framework.yml`.
+
+Il faut modifier la valeur pour `handler_id`
+
+```yml
+handler_id: '%end(resolve:DATABASE_URL)%'
+```
+
+On viens ensuite créer une table `sessions`.
+
+```shell
+# table sessions automatiquement généré
+symfony console make:migration
+symfony console d:m:m
+```
