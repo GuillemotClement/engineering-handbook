@@ -817,3 +817,72 @@ Pour limiter des sections de l'application, on viens modifier `config/packages/s
 ```
 
 Les règles `access_control` limitent l'accès par des expressions régulière. Lorsqu'une personne connectée tente d'accéder à une URL qui commence par `/admin`, le système de sécurité vérifie qu'elle possède le rôle `ROLE_ADMIN`
+
+---
+
+## PROTECTION SPAM 
+
+L'api [Askismet](https://akismet.com/) permet d'ajouter une protection anti spam sur les formulaire.
+
+### Création d'une classe de vérification de spam 
+
+Dans le dossier `src`, on vient créer une nouvelle classe qui permet de contenir la logique de l'API d'Akismet et d'interpréter ses réponses
+
+### Utiliser des variables d'environnement
+
+---
+
+### Request 
+
+### Faire une requête
+
+La méthode `request()` du client HTTP permet de soumettre une requête.
+
+```php
+	public function getSpamScore(Comment $comment, array $context): int
+	{
+		$response = $this->client->request('POST', $this->endpoint, [
+			'body' => array_merge($context, [
+				'blog' => 'https://guestbook.example.com',
+				'comment_type' => 'comment',
+				'comment_author' => $comment->getAuthor(),
+				'comment_author_mail' => $comment->getEmail(),
+				'comment_content' => $comment->getText(),
+				'comment_date_gmt' => $comment->getCreatedAt()->format('c'),
+				'blog_lang' => 'en',
+				'blog_charset' => 'UTF-8',
+				'is_test' => true,
+			]),
+		]);
+
+		$headers = $response->getHeaders();
+		if ('discard' === ($headers['x-akismet-pro-tip'][0] ?? '')) {
+			return 2;
+		}
+
+		$content = $response->getContent();
+		if (isset($headers['x-akismet-debug-help'][0])) {
+			throw new \RuntimeException(sprintf('Unable to check for spam: %s (%s).', $content, $headers['x-akismet-debug-help'][0]));
+		}
+
+		return 'true' === $content ? 1 : 0;
+	}
+```
+
+
+---
+
+## TEST 
+
+```shell
+symfony composer req phpunit --dev
+
+# générer un fichier de test 
+symfony console make:test TestCase <File>Test
+
+# lancer les tests 
+symfony php bin/phpunit
+```
+
+
+https://symfony.com/doc/6.4/the-fast-track/fr/17-tests.html
