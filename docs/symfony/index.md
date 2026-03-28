@@ -100,6 +100,14 @@ Dans le navigateur, il faut ensuite venir cliquer sur la cible dans le profile, 
 
 Les controlleurs ont pour responsabilité de retourne une reponse HTTP pour une requête. 
 
+### Afficher les routes 
+
+Symfony fournit une commande permettant d'afficher toutes les routes de l'application.
+
+```shell
+symfony console debug:router
+```
+
 ### Maker Bundle 
 
 Symfony fournis des outils pour simplfiier la céation des éléments. Il permet de générer le boileplate pour des classes de Symfony.
@@ -307,6 +315,12 @@ Une fois généré, on peut mettre à jour la base de données :
 ```shell
 symfony console d:m:m
 ```
+
+
+
+
+
+
 
 ---
 
@@ -571,3 +585,235 @@ On viens ensuite créer une table `sessions`.
 symfony console make:migration
 symfony console d:m:m
 ```
+
+---
+
+## EVENEMENT 
+
+### listener
+
+Symfony intégère un composant Event Dispatcher qui permet de répartir certains évènements à des moments précis que les listener peuvent écouter.
+Ce sont des hook du framework.
+
+Un subscriber permet de décrire les event qu'un listener doit écouter. Il contient une méthode statique `getSubscribedEvents()` qui retourne sa configuration. Cela permet aux subscribers d'être enregsitrés automatiquement dans le dispatcher Symfony 
+
+### Implémenter un subscriber 
+
+```shell
+symfony console make:subscriber <name>
+```
+
+---
+
+## FORMULAIRE
+
+### Générer un formulaire 
+```shell
+symfony console make:form
+```
+
+La commande génère un nouveau fichier dans le dossier `App\Form\CommentType`
+
+Le fichier `<file>Type.php` permet de définir les champs de formulaire liées au modèle.
+
+Pour afficher le formulaire, il faut venir le créer dans le controlleur et le transmettre au template.
+
+```php
+#[Route('/conference/{slug}', name: 'conference')]
+	public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
+	{
+		// instanciation de l'objet 
+		$comment = new Comment();
+		// création du formulaire
+		$form = $this->createForm(CommentType::class, $comment);
+
+
+		$offset = max(0, $request->query->getInt('offset', 0));
+		$paginator = $commentRepository->getCommentPaginator($conference, $offset);
+
+		return $this->render('conference/show.html.twig', [
+			'conference' => $conference,
+			'comments' => $paginator,
+			'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
+			'next' => min(count($paginator), $offset + $commentRepository::COMMENTS_PER_PAGE),
+			// on transmet le formulaire au template
+			'comment_form' => $form
+		]);
+	}
+```
+
+On utilise ensuite le formulaire avec la méthode Twig `form`
+
+```twig
+<h2>Add your own feedback</h2>
+
+{{ form(comment_form) }}
+```
+
+### Personnaliser un form type 
+
+La personnalisation se fait dans le fichier `Type` associé au formulaire.
+
+```php
+public function buildForm(FormBuilderInterface $builder, array $options): void
+{
+	$builder
+		->add('author', null, [
+			'label' => 'Your name',
+		])
+		->add('text')
+		->add('email', EmailType::class)
+		->add('photo', FileType::class, [
+			'required' => false,
+			// permet de gérer manuellement la façon de traiter ce champ. Il n'est pas mapper à un champ de la table
+			'mapped' => false,
+			'constraints' => [
+				new Image(maxSize: '1024k')
+			],
+		])
+		->add('submit', SubmitType::class);
+}
+```
+
+### Validation des modèle 
+
+Les validation se place sur le l'entity.
+
+```php
+// permet d'utiliser les validateurs
+use Symfony\Component\Validator\Constraints as Assert;
+
+// on ajoute les validateur sur les champs du modèle 
+#[ORM\Column(length: 255)]
+#[Assert\NotBlank()]
+#[Assert\Email]
+private ?string $email = null;
+```
+
+### Traitement du formulaire
+
+Dans le controller, on peut venir gérer le formulaire 
+
+```php
+// on créer une construct pour passer la dépendance
+public function __construct(
+	private EntityManagerInterface $entityManager
+)
+{
+}
+
+#[Route('/conference/{slug}', name: 'conference')]
+public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
+{
+	// instanciation de l'objet
+	$comment = new Comment();
+	// création du formulaire
+	$form = $this->createForm(CommentType::class, $comment);
+
+	// traitement du formulaire
+	// le nouvel objet comment reçoit les données du formulaire
+	$form->handleRequest($request);
+	if ($form->isSubmitted() && $form->isValid()) {
+		// on passe l'id pour la relation FK
+		$comment->setConference($conference);
+
+		$this->entityManager->persist($comment);
+		$this->entityManager->flush();
+
+		return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);
+	}
+
+
+	$offset = max(0, $request->query->getInt('offset', 0));
+	$paginator = $commentRepository->getCommentPaginator($conference, $offset);
+
+	return $this->render('conference/show.html.twig', [
+		'conference' => $conference,
+		'comments' => $paginator,
+		'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
+		'next' => min(count($paginator), $offset + $commentRepository::COMMENTS_PER_PAGE),
+		// on transmet le formulaire au template
+		'comment_form' => $form
+	]);
+}
+```
+
+### Upload de fichier 
+
+Les images devront être stocker sur un disque. Par exemple, on peut venir les stocker dans le dossier `public/uploads/photos`
+
+Symfony est capable de stocker les paramètres en plus des services.
+
+```php
+//config/services.yaml
+parameters:
+  photo_dir: "%kernel.project_dir%/public/uploads/photos"
+```
+
+On vient ensuite gérer le traitenement du fichier dans le controller 
+
+```php
+// ajout du paramètre
+public function show(Request $request, Conference $conference, CommentRepository $commentRepository, #[Autowire('%photo_dir')] string $photoDir): Response
+
+// ...
+if ($form->isSubmitted() && $form->isValid()) {
+	// on passe l'id pour la relation FK
+	$comment->setConference($conference);
+
+	// traitement de la photo soumise
+	if ($photo = $form['photo']->getData()) {
+		// création d'un nom aléatoire pour le fichier
+		$filename = bin2hex(random_bytes(6)) . '.' . $photo->guessExtension();
+		// déplacement du fichier dans le repertoire final
+		$photo->move($photoDir, $filename);
+		// stockage du nom du fihcier dans l'objet Comment
+		$comment->setPhotoFilename($filename);
+	}
+
+	$this->entityManager->persist($comment);
+	$this->entityManager->flush();
+
+	return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);
+}
+```
+
+---
+
+## SECURISATION
+
+On commence par créer la l'entité user qui permet de définir les utilisateurs.
+
+```shell
+symfony console make:user 
+```
+
+### Générer un password hash 
+
+Symfony fournit une commande permettant de gérer un mot de passe hasher.
+
+```shell
+symfony console security:hash-password
+```
+### Configurer le système d'authentification 
+
+Il existe plusieurs stratégie d'authentification. 
+
+Pour la sécurisation via formulaire 
+
+```shell
+symfony console make:security:form-login
+```
+
+La commande vient mettre à jour la configuration de sécurité pour lier les classes générées.
+
+### Ajouter les règles de contrôle d'accès
+
+Pour limiter des sections de l'application, on viens modifier `config/packages/security.yml`
+
+```yml
+  access_control:
+    - { path: ^/admin, roles: ROLE_ADMIN }
+```
+
+Les règles `access_control` limitent l'accès par des expressions régulière. Lorsqu'une personne connectée tente d'accéder à une URL qui commence par `/admin`, le système de sécurité vérifie qu'elle possède le rôle `ROLE_ADMIN`
