@@ -73,3 +73,10 @@ function searchAnnuaireEntreprise() {
 
 - `.val()` : fonction jquery pour récupérer la valeur set dans un input 
 - `.trim()` : fonction pour nettoyer les espace
+
+---
+
+## MODAL 
+
+### Définir la fonction 
+

@@ -86,3 +86,31 @@ $listing->addClosure('Actions', function ($var) {
     return $html;  
 });
 ```
+
+--
+
+## REQUEST 
+
+### Récupération des headers
+
+La fonction `getallHeaders()` vient lire les headers de la requête entrante et les retournes sous forme de tableau.
+
+```php
+$headers = getallheaders();
+
+// $headers ressemble à ça :
+[
+    'Authorization' => 'Bearer eyJhbGci...',
+    'Content-Type'  => 'application/json',
+    'Host'          => 'ton-app.com',
+]
+```
+
+### Extraction de token 
+
+Une fois les headers récupérés, on peut venir extraitre un token, par exemple le token d'Authorization 
+
+```php
+$token = str_replace('Bearer ', '', $headers['Authorization'] ?? '');
+// $token = "eyJhbGci..."
+```
