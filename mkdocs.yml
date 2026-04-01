@@ -1,4 +1,5 @@
 nav:
+  - Golang: go/index.md
   - PHP: php/index.md
   - Evode: evode/index.md
   - SQL: SQL/01_index.md
@@ -12,6 +13,8 @@ nav:
   - GitHubAction: githubaction/index.md
   - Homelab: homelab/index.md
   - Symfony: symfony/index.md
+  - Python: python/index.md
+  - Curl: curl/index.md
 
 site_name: Engineering Handbook
 site_url: https://engineering-handbook.netlify.app
