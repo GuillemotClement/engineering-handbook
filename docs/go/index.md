@@ -112,9 +112,27 @@ a = 7
 appName := "SuperApp"
 ```
 
-### Concaténation 
 
-Le signe `+` permet de faire des concaténation 
+---
+
+## TYPE 
+
+### int 
+
+Stocke les nombres entiers sans la partie décimale. Il prends les négatif et les positifs.
+
+### string 
+
+#### Caractères spéciaux 
+
+- `\n` : saut de ligne 
+- `\t` : tabulation 
+- `\"` : échappement guillemet
+- `\`: échappement anti slash
+
+#### Concaténation 
+
+Le signe `+` permet de faire des concaténation.
 
 ```go
 package main 
@@ -136,10 +154,23 @@ func main(){
 }
 ```
 
+Il n'est pas possible de mélanger une chaîne et des numbers pour réaliser des concaténation.
 
----
+#### len() - Longueur d'une chaîne 
 
-## TYPE 
+Cette fonction retourne la longueur d'une chaîne.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    s := "golang"
+    fmt.Println(len(s)) // 6
+}
+```
+
 
 ### Conversion 
 
@@ -165,6 +196,66 @@ func main(){
 ---
 
 ## MATH 
+
+### Division entière
+
+L'opérateur `/` de faire réaliser des division entière. Si deux `int` sont utilisé, on aura également un `int` pour le résultat. La partie décimale est ignoré.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	a := 7
+	b := 2
+
+	fmt.Println(a / b) // 3
+	
+	// pourcentage 
+	planned := 10
+	done := 3
+	
+	percent := (done * 100) / planned
+	fmt.Println(percent) // 30
+}
+```
+
+### Modulo
+
+L'opérateur `%` permet de calculer le reste d'une division.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	candies := 17
+	kids := 5
+
+	each := candies / kids
+	left := candies % kids
+
+	fmt.Println(each) // 3
+	fmt.Println(left) // 2
+}
+
+// ====
+// calculer de temps 
+package main
+
+import "fmt"
+
+func main() {
+	totalMinutes := 135
+
+	hours := totalMinutes / 60
+	minutes := totalMinutes % 60
+
+	fmt.Println(hours, minutes) // 2 15
+}
+```
 
 ### Opération arithmétique 
 
