@@ -372,8 +372,6 @@ else:
 	print("a a une valeur")
 ```
 
- 
-
 
 ## COMMENTAIRE 
 Les commentaire ne sont pas pris en compte par l’interpréteur. Le commenter n'est pas exécuter.
@@ -1197,3 +1195,68 @@ L'opérateur est souvent utilisé lors du processus de développement de test, l
 Cela permet d'organiser le code et d'ajouter progressivement des fonctionnalités sans compromettre le fonctionnement global de l'application.
 
 ---
+
+### Structurer le code Python 
+
+Toutes les fonctions et variables doivent être déclarées avant d'être utilisées. Pour résoudre le problème de structure dans le code Python, on vient définir toutes les fonctions en premier dans le programme.  
+
+On déclare ensuite une fonction **entry point**, c'est cette fonction qui sert de point d'entrée et lance le programme.
+Par convention, c'est fonction est appelée `main` :
+
+```python
+def main():
+    health = 10
+    armor = 5
+    add_armor(health, armor)
+
+def add_armor(h, a):
+    new_health = h + a
+    print_health(new_health)
+
+def print_health(new_health):
+    print(f"The player now has {new_health} health")
+
+# call entrypoint last
+main()
+```
+
+
+---
+
+### None Return 
+
+Lorsqu'aucune valeur n'est retourner par une fonction, celle ci retourne automatiquement une valeur `None`.
+
+---
+
+### Retour multiple 
+
+Une fonction peut retourner plusieurs valeurs. Ces valeurs doivent être séparé par une virgule.
+
+```python
+def cast_iceblast(wizard_level, start_mana):
+    damage = wizard_level * 2
+    new_mana = start_mana - 10
+    return damage, new_mana # return two values
+```
+
+Lorsque l'on vient appeler une fonction retournant plusieurs valeurs, on viendras déclarer des variables multiples pour récupérer correctement les valeurs retournées par la fonction 
+
+```python
+damage, mana = cast_iceblast(5, 100)
+print(f"Damage: {damage}, Remaining Mana: {mana}")
+# Damage: 10, Remaining Mana: 90
+```
+
+L'ordre des variables correspond à l'ordre des valeurs retournées par la fonction.
+
+---
+
+### Valeur par défaut 
+
+On peut définir des valeurs par défaut pour un argument d'une fonction. Cette valeur sera utilisée dans la fonction si lors de son appel, on ne passe pas de valeur pour cet argument 
+
+```python
+def get_greeting(email, name="there"):
+    print("Hello", name, "welcome! You've registered your email:", email)
+```

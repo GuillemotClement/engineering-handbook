@@ -482,6 +482,17 @@ SELECT
 	CONCAT(first_name, ' ', COALESCE(middle_name, '')) AS full_name
 FROM students
 ```
+
+#### CONCAT_WS() - gestion des NULL
+
+Si une des valeurs passer dans le concat et `NULL`, cela provoque des bugs. Toutes les valeurs seront `NULL`, et il n'y aura pas de données affichée.
+Pour corriger, utiliser la fonction `CONCAT_WS()`
+
+```sql
+CONCAT_WS(<separator>, <value1>, <value2>, ...)
+
+CONCAT_WS(' - ', produit.produit_libelle, produit.produit_reference) AS 'Libellé produit',
+```
 #### UPPER ()
 
 Permet de transformer une chaîne en texte majuscule.

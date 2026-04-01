@@ -1,5 +1,19 @@
 # PHP 
 
+## CONSTANTE MAGIQUE 
+
+### __DIR__
+
+`__DIR__`est une constante magique qui retourne le chemin absolu du dossier où se trouve le fichier actuellement exécuté.
+
+C'est le path du fichier dans lequel `__DIR__` est utiliser qui compte.
+
+Par exemple, j'ai une fonction qui utilise cette constante magique dans `/inc/fonction_generiques.php`. J'appelle cette fonction depuis le fichier `/php/webhook/index.php`.
+
+C'est le path `/inc/` qui sera retourné.
+
+
+
 ## Extension 
 ```shell
 # fedora 
@@ -12,7 +26,9 @@ php -m | grep -E "intl|pdo_pgsql|xsl|amqp|gd|openssl|sodium|iconv|redis|curl|zip
 sudo systemctl restart php-fpm
 ```
 
-## Composer 
+## COMPOSER
+
+### Installation de dépendances
 
 Pour installer les dépendances avec composer, il faut se placer dans le folder qui contient le `composer.json`.
 
@@ -22,72 +38,25 @@ Dans le terminal, lancer l'installation des plugins :
 composer install --no-interaction
 ```
 
+### Erreur Class not found
+
+Parfois, composer contient des fichiers de caches qui peuvent casser le système. Pour résoudre ce type de problème, lancer la commande : 
+
+```shell
+composer dump-autoload
+```
+La commande vient régénéré les fichiers en scannant ce qui est réellement dans le `/vendor` et reconstruit les mappings.
+
+### Forcer l'installation des dépendances 
+
+```shell
+# ingore les contriantes de version 
+composer install --ignore-platform-reqs
+```
+
 ## EVODE 
 
-### selectGenerique()
 
-Permet de générer des selectlist générique. Elle viens directement rechercher dans la table pour afficher les option disponible.
-
-```php
-echo selectGenerique( $id_selected, // valeur sélectionnée 
-'entreprises', // table 
-"AND pays = 'FR'", // condition supplémentaire 
-'id_entreprise', // colonne ID 
-'nom_entreprise', // colonne libellé 
-'actif', // colonne actif (optionnel) 
-'', // colonne désactivé (optionnel) 
-'', // valeur défaut option vide 
-'Choisir une entreprise' // libellé défaut );
-```
-
-## listing 
-
-### Modifier le style d'une ligne 
-
-Dans la requête du listing, on viens utiliser l'alias `nv_tr_style`, ce qui permet d'appliquer le style dans le `CASE WHEN` de la requête SQL.
-
-```php
-CASE  
-    WHEN tache.tache_etat = 1 THEN 'background-color:#d3d3d3;'    ELSE ''END AS nv_tr_style,
-```
-
-### addClosure() 
-
-Permet de faire des actions particulière, en venant passer de la donnée issue de la requête.
-
-Dans un premier temps, on prépare une colonne pour transmettre de la données vers la closure 
-
-```php 
-CONCAT(tache.tache_id,'||',tache.tache_salarie_id,'||',tache.tache_initiateur_id,'||',tache.tache_etat) AS 'Actions'
-```
-
-Dans la définition du listing, on vient ajouter la méthode `addClosure()`, et on applique des instructions 
-Dans l'exemple, on vient ajouter 2 boutons permettant d'exécuter des actions spécifique 
-
-```php 
-$listing->addClosure('Actions', function ($var) {  
-    $tab = explode("||", $var); // on récupère les données info dans un tableau
-    $tache_id = $tab[0];  
-    $tache_salarie_id = $tab[1];  
-    $tache_initiateur_id = $tab[2];  
-    $tache_etat = $tab[3];  
-  
-    $html = '<div class="">';  
-    if ($tache_etat != 1 && $tache_salarie_id == $tache_initiateur_id && $tache_salarie_id = $_SESSION['user']['IdSalarie']) {  
-        $html .= '<button type="button" class="btn btn-sm btn-info me-3" title="Réaliser la tâche" onclick="realiserTache(\''.$tache_id.'\')">  
-                    <i class="fa-solid fa-check"></i>                  </button>';  
-    }  
-    if ($tache_initiateur_id == $_SESSION['user']['IdSalarie']) {  
-        $html .= '<button type="button" class="btn btn-sm btn-success" onclick="formTache(\''.$tache_id.'\')">  
-                    <i class="fa-solid fa-edit"></i>                  </button>';  
-    }  
-    $html .= '</div>';  
-  
-    return $html;  
-});
-```
-
---
 
 ## REQUEST 
 
