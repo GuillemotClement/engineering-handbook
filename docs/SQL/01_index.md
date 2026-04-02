@@ -1020,6 +1020,13 @@ ALTER TABLE <name_table>
 ADD Actif BIT DEFAULT(1);
 ```
 
+### Suppression de colonne
+
+```sql 
+ALTER TABLE <table>
+DROP COLUMN <name_col>;
+```
+
 ### UPDATE 
 Permet de mettre à jour la valeur d'un champ d'une table 
 

@@ -35,10 +35,7 @@ commentaire multiligne
 */
 ```
 
-
-
-
-
+---
 ## AFFICHAGE 
 
 ### fmt
@@ -171,14 +168,17 @@ func main() {
 }
 ```
 
+---
 
-### Conversion 
+## CONVERSION
 
-#### strconv.Itoa() - int -> str 
+Le package `strconv` permet de convertir les types. 
 
-Permet de convertir un entier en chaîne 
+### strconv.Atoi - str -> int 
 
-```go 
+Conversion `str` vers `int`. Retourne deux valeurs.
+
+```go
 package main 
 
 import (
@@ -187,9 +187,29 @@ import (
 )
 
 func main(){
-	x := 333
-	s = "Amigo" + strconv.Itoa(x)
-	fmt.Println(s)
+	s := "42"
+	n, err := strconv.Atoi(s) // on fait la conversion 
+	
+	fmt.Println("n =", n) // 42
+	fmt.Println("err =", err) // err = nil
+}
+```
+### strconv.Itoa - int -> str
+
+Convertion `int` vers `str`. 
+
+```go
+package main 
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main(){
+	nextID := 101 
+	msg := "next id = " + strconv.Itoa(nextID) // conversion 
+	fmt.Println(msg) // "next id = 101"
 }
 ```
 
@@ -270,4 +290,96 @@ x /= 4  // x = 6
 // concaténation 
 s := "Hello"
 s += " World" // "Hello World"
+```
+
+---
+
+## SAISIE DE DONNEES
+
+En Go, pour lire des valeurs depuis l'entrée standard `stdin` et afficher le résultat sur la sortie standards `stdout` se fait via la librairie standard `Scan`
+
+### fmt.Scan - lire une valeur 
+
+La fonction prends un pointeur, et retourne deux valeurs `count`, et `err`
+Elle permet de récupérer la saisie depuis la `stdin`, la console.
+
+- `count`: indique combine de valeurs ont réellement pu être reconnues et écrite dans les variables. Si une valeur n'as pas pu être lu, `err` contiendras alors une valeur non `nill` qui descrit l'erreur.
+
+Scan prends des pointeur. On lui passe l'adresse des variables créer au préalable pour qu'il puisse venir stocker dans ces variables les valeurs issue de la `stdin`.
+
+- `&a` : transmet l'adresse mémoire de la variable 
+- `a` : transmet la valeur de la variable
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	var a, b int // on prépare les variables 
+	fmt.Scan(&a, &b) // récupération depuis la stdin
+	
+	sum := a + b
+	fmt.Println(sum)
+}
+
+// exemple 
+package main
+
+import "fmt"
+
+func main() {
+	var x int
+	count, err := fmt.Scan(&x) // on récupère les valeurs retourné
+
+	fmt.Println("count:", count) // par exemple : count: 1
+	fmt.Println("err:", err)     // en cas de succes : err: <nil>
+	fmt.Println("x:", x)         // si vous avez saisi 42, alors : x: 42
+}
+```
+
+### Ignorer une valeur de retour d'une fonction 
+
+Dans le cas où une valeur retournée n'est pas utile, on peut l'ignorer avec un **blank identifier** `_`.
+
+Par exemple, il n'est pas forcément nécessaire d'utiliser la variable `count`, on peut alors l'ignore 
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	var n int 
+	-, err := fmt.Scan(&n)
+	
+	fmt.Println("err:", err) 
+	fmt.Println(n)
+}
+```
+
+### Panic 
+
+Parfois dans un programme Go, il peut s'arrêter brutalement. C'est ce qu'on appelle une `panic`.
+
+C'est un signal qui dit que quechose de potentiellement dangereux est arrivé. 
+
+### fmt.Fscan - entrée avec source explicite
+
+Lorsque l'on souhaite lire des entrée depuis une autre source que la `stdin` (fichier, chaîne, réseau), on peut venir utiliser cette méthode.
+
+```go
+package main 
+
+import (
+	"fmt"
+	"os"
+)
+
+func main(){
+	var a, b int
+	fmt.Fscan(os.Stdin, &a, &b) // on passe explicitement la stdin
+	
+	fmt.Println(a * b)
+}
 ```
