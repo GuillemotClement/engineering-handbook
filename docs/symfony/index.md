@@ -1,5 +1,131 @@
 # Symfony 
 
+## CONTROLLER 
+
+### Création d'un controlleur 
+
+```shell
+symfony console make:controller <name>Controller
+```
+
+La commande vient générer le code pour un controller. On peut ensuite y venir définir les différentes routes.
+
+### Récupération des données de la request 
+
+```php
+// récupération des données issue du body de la request
+$data = json_decode($request->getContent(), true);
+
+// check si on as bien récupérées les données
+if(!$data){
+	return $this->json(['errors' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
+}
+```
+
+### Création d'un nouvel enregistrement 
+
+```php
+// mappage des données reçu dans l'user 
+$user = new User();
+$user->setEmail($data['email'] ?? '');
+$user->setPassword($data['password'] ?? '');
+
+
+// validation des données
+// warning Intelephense
+/** @var ConstraintViolationListInterface $errors */
+$errors = $validator->validate($user);
+if(count($errors) > 0){
+	$errorsMessages = [];
+	foreach($errors as $error){
+		$errorsMessages[$error->getPropertyPath()] = $error->getMessage();
+	}
+
+	return $this->json([
+		'errors' => $errorsMessages
+	], Response::HTTP_BAD_REQUEST);
+}
+
+// hashage du password
+$hashedPassword = $hasher->hashPassword(
+	$user,
+	$data['password']
+);
+$user->setPassword($hashedPassword);
+
+// enregistrement de la nouvelle valeur
+$em->persist($user);
+$em->flush();
+```
+
+### Retourner du json 
+
+```php
+return $this->json(['message' => 'User registered'], Response::HTTP_CREATED);
+```
+
+## VALIDATION 
+
+Les contraintes de validations sont ajouter dans les fichier `Entity`. On peut ajouter des contraintes sur les champs.
+
+Symfony fournit des contraintes. Pour les importer :
+
+```php
+use Symfony\Component\Validator\Constraints as Assert;
+```
+
+On peut ensuite venir ajouter les contraintes sur les différents champs.
+
+```php
+#[ORM\Column]
+#[Assert\NotBlank()]
+#[Assert\Length(
+	min: 8,
+)]
+private ?string $password = null;
+```
+
+
+## LOG 
+
+### dump()
+
+Permet d'afficher des variables. Utiliser pour des application Symfony 
+```php
+dump($maVariable);
+```
+
+### dd()
+
+Dump and die. Affiche et couche l'exécution du code.
+
+```php
+dd($maVariable);
+```
+
+### Retourner les données
+
+Pour une API, le plus simple est de retourner directement les données dans un JSON.
+
+```php
+$payload = $request->getPayload(); 
+
+return $this->json([
+	'debug' => $payload
+]);
+```
+
+### error_log()
+
+Permet d'ajouter dans les log du serveur
+
+```php 
+error_log(json_encode($payload->all()));
+// visible dans var/log/dev.log 
+```
+
+
+
 ## PROJET 
 
 ### Support TLS 
