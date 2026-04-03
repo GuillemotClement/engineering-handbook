@@ -109,6 +109,13 @@ a = 7
 appName := "SuperApp"
 ```
 
+### Blocs et portée 
+
+Dans un bloc `{ ... }`, on peut déclarer des variables qui n'existeront que dans le bloc. C'est la portée.
+
+- **Variable déclaré dans `main` (hors des blocs)** : utilisable dans tous `main`
+- **Dans un bloc `{...}`** : uniquement dans ce bloc 
+- **Dans `if x := ... ; cond { ... }`** : dans le `if/else`
 
 ---
 
@@ -167,6 +174,24 @@ func main() {
     fmt.Println(len(s)) // 6
 }
 ```
+
+
+### bool 
+
+Le type  `bool` ou boolean, contient une valeur `true` ou `false`. 
+
+Pour le nom des variables boolean, on utilise généralement ce type de nom `isAdult`, `hasTicket`, etc.
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	isWeekend := true 
+}
+```
+
 
 ---
 
@@ -381,5 +406,264 @@ func main(){
 	fmt.Fscan(os.Stdin, &a, &b) // on passe explicitement la stdin
 	
 	fmt.Println(a * b)
+}
+```
+
+---
+
+## CONDITION 
+
+### Comparaison 
+
+La comparaison est une expression qui retourne un `bool`. 
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	a := 10 
+	b := 7 
+	
+	greater := a > b // la variable contient la valeur boolean 
+	fmt.Println(greater) // true 
+}
+```
+
+### Opérateur de comparaison 
+
+On ne peut faire des comparaison que sur des types compatibles.
+
+- `==` : vérifie une égalité 
+- `!=` : vérifie une différence 
+- `<` : inférieur à 
+- `<=` : inférieur ou égale à 
+- `>` : supérieur à 
+- `>=` : supérieur ou égale à 
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	x := 5 
+	
+	isFive := x == 5
+	isNotFive := x != 5 
+	
+	fmt.Println(isFive) // true 
+	fmt.Println(isNotFive) // false 
+	
+	// ============================
+	
+	score := 82 
+	
+	isHight := score >= 90
+	isMedium := score >= 75 
+	
+	fmt.Println(isHight) // false 
+	fmt.Println(isMedium) // true 
+}
+```
+
+### If, else, else if
+
+```go 
+func main(){
+	age := 12 
+	
+	if age < 7 {
+		fmt.Println("Entrée gratuite")
+	} else if age < 18 {
+		fmt.Println("Billet enfant")
+	} else {
+		fmt.Println("Billet adulte")
+	}
+}
+```
+
+En Go, on ne peut pas faire une vérif directement sur une variable non nul `if age { }`, il faut obligatoirement utiliser ce code : 
+
+```go 
+if age != 0 {
+	...
+}
+```
+
+### Portée de variable 
+
+Une variable peut exister uniquement dans une conditon `if`.
+
+Dans le code, `x` est déclaré dans l'initialisateur de `if`. La variable est donc accessible dans les deux blocs de la condition.
+
+```go 
+func main(){
+	if x := 10; x%2 == 0 {
+		fmt.Println("x est pair :", x) // x est pair 
+	} else {
+		fmt.Println("x est impair :", x)
+	}
+}
+```
+
+### if avec initialiseur 
+
+Go permet d'écrire un `if` avec une valeur initialisateur. La variable est disponible que pour cette condition.
+
+```go
+if init; cond {
+	...
+} else {
+	...
+}
+```
+
+Par exemple, pour gérer les erreurs de conversion de type 
+
+```go 
+package main 
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main(){
+	ageStr := "21"
+	
+	if age, err := strconv.Atoi(ageStr); err == nil {
+		fmt.Println("Age : ", age)
+	} else {
+		fmt.Println("Age incorrect")
+	}
+}
+```
+
+Les variable `age` et `err` n'existent que dans le bloc de conditions.
+
+### Opération logique 
+
+- `&&` : les deux condition doivent être `true` 2
+- `||` : une des conditions doit être `true` 3
+- `!` : inversion - 1
+
+```go 
+// && exemple 
+func main(){
+	age := 20
+	hasTicket := true 
+	
+	if age >= 18 && hasTicket {
+		fmt.Println("welcome")
+	} else {
+		fmt.Println("no entry")
+	}
+}
+
+// || exemple 
+func main(){
+	role := "editor"
+	
+	isAdmin := role == "admin"
+	isEditor := role == "editor"
+	
+	canEdit := isAdmin || isEditor
+	fmt.Println(canEdit)
+}
+
+// ! exemple 
+func main(){
+	name := "user"
+	
+	ifEmpty := name == ""
+	fmt.Println(isEmpty) // false 
+	fmt.Println(!isEmpty) // true
+}
+```
+
+Les opérateurs `&&` et `||` ont un comportement spécifique : 
+- `A && B` : la partie B n'est pas évalué sur A est `false`
+- `A || B` : la partie B n'est pas évalué sur A est `true`
+
+```go 
+func main(){
+	a := 10 
+	denom := 0
+	
+	// partie droit non exécuté sur denom == 0
+	ok := denom != 0 && (a/denom > 1)
+	flt.Println(ok) // false
+}
+```
+
+Si la valeur est `0`, on passe directement à `false`. Sinon, le calcul est effectué 
+
+```go 
+func main(){
+	role := "admin"
+	hasPaid := false 
+	
+	canUseFeature := role == "admin" || hasPaid
+	fmt.Println(canUseFeature) // true 
+}
+```
+
+Si l'user est admin, la condition sera vraie.
+
+### return 
+
+L'opérateur `return` termine immédiatement l'exécution de la fonction courante.
+
+De cette manière, on peut éviter les imbrications profondes de `if`
+
+```go
+if isBanned {
+	fmt.Println("denied: banned")
+	return 
+}
+
+if isVIP || (isAdult && hasTicket) {
+	fmt.Println("welcome")
+}
+```
+
+### Exemple DoorGuard 
+
+Programme qui vient vérifier si un utilisateur à les droits d'accès.
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	// déclaration des variables
+	var age int 
+	var ticketStr string 
+	var vipStr string 
+	var bannedStr string 
+	
+	// récupération saisie stdin 
+	fmt.Scan(&age, &ticketStr, &vipStr, &bannedStr)
+	
+	// conversion texte en boolean 
+	hasTicket := ticketStr == "yes"
+	isVIP := vipStr == "yes"
+	isBanned := bannedStr == "yes"
+	isAdult := age >= 18
+
+	// vérification 
+	if isBanned {
+		fmt.Println("denied: banned")
+		return 
+	}
+	
+	if isVIP || (isAdult && hasTicket) {
+		fmt.Println("welcome")
+	} else {
+		fmt.Println("denied: need ticket and age 18+")
+	}
 }
 ```
