@@ -81,7 +81,17 @@ L'utilise de `%s` permet d'ajouter une string, `%d` permet d'ajouter un nomber.
 
 ```go
 fmt.Printf("Name: %s, Score: %d\n", "Alice", 42)
+
+func main(){
+	x := 10 
+	fmt.Printf("x=%v type=%T\n", x, x) // x=10 type=int 
+}
 ```
+
+- `%v` : spécificateur universel 
+- `%T` : affiche le type de valeur 
+- `%d` : entier 
+- `%s` : string 
 
 ---
 
@@ -117,6 +127,55 @@ func main() {
 }
 ```
 
+L'utilisation de `:=` n'est autorisé que lorsqu'au moins une des variable est déclaré dans le bloc.
+- si tous les noms existent déjà, alors l'utilisation est interdite.
+- si une partie des variables existe déjà, mais qu'un moins un nouveau apparait, alors on peut l'utiliser, et les variables existante recevront la nouvelle valeur.
+
+```go 
+func main() {
+	x := 10
+	y := 20
+
+	x, z := y, 30 // z est un nouveau nom, donc := est autorise
+	fmt.Println(x, y, z) // 20 20 30
+}
+```
+
+### Shadowing 
+
+Le shadowing, ou le masquage de variable est lorsque dans un bloc, on créer une nouvelle variable avec le même nom qu'une variable d'une bloc externe. Dans le bloc, la nouvelle variable, prends cette valeur, et celle du bloc exterene ne change pas.
+
+### Variable globale
+
+Il est possible de déclarer des variables au niveau du package. Ces variables se déclarent en dehors des fonctions
+
+On ne peut pas utiliser `:=`, il faut utiliser `var` ou `const`. 
+
+Les variables globales sont visibles dans toutes les fonctions de ce package.
+
+```go 
+package main
+
+import "fmt"
+
+var appName = "Range Normalizer" // variable globale (package-level)
+
+func normalize(from, to int) (int, int) {
+	if from > to {
+		from, to = to, from
+	}
+	return from, to
+}
+
+func main() {
+	from, to := 10, 3
+	from, to = normalize(from, to)
+	fmt.Println(appName, from, to) // Range Normalizer 3 10
+}
+```
+
+
+
 ### Affectation 
 
 L'affectation c'est lorsque l'on passe une nouvelle valeur à une variable. La variable doit être déclaré au préalable dans la portée courante.
@@ -147,13 +206,57 @@ func main() {
 }
 ```
 
+### Assignation multiple 
+
+Il est possible d'assigner plusieurs valeurs à plusieurs variables en une seule fois : 
+
+```go 
+a, b = 10, 20
+```
+
+- `a` prend la valeur 10 
+- `b` prend la valeur 20 
+
+Le côté droit est évalué entièrement, puis les résultats sont répartis dans les variables de gauche.
+
+```go 
+func main() {
+	x := 1
+	y := 2
+
+	x, y = y, x+y
+	fmt.Println(x, y) // 2 3
+}
+```
+
+Cela peut être utile pour permuter les valeurs sans utiliser de variables temporaire 
+
+```go 
+func main() {
+	from := 0
+	to := 0
+
+	fmt.Scan(&from, &to)
+
+	if from > to {
+		from, to = to, from // permutation
+	}
+
+	fmt.Printf("range: %d..%d\n", from, to) // par exemple : range: 3..10
+}
+```
+
 ---
 
 ## TYPE 
 
 ### int 
 
-Stocke les nombres entiers sans la partie décimale. Il prends les négatif et les positifs.
+Stocke les nombres entiers sans la partie décimale. Il prends les négatif et les positifs. 
+
+### float64 
+
+Permet de stocker des valeurs décimale. 
 
 ### string 
 
@@ -221,6 +324,16 @@ func main(){
 	isWeekend := true 
 }
 ```
+
+### Valeurs par défaut 
+
+A la déclaration d'une variable, elle prends automatiquement une valeur par défaut.
+
+- `int` : 0
+- `float64` : 0.0
+- `boolean`: false 
+- `string` : ""
+
 
 
 ---
