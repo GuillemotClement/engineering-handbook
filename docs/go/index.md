@@ -87,35 +87,65 @@ fmt.Printf("Name: %s, Score: %d\n", "Alice", 42)
 
 ## VARIABLES
 
-En Go, lorsque l'on réalise une affectation, on vient **copier** la valeur dans une nouvelle variable.
+### var 
 
-Avec la syntaxe courte, Go détermine lui même le type de la variable depuis sa valeur.
+Permet de créer une variable. Par défaut, Go lui affecte la valeur par défaut pour ce type si on ne lui affecte rien.
 
-```go
-// déclaration de variable
-var <name> <type>
+On l'utilise pour préparer une variable qui va recevoir une valeur. Par exemple, pour utiliser avec `fmt.Scan`, ou après une vérification de condition.
 
-var a int // entier
-var s string // chaîne de caractère
-var c float64 // nombre décimaux
-
-// déclaration multiple 
-var a, b, c int; var d int
-
-// affectation ===========================
-a = 7
-
-// syntaxe courte => méthode standard ====
-appName := "SuperApp"
+```go 
+func main() {
+	var count int // declared
+	count = 3     // assigned
+	fmt.Println(count) // 3
+	
+	var name = "Gopher" // inférence 
+	var age = 10
+	fmt.Println(name, age) // Gopher 10
+}
 ```
 
-### Blocs et portée 
+### := 
 
-Dans un bloc `{ ... }`, on peut déclarer des variables qui n'existeront que dans le bloc. C'est la portée.
+Syntaxe courte pour déclarer une variable.
 
-- **Variable déclaré dans `main` (hors des blocs)** : utilisable dans tous `main`
-- **Dans un bloc `{...}`** : uniquement dans ce bloc 
-- **Dans `if x := ... ; cond { ... }`** : dans le `if/else`
+```go
+func main() {
+	x := 10        // declared + initialized
+	x = x + 5      // updated an existing variable
+	fmt.Println(x) // 15
+}
+```
+
+### Affectation 
+
+L'affectation c'est lorsque l'on passe une nouvelle valeur à une variable. La variable doit être déclaré au préalable dans la portée courante.
+
+```go 
+func main() {
+	var total int // déclaration 
+	total = 100 // affectation 
+	total = total - 30
+	fmt.Println(total) // 70
+}
+```
+
+### Portée des blocs 
+
+Les accolades définissent la portée, une zone de code à l'intérieur de laquelles les noms de variables existent et sont accessibles.
+
+```go 
+func main() {
+	x := 10
+
+	if x > 0 {
+		y := x * 2
+		fmt.Println("inside:", y) // inside: 20
+	}
+
+	fmt.Println("outside:", x) // outside: 10
+}
+```
 
 ---
 
@@ -667,3 +697,241 @@ func main(){
 	}
 }
 ```
+
+### Switch 
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	op := "*" // variale checker dans le switch
+
+	switch op {
+	// check plusieurs valeurs 
+	case "+", "add":
+		fmt.Println("addition")
+	case "-":
+		fmt.Println("soustraction")
+	case "*":
+		fmt.Println("multiplication")
+	default:
+		fmt.Println("operation inconnue")
+	}
+}
+```
+
+- `default` : c'est le cas qui s'exécute si aucune valeur ne match avec les différents case. Il n'est pas obligatoire.
+
+Par défaut, chaque case est `break` automatiquement.. `fallthrough` permet d'empêcher ce comportement.
+
+---
+
+## ERREUR 
+
+### Vérification des erreurs
+
+En go, de nombreuses fonctions retourne `error`, et cette valeur est soit `nil` soit non `nil`.
+Lorsque la fonction s'est bien exécuté, la valeur de `error` sera `nil`. 
+
+En Go, on utilise ce pattern : `appel -> check -> use` :
+1. Appelle de la fonction 
+2. Vérifier `err`
+3. Utiliser le résultat de la fonction 
+
+Chaque appel d'une fonciton pouvant retourner une erreur doit être gérer directement.
+
+```go 
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	var billStr, tipStr string
+	_, err := fmt.Scan(&billStr, &tipStr)
+	if err != nil {
+		fmt.Println("erreur d'entree : 2 valeurs sont necessaires")
+		return
+	}
+
+	bill, err := strconv.Atoi(billStr)
+	if err != nil {
+		fmt.Println("le montant doit etre un entier")
+		return
+	}
+	if bill < 0 {
+		fmt.Println("le montant ne peut pas etre negatif")
+		return
+	}
+
+	tipPercent, err := strconv.Atoi(tipStr)
+	if err != nil {
+		fmt.Println("le pourboire doit etre un entier")
+		return
+	}
+	if tipPercent < 0 {
+		fmt.Println("le pourcentage de pourboire ne peut pas etre negatif")
+		return
+	}
+
+	total := bill + bill*tipPercent/100
+	fmt.Println("total :", total)
+}
+```
+
+Dans le cas ou la valeur doit être uniquement dans un endroit unique, il est possible d'utiliser la syntaxe avec initialiseur. Dans ce cas, les variables n'existe que dans le bloc `if/else` 
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	if n, err := strconv.Atoi("100"); err != nil {
+		fmt.Println("erreur de parsing :", err)
+	} else {
+		fmt.Println(n + 1) // 101
+	}
+} 
+```
+
+--- 
+
+## BOUCLE 
+
+En Go, il n'existe qu'une seule boucle `for`. 
+
+### Boucle for
+
+```go
+for init; cond; post {
+	// corps de la boucle 
+}
+
+func main(){
+	for i := 0; i < 3; i++ {
+		fmt.Println("Itération :", i)
+	}
+}
+```
+
+- `init`: création et initialisation d'une variable compteur. Elle se fait une fois au début de la boucle.
+- `cond` : condition d'arrête. Elle est vérifié avant chaque itération de la boucle.
+- `post` : étapes entre itération. S'exécute après le code de la boucle. Par exemple, augmenter ou diminuer la variable compteur.
+
+### Boucle while 
+
+Pour les boucle while, on utilise également `for` sous une autre forme. 
+
+```go 
+for cond {
+	// code de la boucle 
+}
+```
+
+La boucle s'exécute tant que la condition est `true`.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	x := 1
+	for x < 100 {
+		x = x * 2
+	}
+	fmt.Println(x) // 128
+}
+```
+
+### Boucle infinie
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	balance := 0 
+	
+	for { 
+		var x int 
+		-, err := fmt.Scan(&x) // récupère la saisis
+
+		if err != nil {
+			break
+		}
+		
+		if x == 0 {
+			break
+		}
+		
+		// si valeur trop grande on skip 
+		if x > 1_000_000 || x < -1_000_000 {	
+			fmt.Println("montant trop grand, j'ignore")
+			continue
+		}
+		
+		balance = balance + x
+	}
+	fmt.Println(balance)
+}
+```
+
+### break 
+
+L'instruction `break` permet de sortir de la boucle. 
+
+### continue 
+
+Passer à l'itération suivante 
+
+### range 
+
+Cette instruction permet de parcourir les éléments d'une séquence. 
+
+La fonction retourne deux valeurs. (index, et value)
+
+```go 
+func main(){
+	s := "Go"
+	
+	for i, v := range s {
+		fmt.Println(i, v)
+	}
+}
+
+// détecteur de caractères 
+func main() {
+	s := "go#lang"
+
+	hasHash := false
+	for _, v := range s {
+		if v == '#' {
+			hasHash = true
+			break
+		}
+	}
+
+	fmt.Println(hasHash) // true
+}
+```
+
+- `i` position de l'élément en court d'itération 
+- `v` : caractères unicode du caractère de type `rune`
+
+---
+
+## PACKAGE 
+
+Un package est un dossier physique contenant le code source. 
+
+Pour créer un nouveau package, on créer un nouveau dossier dans le projet.
