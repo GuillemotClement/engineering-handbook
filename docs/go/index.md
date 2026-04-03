@@ -247,16 +247,138 @@ func main() {
 ```
 
 ---
+## CONSTANTE
+
+### Déclarer une constante
+
+Une constante désigne une valeur qui est définie une fois et qui ne change jamais. Elle doit également être **connue au moment de la compilation**. 
+
+```go
+const maxUsers = 100
+```
+
+Après cela, la constante ne peut plus être réassigné. 
+
+On utilise généralement les constantes pour des limites strictes, ou des réglages qui ne devraient pas changer.
+
+```go 
+const minAge = 18
+
+if age >= minAge {
+    fmt.Println("welcome")
+}
+```
+
+### Groupe de constante 
+
+Les constantes sont généralement déclarée dans des groupes. 
+
+```go 
+const (
+	minAge = 18
+	maxUsers = 100 
+	appName = "DoorGuard"
+)
+```
+
+### Constante untyped 
+
+Ce type de constante est sans type fixé. 
+
+```go 
+const n = 5 
+```
+
+La constante peut prendre un type `int`, `int64` ou `uint`. On pourras recevoir un type plus tard selon l'endoit où la constante est utilisée.
+
+```go 
+func main() {
+	const n = 5 // untyped
+
+	var a int = n
+	var b int64 = n
+
+	fmt.Printf("a=%v (%T)\n", a, a) // a=5 (int)
+	fmt.Printf("b=%v (%T)\n", b, b) // b=5 (int64)
+}
+```
+
+Ici c'est la variable qui reçoit le type. La constante se glisse dans le type attendu.
+
+### Constante typées 
+
+```go 
+const m int = 5 
+```
+
+Il s'agit d'une constante `typed`. Elle possède un type et obéit au même règle que les valeurs ordinaire de ce type.
+
+```go 
+func main() {
+	const n = 5     // untyped
+	const m int = 5 // typed
+
+	var a int64 = n        // ok
+	var b int64 = int64(m) // conversion nécessaire
+
+	fmt.Println(a, b) // 5 5
+}
+```
+
+---
 
 ## TYPE 
 
-### int 
+### int
 
 Stocke les nombres entiers sans la partie décimale. Il prends les négatif et les positifs. 
 
+Il est possible de savoir combien de bits représente le `int`
+
+```go 
+func main() {
+	fmt.Println("int size:", strconv.IntSize, "bits") // par exemple: int size: 64 bits
+}
+```
+
+### int64 
+
+Utiliser lorsque l'on souhaite travailler avec une taille fixe, et une grand plage. C'est utiliser lorsque l'on stocke des nombres potentiellement grand, ou lorsque le format doit être identiques sur différentes machines.
+
+- argent en unité minimales, par exemple en centimes. Généralement, pour le stockage de valeur numéraire, on préfère stocker en centimes pour éviter les erreur de précision.
+- compteur et accumulations 
+- les nombres venant de l'extérieur (numéro de transactions, Id user)
+
+### uint 
+
+Peut prendre que des nombre positif. 
+- travail avec les masques de bits et des aspects de bas niveau 
+- lorsque l'api exige ce type spécifique 
+- lorsque l'on travail avec des identifiant 
+
+```go 
+func main(){
+	u := uint(17)
+}
+```
+
 ### float64 
 
-Permet de stocker des valeurs décimale. 
+Permet de stocker des valeurs décimale. C'est le type par défaut pour les nombres à virgule.
+
+Attention à la précision avec les float.
+```go 
+func main() {
+	x := 0.1
+	var y float32 = 0.1
+
+	fmt.Printf("x=%v, type=%T\n", x, x) // x=0.1, type=float64
+	fmt.Printf("y=%v, type=%T\n", y, y) // y=0.1, type=float32
+}
+```
+
+La comparaison entre nombre flottant peut engendrer des résultats inattendu à cause de la précision.
+
 
 ### string 
 
@@ -381,52 +503,124 @@ func main(){
 }
 ```
 
+### Conversion explicite 
+
+Go utilise une syntaxe de conversion `T(x)` ou `T` est le type cycle, et `x` la valeur à convertir.
+
+```go 
+func main() {
+	var n int64 = 42
+	m := int(n) // conversion du int64 en int 
+
+	fmt.Printf("n=%v (%T)\n", n, n) // n=42 (int64)
+	fmt.Printf("m=%v (%T)\n", m, m) // m=42 (int)
+}
+```
+
+### Débordement à la conversion d'entier 
+
+La convesion d'un type large vers un type plus étroit comme `int64` vers `int32` peut provoquer des problème.
+
+Il peut y avoir des perte de donnée (débordement de plage), et le programme ne plante pas forcément.
+
+```go 
+func main() {
+	var big int64 = 130
+	var small int8 = int8(big)
+
+	fmt.Println(big)   // 130
+	fmt.Println(small) // -126 // débordement
+}
+```
+
+### Conversion signed to unsigned 
+
+```go 
+func main() {
+	i := -1
+	u := uint(i)
+
+	fmt.Println(i) // -1
+	fmt.Println(u) // un très grand nombre (dépend de la taille de uint)
+}
+```
+
+### float -> int 
+
+Une conversion d'un flottant vers un entier entraine une troncature de la valeur. La partie décimal n'est pas conservé.
+
+La conversion peut également entrainer une perte de précision sur les grands nombres.
+
+```go 
+func main() {
+	x := 3.99
+	n := int(x)
+
+	fmt.Println(n) // 3
+}
+```
+
+Pour obtenir un résultat de division décimal, il faut convertir les opérandes en `flat64` avant la division, sinon la partie décimal ne sera pas conservée.
+
+```go 
+func main() {
+	a := 7
+	b := 2
+
+	fmt.Println(a / b)                   // 3
+	fmt.Println(float64(a) / float64(b)) // 3.5
+	fmt.Println(float64(a/b) + 0.0)      // 3 (d’abord en entier, puis en float)
+}
+```
+
+
+
 ---
 
-## MATH 
+## ARITHMETIQUE 
+
+### Opérateur arithmétique 
+
+- `+` : addition 
+- `-` : soustraction 
+- `*` : multiplication 
+- `/` : division entière 
+- `%` : modulo (reste d'une division)
+
+Les opérations sont typé, par exemple, des opérations sur des `int` produisent des `int`.
 
 ### Division entière
 
 L'opérateur `/` de faire réaliser des division entière. Si deux `int` sont utilisé, on aura également un `int` pour le résultat. La partie décimale est ignoré.
 
 ```go
-package main
-
-import "fmt"
-
 func main() {
-	a := 7
-	b := 2
-
-	fmt.Println(a / b) // 3
-	
-	// pourcentage 
-	planned := 10
-	done := 3
-	
-	percent := (done * 100) / planned
-	fmt.Println(percent) // 30
+	fmt.Println(7 / 2) // 3
+	fmt.Println(9 / 3) // 3
+	fmt.Println(1 / 2) // 0
 }
 ```
 
+### Division des nombres négatifs 
+
+La division entière se fait vers zéro.
+
+```go 
+func main() {
+	fmt.Println(-7 / 2) // -3
+	fmt.Println(-1 / 2) // 0
+}
+```
 ### Modulo
 
-L'opérateur `%` permet de calculer le reste d'une division.
+L'opérateur `%` permet de calculer le reste d'une division. Fonctionne que sur des `int`
 
 ```go
-package main
-
-import "fmt"
-
 func main() {
-	candies := 17
-	kids := 5
-
-	each := candies / kids
-	left := candies % kids
-
-	fmt.Println(each) // 3
-	fmt.Println(left) // 2
+	a := 17
+	b := 5
+	fmt.Println(a/b, a%b) // 3 2
+	fmt.Println((a/b)*b + (a%b)) // 17
 }
 
 // ====
@@ -442,6 +636,38 @@ func main() {
 	minutes := totalMinutes % 60
 
 	fmt.Println(hours, minutes) // 2 15
+}
+
+// monétaire 
+// on passe en centime pour éviter les problème de précision 
+func main() {
+	totalCents := 12345
+
+	euros := totalCents / 100
+	cents := totalCents % 100
+
+	fmt.Printf("%d euros %02d cents\n", euros, cents) // 123 euros 45 cents
+}
+```
+
+- `%2d` : format d'affichage. On affiche deux nombres après la virgule
+
+### Calcul de pourcentage 
+
+```go 
+func main() {
+	var priceK int64
+	var qty int64
+	var discountPercent int64
+
+	fmt.Scan(&priceK, &qty, &discountPercent)
+
+	subtotal := priceK * qty
+	// on calcul la remise à appliquer
+	discount := (subtotal * discountPercent) / 100
+	total := subtotal - discount
+
+	fmt.Println(total)
 }
 ```
 
@@ -459,6 +685,95 @@ x /= 4  // x = 6
 s := "Hello"
 s += " World" // "Hello World"
 ```
+
+---
+
+## ARRONDIS ET FORMATAGE 
+
+Le formatage ne modifie pas la valeur, mais l'arrondis viens modifier la valeur.
+
+### Formatage 
+
+Le formatage permet par exemple d'afficher de manière lisible une valeur par exemple 
+
+```go 
+func main() {
+	x := 2.0 / 3.0
+
+	fmt.Printf("Pretty: %.2f\n", x)   // Pretty: 0.67
+	fmt.Printf("Raw:    %.17f\n", x)  // Raw:    0.66666666666666663
+	fmt.Printf("Still x: %.17f\n", x) // Still x: 0.66666666666666663
+}
+```
+
+### Formatage des float 
+
+Lorsque l'on affiche un `float`, Go essaie d'affiche un nombre raisonable. Il est possible de forcer l'affichage pour définir le nombre de chiffres après la virgule à afficher.
+
+- `%f` : affiche un float 
+- `%.2f` : affichage 2 chiffres après la virgule avec un arrondis pour l'affichage 
+- `%.0f` : affichage sans la partie décimal 
+
+```go 
+func main() {
+	x := 1.0 / 3.0
+
+	fmt.Printf("x as %%f   = %f\n", x)   // x as %f   = 0.333333
+	fmt.Printf("x as %%.2f = %.2f\n", x) // x as %.2f = 0.33
+	fmt.Printf("x as %%.0f = %.0f\n", x) // x as %.0f = 0
+}
+```
+
+### Arrondis 
+
+On vient faire un arrondis lorsque l'on souhaite : 
+- calculer une somme, puis utiliser la valeur arrondie 
+- appliquer un arrondis 
+- tronquer la partie décimale 
+
+Pour cela, on utilise le package `math`. Ces méthode retourne une nouvelle valeur
+
+- `math.Round(x)` : arrondi à l'entier le plus proche 
+- `math.Floor(x)` : arrondi vers le bas 
+- `math.Ceil(x)` : arrondi vers le haut 
+
+```go 
+func main() {
+	fmt.Println(math.Round(2.5)) // 3
+	fmt.Println(math.Floor(2.9)) // 2
+	fmt.Println(math.Ceil(2.1))  // 3
+}
+```
+
+### Arrondis a deux chiffres 
+
+Pour obtenir une valeur à deux chiffres :
+
+```go
+func main() {
+	x := 12.3456
+	// on multiple par 100
+	// on arrondi l'entier 
+	// on divise de nouveau 
+	y := math.Round(x*100) / 100
+
+	fmt.Printf("x = %.10f\n", x) // x = 12.3456000000
+	fmt.Printf("y = %.10f\n", y) // y = 12.3500000000
+}
+```
+
+### Gestion des float 
+
+```go 
+func main() {
+	x := 0.1 + 0.2
+
+	fmt.Printf("x = %.17f\n", x) // x = 0.30000000000000004
+	fmt.Printf("x = %.2f\n", x)  // x = 0.30
+}
+```
+
+
 
 ---
 
@@ -726,9 +1041,11 @@ func main(){
 }
 ```
 
+### Short circuit 
+
 Les opérateurs `&&` et `||` ont un comportement spécifique : 
-- `A && B` : la partie B n'est pas évalué sur A est `false`
-- `A || B` : la partie B n'est pas évalué sur A est `true`
+- `A && B` : la partie B n'est pas évalué si A est `false`
+- `A || B` : la partie B n'est pas évalué si A est `true`
 
 ```go 
 func main(){
@@ -853,7 +1170,7 @@ En Go, on utilise ce pattern : `appel -> check -> use` :
 2. Vérifier `err`
 3. Utiliser le résultat de la fonction 
 
-Chaque appel d'une fonciton pouvant retourner une erreur doit être gérer directement.
+Chaque appel d'une fonction pouvant retourner une erreur doit être gérer directement.
 
 ```go 
 package main
