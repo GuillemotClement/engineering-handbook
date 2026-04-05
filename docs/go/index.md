@@ -50,10 +50,6 @@ import "fmt"
 
 Cette fonction affiche du texte à l'écran sans ajouter de retour à la ligne
 ```go
-package main 
-
-import "fmt"
-
 func main(){
 	fmt.Print("Hello")
 }
@@ -456,6 +452,205 @@ A la déclaration d'une variable, elle prends automatiquement une valeur par dé
 - `boolean`: false 
 - `string` : ""
 
+### Type personnalisé sur les nombres 
+
+Ce sont des types crée en interne, stocké comme un nombre mais ayant un sens distinct et des règles de compatibilité distinct.
+
+Il aura la même représentation interne qu'un `int`, mais pour le compilateur, c'est une autre entité et il empêchera de la mélanger avec n'importe quel `int`.
+
+Pour déclarer un nouveau type :
+
+```go 
+func main() {
+	type Status int // on déclare le nouveau type 
+
+	var s Status = 1
+	fmt.Printf("%T %v\n", s, s) // main.Status 1
+}
+```
+
+Si on tente de lui affecter ensuite une valeur différentes de son type, le compilateur empêche la compilation.
+
+```go 
+func main() {
+	type Status int
+
+	var code int = 2
+	var s Status = code // impossible : types différents
+
+	fmt.Println(code) // 2
+}
+```
+
+Pour réaliser une conversion explicite et pouvoir affecter une valeur au nouveau type : 
+
+```go 
+func main() {
+	type Status int
+
+	var code int = 2
+	var s Status = Status(code) // conversion explicite
+
+	fmt.Printf("code=%d (%T)\n", code, code) // code=2 (int)
+	fmt.Printf("s=%d (%T)\n", s, s)          // s=2 (main.Status)
+}
+
+// conversion inverse 
+func main() {
+	type Status int
+
+	var s Status = 2
+	code := int(s) // on reconvertit en int
+
+	fmt.Printf("code=%d (%T)\n", code, code) // code=2 (int)
+}
+```
+
+Pour garder un sens au code, il utilise alors des constante pour connaitre la signification de chaque valeur.
+
+```go 
+func main() {
+	// déclartion du nouveau type 
+	type Status int
+	// déclaration des constante pour stocker la signification
+	const (
+		StatusNew        Status = 0
+		StatusInProgress Status = 1
+		StatusDone       Status = 2
+	)
+	
+	var s Status = StatusDone // on affecte la valeur de la const
+	fmt.Println(s) // 2
+}
+```
+
+### ioat 
+
+Les iota permettent de numéroter les valeurs de façon uniforme pour que le code garde un sens et reste maintenable.
+
+```go 
+func main() {
+	const (
+		StatusNew = iota			// 0
+		StatusInProgress			// 1
+		StatusDone						// 2
+	)
+
+	fmt.Println(StatusDone) // 2
+}
+```
+
+Un `ioat` n'existe que dans un groupe de `const`, commence à `0` sur la première ligne du bloc, et augmente de `1` pour chaque ligne de ce groupe.
+
+Il repart à `0` dans chaque nouveau bloc
+
+#### Enum - valeur unique 
+
+En Go, pour créer une énumération, on créer un type numérique ( par exemple `type Status int`) et un ensemble de constante de ce type. On obtient un nombre, mais le code se lit comme un nom parlant.
+
+Le compilateur n'autorise pas de mélanger plusieurs types.
+
+```go 
+type TaskStatus int // création du type 
+
+// enum
+const (
+	StatusNew TaskStatus = iota // 0
+	StatusInProgress // 1
+	StatusDone // 2
+)
+
+func main() {
+	var s TaskStatus = StatusInProgress
+	
+	switch s {
+	// les case corresponde à l'enum
+	case StatusNew:
+		fmt.Println("status: new") // status: new
+	case StatusInProgress:
+		fmt.Println("status: in progress")
+	case StatusDone:
+		fmt.Println("status: done") // status: done
+	default:
+		fmt.Println("status: unknown")
+	}
+}
+```
+
+#### Bitmasks - conbinaison
+
+Un enum répond à la question "quelle variante est choisie". Mais parfois il est nécessaire de stocker un ensemble de caractéristiques indépendante.
+
+Par exemple, une tâche peut avoir plusieurs options (urgente, avec notification, archivée, etc), et elles peuvent se combiner dans n'importe quelle configuration.
+
+Pour cela, on utilise un flag : un seul nombre dans lequel chaque bit représente une case à cocher.
+
+Le modèle le plus courante ressemble à `1 << iota`: cela signifie "prends le nombre 1, et décale le bit à 1 de `iota` position".
+On obtient alors des puissance de deux : `1`, `2`, `4`, `8` ...
+
+```go
+type TaskFlag uint
+
+const (
+	FlagUrgent TaskFlag = 1 << iota
+	FlagNotify
+	FlagArchived
+)
+
+func main() {
+	var flagsCode uint
+	
+	fmt.Scan(&flagsCode)
+
+	flags := TaskFlag(flagsCode)
+
+	if flags&FlagUrgent != 0 {
+		fmt.Println("flag: urgent")
+	}
+	if flags&FlagNotify != 0 {
+		fmt.Println("flag: notify")
+	}
+	if flags&FlagArchived != 0 {
+		fmt.Println("flag: archived")
+	}
+}
+```
+
+#### Saut et démarrage non nul 
+
+Parfois, on souhaite que la valeur `0` signifie "inconnu", et que les vraies valeurs commence à `1`. C'est généralement ce qu'on réalise sur des valeurs venant de l'extérieur.
+
+avec `iota`, on peut donnez explicitement le premier élément, ou bien sauter la première ligne.
+
+```go
+type Level int
+
+// on spécifie la première valeur
+const (
+	LevelUnknown Level = 0
+	LevelLow     Level = iota // iota ici vaut 1, car c'est la deuxieme ligne
+	LevelHigh                 // 2
+)
+
+func main() {
+	fmt.Println(LevelUnknown, LevelLow, LevelHigh) // 0 1 2
+}
+
+// AVEC SAUT DE LIGNE 
+const (
+	_ = iota // nous avons saute 0
+	One      // 1
+	Two      // 2
+)
+
+func main() {
+	fmt.Println(One, Two) // 1 2
+}
+```
+
+
+
+
 
 
 ---
@@ -577,19 +772,26 @@ func main() {
 
 ---
 
-## ARITHMETIQUE 
+## OPERATEURS
 
 ### Opérateur arithmétique 
 
-- `+` : addition 
-- `-` : soustraction 
-- `*` : multiplication 
-- `/` : division entière 
-- `%` : modulo (reste d'une division)
+```go 
+x := 10
+
+x += 5  // x = 15
+x -= 3  // x = 12
+x *= 2  // x = 24
+x /= 4  // x = 6
+
+// concaténation 
+s := "Hello"
+s += " World" // "Hello World"
+```
 
 Les opérations sont typé, par exemple, des opérations sur des `int` produisent des `int`.
 
-### Division entière
+#### Division entière
 
 L'opérateur `/` de faire réaliser des division entière. Si deux `int` sont utilisé, on aura également un `int` pour le résultat. La partie décimale est ignoré.
 
@@ -601,7 +803,7 @@ func main() {
 }
 ```
 
-### Division des nombres négatifs 
+#### Division des nombres négatifs 
 
 La division entière se fait vers zéro.
 
@@ -611,7 +813,7 @@ func main() {
 	fmt.Println(-1 / 2) // 0
 }
 ```
-### Modulo
+#### Modulo
 
 L'opérateur `%` permet de calculer le reste d'une division. Fonctionne que sur des `int`
 
@@ -652,7 +854,7 @@ func main() {
 
 - `%2d` : format d'affichage. On affiche deux nombres après la virgule
 
-### Calcul de pourcentage 
+#### Calcul de pourcentage 
 
 ```go 
 func main() {
@@ -671,20 +873,157 @@ func main() {
 }
 ```
 
-### Opération arithmétique 
+### Opération binaire 
+
+Un nombre peut être perçu comme un ensemble de bits. Cette approche est utile lorsqu'il faut stocker plusieurs attributs indépendants dans un seul nombre, et vérifier rapidement ce qui est actif.
+
+Généralement, on utilise les flags (ensemble d'options, d'autorisation ou de mode), et pour cela on garde tout dans un seul nombre et on manipule les bits.
+
+#### Ecriture binaire 
+
+La représentation binaire permet d'écrire des masque directement dans le code pour les lire.
+
+Pour cela, on utilise des préfixe : 
+- `ob...` - écriture binaire 
+- `0x...` : hexa
+- `0o` : octal 
 
 ```go 
-x := 10
-
-x += 5  // x = 15
-x -= 3  // x = 12
-x *= 2  // x = 24
-x /= 4  // x = 6
-
-// concaténation 
-s := "Hello"
-s += " World" // "Hello World"
+const (
+	a = 12       // decimal
+	b = 0b1100   // binaire
+	c = 0x0C     // hex
+	d = 0o14     // octal
+)
 ```
+
+L'écriture binaire est adapté pour les drapeaux, car on peut directement voir quel bits sont actif.
+
+Pour simplifier les masques longs, on peut utiliser `_` pour regrouper les bits 
+
+```go 
+const mask = 0b1111_0000_0011_0101
+```
+
+On regroupe ici 4 groupes de bits.
+
+Un masque est un nombre dans lequels certains bits nous interessent. Souvent un masique contient exactement un bit active, il représente alors un drapeau.
+
+`%b` permet d'afficher un nombre binaire avec le `fmt.Printf`
+
+#### Décalage à gauche - << 
+
+Permet de déplacer les bits d'un nombre vers la gauche.  La valeur à droite indique de combien de colonne on décale vers la gauche
+
+```go 
+1 << 0 => 0000 0001 | 1 
+1 << 1 => 0000 0010 | 2
+1 << 3 => 0000 1000 | 8 
+```
+
+On peut changer rapidement la valeur binaire.
+
+```go 
+func main() {
+	var mask uint = 1 << 3
+	fmt.Printf("mask=%b (%d)\n", mask, mask) // mask=1000 (8)
+}
+```
+
+#### OR binaire - |  - Activer
+
+Lorsque l'on stocke un ensemble de drapeau dans un seul nombre, l'opération "activer un drapeau" se fait avec `|` 
+
+```go 
+func main() {
+	var a uint = 1 << 0 // 0001
+	var b uint = 1 << 2 // 0100
+
+	// démarre à 0 (0000)
+	var flags uint = a | b // on active le 1 et le 3 ref a et b
+	fmt.Printf("%b\n", flags) // 101
+}
+```
+
+#### AND binaire - &  - Vérification 
+
+Permet de faire une vérification d'octets actif. 
+
+```go
+func main() {
+	const (
+		read  uint = 1 << 0 // 001
+		write uint = 1 << 1 // 010
+	)
+
+	var perms uint = read // lecture seule
+
+	// check si le deuxieme octet est actif 
+	fmt.Println(perms&write != 0) // false
+	// 
+	fmt.Println(perms&read != 0)  // true
+}
+```
+
+#### AND NOT binaire - &^ - Désactiver 
+
+Permet de désactiver 
+
+```go 
+func main() {
+	const (
+		read  uint = 1 << 0 // 001
+		write uint = 1 << 1 // 010
+		exec  uint = 1 << 2 // 100
+	)
+
+	var perms uint = read | write | exec // 111
+	perms = perms &^ write // on passe le 2 bit à 0
+
+	fmt.Printf("%b\n", perms) // 101
+}
+```
+
+#### ^ - bascule et inversion 
+
+- `a ^ b`: XOR ou exlusif 
+- `^a` : inversion 
+
+On utilise `XOR` lors que l'on souhaite tout toggle. 
+
+```go 
+func main() {
+	var x uint = 0b1010
+	var y uint = 0b1100
+
+	fmt.Printf("%b\n", x^y) // 110
+}
+
+func main() {
+	const debug uint = 1 << 0
+
+	var flags uint = 0
+	flags = flags ^ debug // debug active
+	flags = flags ^ debug // debug desactive
+
+	fmt.Println(flags) // 0
+}
+```
+
+#### Décalage à droite >> - extraction 
+
+```go 
+func main() {
+	var flags uint = 0b10100 // le bit 2 est active, le bit 4 est active
+
+	bit2 := (flags >> 2) & 1
+	bit3 := (flags >> 3) & 1
+
+	fmt.Println(bit2, bit3) // 1 0
+}
+```
+
+
 
 ---
 
@@ -1365,3 +1704,419 @@ func main() {
 Un package est un dossier physique contenant le code source. 
 
 Pour créer un nouveau package, on créer un nouveau dossier dans le projet.
+
+### Package et espace de nom 
+
+Les package Go permettent de grouper le code par sens, et donner des règles sur qui peut voir quoi et l'utiliser.
+
+La ligne `package` en haut du fichier permet de définir le package auquel le fichier appartient.
+
+Un fichier n'est pas a lui seul un "module du programme". Le module c'est le package, et le fichier n'est qu'une morceau du module.
+
+```go
+// définition du package du fichier
+package main  
+```
+
+Cette ligne indique que le fichier appartient au package `main`. Tous les fichiers appartenant au même package dans un même dossier partage le même espace de visibilité.
+
+La frontière est le `package` est pas le fichier.
+
+### package main 
+
+Le package `main` est spécial. C'est le point d'entrée d'une application. Le programme démarre à partir de celui ci.
+
+Dans ce package, on retrouve la fonction `main()`, qui est le point d'entrée par lequel  le programme se lance. C'est dans cette fonction que l'on viens connecter les différents composant de l'application.
+
+On retrouve ce package dans le cas d'une application exécutable. 
+
+### Règle d'exportation 
+
+En Go, pour définir si un élément (constante, type, variable, fonction )est exporté ou non c'est la première lettre qui définit ce comportement : 
+-  majuscule : il est exporté et accessible depuis d'autre package 
+- minuscule : il est non exporté, accessible uniquement à l'intérieur de son package.
+
+L'export d'élément n'as aucune incidence sur la sécurité. Il s'agit uniquement d'un contrat et d'une promesse.
+On indique juste que cet élément est disponible en dehors du package.
+
+On exporte uniquement les éléments intéressant pour en dehors du package. La logique interne au package reste privée, il n'y a aucun intérêt à rendre cela public.
+
+### Import path 
+
+L'import path permet au compilateur et aux outils d'aller chercher le code nécessaire. Il doit pointer sur un package unique.
+
+```go 
+package main
+
+import (
+	"fmt"
+	"math/rand"
+)
+
+func main() {
+	// on fait référence au package math/rand
+	fmt.Println(rand.Intn(10)) // par exemple : 7
+}
+```
+
+Pour utiliser ensuite les fonction du package, on fait référence au package, puis la fonction que l'on souhaite utiliser.
+
+Généralement, le `package name` correspond au dernier segment du chemin. 
+
+#### Package avec le même nom 
+
+```go 
+package main 
+
+import (
+	"crypto/rand"
+	"math/rang"
+)
+
+func main(){}
+```
+
+Ce code ne compileras pas car dans un fichier, il ne peut pas avoir deux package avec le même nom d'import
+
+
+
+
+
+
+---
+
+## FONCTION 
+
+Un fonction doit être déclaré, puis appeler. A l'appel, le code dans la fonction est exécuté.
+
+```go
+// syntaxe 
+func <name>(<param> <type>, <param2> <type>) <type_retour> {
+	// code exécuter à l'appel de la fonction 
+}
+```
+
+- Les paramètre passés à la fonction doivent être typés
+- Le retour de la fonction doit être typé
+
+```go 
+package main 
+
+import "fmt"
+
+func printIfPositive(x int){
+	if x <= 0 {
+		return 
+	}
+	fmt.Println("positive:", x)
+}
+
+func add(a int, b int) int {
+	return a + b
+}
+
+// si plusieurs paramètres ont le même type 
+func reactArea(width, height int) int {
+	return width * height
+}
+
+func main(){
+	// appel de la fonction 
+	printIfPositive(3)
+	
+	fmt.Println(add(2, 3)) // 5
+	
+	fmt.Println(rectArea(3, 4)) // 12
+}
+```
+
+### Contrat de fonction 
+
+Chaque fonction doit avoir un contrat clair : qu'attends la fonction, qu'est ce qui est retourné
+
+Les nom des paramètres doit également être clair, de cette manière, cela améliore la lisibilité du code.
+
+### Retour de fonction multiple 
+
+En Go, une fonction peut retourner plusieurs valeurs. Dans la signature, ces résultats s'écrivent entre parenthèses.
+
+Une fonction renvoie un résultat utile, soit indique que quelque chose n'a pas marché via une `error`.
+
+`error` est une interface avec la méthode `Error() string`, qui signifie que toute erreur doit pouvoir s'expliquer en texte.
+
+```go
+package main 
+
+import "fmt"
+
+// la fonction retourne deux string 
+func swap(a, b strin) (string, string){
+	return b, a
+}
+
+func main() {
+	// on prépare deux variables pour récupérer les valeurs de la func 
+	left, right := swap("L", "R")
+	fmt.Println(left, right) // R L
+}
+```
+
+### Ignorer une valeur retourner 
+
+Toutes les valeurs retourner par une fonction ne sont pas forcément utiliser. Dans ce cas, on utilise `_` pour l'ignorer.
+
+```go 
+package main 
+
+import "fmt"
+
+func pair() (int, int) {
+	return 10, 20
+}
+
+func main() {
+	// on ignore la seconde valeur retourné
+	x, _ := pair()
+	fmt.Println(x) // 10
+}
+```
+
+### Gestion d'erreur 
+
+Les fonctions qui peuvent échouer, retourne une `err`. 
+
+Pour créer une erreur, on utilise `errors.New("message")`. On lance cette erreur, et on viens la traiter à l'endroit où la fonction est appelée.
+
+Dans le cas ou une erreur arrive dans la fonction, la valeur retourné devras être celle par défaut : 
+- `0` pour un `int`
+- `""` pour une `string`
+- `0.0` pour un `float`
+- `false` pour un `bool`
+
+```go 
+package main 
+
+import (
+	"errors"
+	"fmt"
+)
+
+func safeDiv(a, b int) (int, error) {
+	if b == 0 {
+		// on lance une erreur 
+		// on retourne 0 pour la valeur 
+		// la nouvelle erreur 
+		return 0, errors.New("division by zero")
+	}
+	// on retourne la valeur 
+	// et nil pour indiquer l'absence d'erreur 
+	return a / b, nil 
+}
+
+func main(){
+	q, err := safeDiv(10, 0)
+	// check résultat de la fonction 
+	if err != nil {
+		fmt.Println("error:", err) // on affiche l'erreur 
+		return // termine l'exécution 
+	}
+	
+	fmt.Println("q =", q)
+}
+```
+
+### Resultat nomme
+
+On peut directement nommer les retour de la fonction depuis la signature. Ces variables seront directement disponible dans le corps de la fonction. Elles sont directement initialiser avec leur `zero value`.
+
+Un `return` sans valeur est autorise uniquement sur les résultats sont nomme. 
+
+```go 
+package main 
+
+import (
+	"fmt"
+)
+
+// les variable min et max sont dispo dans la fonction
+func minMax(a, b int) (min int, max int) {
+	if a < b {
+		min = a
+		max = b
+		// les variable min et max sont automatiquement retourner
+		return
+	}
+	
+	min = b
+	max = a
+	return
+}
+```
+
+Il est toujours possible de retourner explicitement les resultats lors du `return`
+
+```go
+func parseExpr(aS, opS, bS string) (a int, op string, b int, err error){
+	if opS != "+" && opS != "-" && opS != "*" && opS != "/" {
+		return 0, "", ), errors.New("unknow operator")
+	}
+	
+	return
+}
+```
+
+### Fonction variadiques 
+
+Fonctions qui prends un nombre indéterminé de paramètres. Le paramètre variadiques est toujours le dernier dans la liste des paramètres.
+
+Pour déclarer une paramètre variadiques, on utilise `<name> ...T`. Lorsque l'on appelle la fonction, on pourras passer autant d'arguments que souhaité dans la fonction.
+
+```go 
+func sum(nums ...int) int {
+	total := 0 
+	// on parcours les argument reçus 
+	for _, v := range nums {
+		total += v
+	}
+	return total 
+}
+
+func main(){
+	fmt.Println(sum(1, 2, 3)) 
+}
+```
+
+### Fonction anonymes 
+
+Une fonction anonyme est une fonction sans nom. Elle permet de transmettre un comportement.
+
+```go 
+func (x int) int {
+	return x * 2
+}
+```
+
+#### Appel immédiat (IIFE)
+
+Parfois, il peut être intéressant d'exécuter un bloc de code directement (IIFE).
+
+Les parenthèses à la fin permette de déclencher l'appel de la fonction anonyme.
+
+```go 
+func (){
+	fmt.Println("=== MiniCalc ===")
+	fmt.Println("Entrez: a op b rule")
+}()
+```
+
+On peut également passer un paramètre et un résultat à la fonction anonyme 
+
+```go 
+res := func(x int) int {
+	return x * x
+}(5) // on appel la fonction anonyme et on lui passe 5
+
+fmt.Println(res) // 25
+```
+
+#### Calculer puis assigner 
+
+Parfois, le calcul exige un `if` mais on ne souhaite pas encombrer `main` avec des variables temporaire.
+
+```go 
+x := -10
+
+sign := func(n int) string {
+	if n < 0 {
+		return "negative"
+	}
+	
+	if n == 0 {
+		return "zero"
+	}
+	
+	return "postive"
+}(x)
+
+fmt.Println(sign) // negative
+```
+
+#### Fonction comme valeur 
+
+On peut venir stocker une fonction dans une variable.
+
+```go 
+f := func(x int) int {
+	return x + 1
+}
+
+fmt.Println(f(10)) // 11
+```
+
+#### Type de fonction 
+
+On peut venir définir un type pour les fonction. 
+
+```go 
+type Rule func(int) int 
+```
+
+#### Fonction d'ordre supérieur 
+
+Fonction qui accepte une autre fonction et l'utilise à l'intérieur. 
+
+```go 
+// type de fonction 
+type Rule func(int) int
+
+func apply(x int, r Rule) int {
+	return r(x) 
+}
+
+// utilisation avec une fonction nommée
+func double(x int) int { return x * 2}
+
+fmt.Println(apply(10, double)) // 20
+
+// utilisation avec une fonction anonyme 
+fmt.Println(apply(10, func(x int) int { return x * x})) // 100 
+```
+
+Le deuxième paramètre de la fonction `apply` est une fonction. Elle retourne le résultat de la fonction passé en paramètre.
+
+Un autre exemple avec une fonction qui prends un nombre de répétition et une action 
+
+```go 
+func repeat(n int, action func()) {
+	for i := 0; i < n; i++ {
+		// chaque itération on appelle la fonction passé
+		action()
+	}
+}
+
+// utilisation 
+repeat(3, func(){
+	fmt.Println("hi")
+})
+```
+
+### Closure 
+
+Une closure est une fonction qui utilise des variables de la portée externe. 
+
+Par exemple, pour implémenter un compteur. La fonction `makeCounter` retourne une fonction qui incrémente un nombre interne à chaque appel 
+
+```go
+func makeCounter() func () int {
+	n := 0
+	return func() int {
+		n++
+		return n
+	}
+}
+
+c := makeCounter()
+fmt.Println(c()) // 1
+fmt.Println(c()) // 2
+fmt.Println(c()) // 3
+```
