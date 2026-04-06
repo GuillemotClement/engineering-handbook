@@ -1575,14 +1575,18 @@ func main() {
 
 ## BOUCLE 
 
-En Go, il n'existe qu'une seule boucle `for`. 
+### Boucle for 
 
-### Boucle for
+En Go, il n'existe qu'une seule boucle `for`. 
 
 ```go
 for init; cond; post {
 	// corps de la boucle 
 }
+```
+
+
+```go 
 
 func main(){
 	for i := 0; i < 3; i++ {
@@ -1595,17 +1599,15 @@ func main(){
 - `cond` : condition d'arrête. Elle est vérifié avant chaque itération de la boucle.
 - `post` : étapes entre itération. S'exécute après le code de la boucle. Par exemple, augmenter ou diminuer la variable compteur.
 
-### Boucle while 
+#### Boucle while 
 
-Pour les boucle while, on utilise également `for` sous une autre forme. 
+La boucle s'exécute tant que la condition est `true`.
 
 ```go 
 for cond {
 	// code de la boucle 
 }
 ```
-
-La boucle s'exécute tant que la condition est `true`.
 
 ```go
 package main
@@ -1621,13 +1623,12 @@ func main() {
 }
 ```
 
-### Boucle infinie
+#### Boucle infinie
+
+Pour une CLI par exemple, on attends la saisie de l'utilisateur tant qu'il ne souhaite pas sortie explicitement de la boucle.
+Dans ce cas, on peut utiliser une boucle infinie : 
 
 ```go 
-package main 
-
-import "fmt"
-
 func main(){
 	balance := 0 
 	
@@ -1639,6 +1640,7 @@ func main(){
 			break
 		}
 		
+		// sortie de la boucle 
 		if x == 0 {
 			break
 		}
@@ -1661,29 +1663,47 @@ L'instruction `break` permet de sortir de la boucle.
 
 ### continue 
 
-Passer à l'itération suivante 
+L'instruction `continue` permet de passer à l'itération suivante. 
 
-### range 
+### range - parcourir une séquence
 
-Cette instruction permet de parcourir les éléments d'une séquence. 
+Cette instruction permet de parcourir les éléments d'une séquence. La fonction retourne deux valeurs. (index, et value)
 
-La fonction retourne deux valeurs. (index, et value)
+```go 
+for index, value := range s {
+	// code de la boucle 
+}
+```
+
+- `index` : la position de l'élément dans la séquence 
+- `value` : la valeur en cours d'itération 
+
+#### Parcourir une chaîne 
 
 ```go 
 func main(){
-	s := "Go"
+	message := "Go"
 	
-	for i, v := range s {
-		fmt.Println(i, v)
+	// on parcour la chaîne 
+	for i, v := range message {
+		fmt.Printf("Index: %v\n", i)
+		fmt.Prinf("Valeur: %v\n", v)
 	}
 }
 
-// détecteur de caractères 
+```
+
+#### Vérification de caractère 
+
+Pour vérifier un caractère unique, on utiliseras un `rune`.
+
+```go
 func main() {
 	s := "go#lang"
 
 	hasHash := false
 	for _, v := range s {
+	// on compare avec une rune
 		if v == '#' {
 			hasHash = true
 			break
@@ -1694,8 +1714,63 @@ func main() {
 }
 ```
 
-- `i` position de l'élément en court d'itération 
-- `v` : caractères unicode du caractère de type `rune`
+#### Remplacement de caractères 
+
+```go 
+package main
+
+import "fmt"
+
+func main() {
+	var levelRow string
+	fmt.Scan(&levelRow)
+
+	var fixedRow string // contient la chaîne corriger
+	var replacedCount int // cumul des caractères remplacer 
+
+	for _, v := range levelRow {
+		if v == '#' {
+			fixedRow += "*" // on ajoute dans la string corriger 
+			replacedCount++ // on incrémente le compteur 
+		} else {
+			fixedRow += string(v) // on ajoute le caractère de la string original
+		}
+	}
+
+	fmt.Println(fixedRow)
+	fmt.Println(replacedCount)
+}
+```
+
+### Protection contre les boucle infinie 
+
+Si une boucle provoque potentiellement une boucle infinie, on peut utiliser ce pattern pour log ce qui se passe, et ajouter une limite pour le debug.
+
+```go 
+package main
+
+import "fmt"
+
+func main() {
+	i := 0
+	limit := 20
+
+	for i < 5 {
+		i++
+		fmt.Println("i =", i) // i = 1, i = 2, ...
+
+		limit--
+		if limit == 0 {
+			fmt.Println("stop: safety limit reached")
+			break
+		}
+	}
+}
+```
+
+
+
+
 
 ---
 
@@ -2404,3 +2479,380 @@ fmt.Println(c()) // 3
 ---
 
 ## TABLEAU ET SLICE 
+
+### Tableau 
+
+Le tableau permet de contenir un ensemble de valeur de taille fixe connu à l'avance.
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	var myArray [7]int // instanciation de 7 int 0
+	week[3] = 100 // change la valeur du 4eme élément 
+	// itération du tableau
+	for i := 0; i < 7; i++ {
+		fmt.Scan(&week[i]) // on remplis le tableau 
+	}
+	
+
+	week := [3]int{10, 20, 30} // création est init d'un tableau
+	week[1] = 99 // on insere la valeur sur le 2eme élément
+	
+	fmt.Prinln(week) // [10 99 30]
+}
+```
+
+#### Copie d'un tableau 
+
+Lorsque l'on affecte un tableau, tous les éléments sont copiés. 
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	a := [3]int{1, 2, 3}
+	b := a // on affecte le tableau 
+	b[0] = 99 
+	
+	fmt.Println("a:", a) // a: [1 2 3]
+	fmt.Println("b:", b) // b: [99 2 3]
+}
+```
+
+### Slice 
+
+Pour travailler avec les tableau, on utilise principalement les slice. Ce sont des tableau mais où l'on ne définit pas la longueur.
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	s := []int{1, 2, 3} // création du slice 
+	s[0] = 99 // changement de la valeur du 1er élément 
+	
+	fmt.Println(s) // [99 2 3]
+}
+
+```
+
+#### Affectation d'un slice 
+
+Lorsque l'on copie un slice, on ne copie pas tous les élément. Les éléments restent partagés.
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	s := []int{1, 2, 3}
+	t := s // copie 
+	t[0] = 99 
+	
+	fmt.Println("s:", s) // s: [99 2 3]
+	fmt.Println("t:", t) // s: [99 2 3]
+}
+```
+
+### Passage a une fonction 
+
+Le passage d'un tableau à une fonction ne change pas les valeurs de ce tableau. En revanche, lorsque l'on passe un slice, ces valeurs sont modifié en dehors de la fonction.
+
+```go 
+// la fonction prends en paramètre un tableau
+func setFirstArray(a [3]int) {
+	a[0] = 100
+}
+
+// la fonction prends en paramètre un slice
+func setFirstSlice(s []int) {
+	s[0] = 100
+}
+
+func main() {
+	a := [3]int{1, 2, 3}
+	s := []int{1, 2, 3}
+
+	setFirstArray(a) // on passe le tableau comme copie
+	setFirstSlice(s) // on passe le slice comme référence
+
+	fmt.Println("array:", a) // array: [1 2 3]
+	fmt.Println("slice:", s) // slice: [100 2 3]
+}
+```
+
+### Comparaison 
+
+Les tableaux peuvent être comparé avec `==`, leurs éléments sont comparables.
+
+Un slice ne peut pas en revanche.
+
+```go 
+func main() {
+	a := [2]int{1, 2}
+	b := [2]int{1, 2}
+	fmt.Println(a == b) // true
+
+	s := []int{1, 2}
+	_ = s
+	fmt.Println(s == s) // erreur de compilation : les slices ne peuvent pas etre comparés ainsi
+}
+```
+
+### Slice header 
+
+La valeur d'un slice n'est pas un conteneur d'élément, mais une description d'une fenêtre  a travers laquelle on regarde un certain ensemble d'éléments en mémoire.
+
+Cette description comporte trois parties 
+
+#### len - nombre d'éléments du slice 
+
+Permet d'afficher le nombre d'éléments accessible dans le slice. Dépasser les limites provoque un arrêt brutale du programme `panic`. 
+
+```go 
+func main() {
+	s := []int{10, 20, 30}
+	fmt.Prinln(len(s)) // 3 - affiche le nombre d'élément
+	
+	fmt.Println(s[0]) // 10
+	fmt.Println(s[2]) // 30 
+	fmt.Println(s[3]) // panic: out of range 
+}
+```
+
+#### cap 
+
+Permet d'afficher combien d'éléments peuvent être stocker dans le slice (segment mémoire).
+
+```go 
+func main() {
+	s := make([]int, 2, 5) // len=2, cap=5
+	fmt.Println(len(s), cap(s)) // 2 5
+	fmt.Println(s)              // [0 0]
+}
+```
+
+- `len = 2` : signifie deux éléments disponible, tous deux valent pour l'instant zéro
+- `cap = 5` : jusqu'à 5 éléments peuvent tenir dans ce même bloc mémoire, mais pour le moment seuls 2 sont visible.
+
+#### pointer 
+
+Dans le slice, se trouve une information indiquant où se trouve le premier élément. Deux valeurs de type slice différentes peuvent référence un même ensemble d'éléments.
+
+```go 
+func main() {
+	s := []int{1, 2, 3}
+	t := s       // we copy the header, not the elements
+	t[0] = 99
+
+	fmt.Println(s) // [99 2 3]
+	fmt.Println(t) // [99 2 3]
+}
+
+// schema
+s (header) ----+
+               |
+               v
+           [ 1 ][ 2 ][ 3 ]   (data)
+               ^
+               |
+t (header) ----+
+```
+
+- `t := s` : vient copier le header du slice (`pointer` / `len` / `cap`)
+- Le `pointer` de `t` et celui de `s` pointe vers le même tableau sous jacent.
+- Les modification sur l'un des slice affecte également l'autre.
+
+### nil slice 
+
+En Go, presque chaque type à une valeur par défaut. Pour un slice, la valeur zéro est  `nil`.
+Cela signifie qu'il n'y a pas de slice, il ne pointe vers aucun élément.
+
+```go
+func main(){
+	var nums []int 
+	
+	fmt.Println(nums = nil) // true 
+	fmt.Println(len(nums), caps(nums)) // 0 0 
+	fmt.Println(nums) // []
+}
+```
+
+### make 
+
+`make` permet de créer des conteneurs prêt à l'emploi. Cette instruction permet de créer un slice, avec une longueur définis en second argument.
+
+L'instruction permet de choisir explicitement la forme du slice.
+
+```go
+make([]T, n) // n : longueur => élément inclus avec la zero value
+make([]T, n, cap) // on peut également passer la cap direct  
+```
+
+```go
+func main(){
+	a := make([]int, 3) // définis un slice de 3 éléments
+	fmt.Println(a, len(a), cap(a)) // [ 0 0 0 ] 3 3
+}
+
+func main(){
+	b := make([]int, 0, 3) // on passe une cap de 3 
+	fmt.Println(b, len(b), cap(b)) // [] 0 3 
+}
+```
+### slice vide 
+
+Un slice vide c'est un slice pour lequel `len == 0`, mais qui n'est pas égale à `nul`.
+Il existe deux manière d'obtenir un slice vide :
+
+```go 
+func main(){
+	// litteral  
+	tasks := []string{} // slice vide
+	
+	// avec make 
+	tasks := make([]string, 0)
+}
+```
+
+Ces deux méthodes sont équivalente : longueur `0`, cap `0`, non `nil`. Mais on peut garder cette association :
+- **litteral** : valeur vide dans le code 
+- **make** : création de conteneur 
+
+### Test de slice 
+
+```go 
+// savoir si des éléments sont présent :
+if len(tasks) == 0 {
+	fmt.Println("Il n'y a pas encore de tâches")
+}
+
+// le slice est initalisé
+
+if s == nil {
+	fmt.Println("le slice n'est pas initialisé")
+}
+```
+
+### append - ajout dans un slice
+
+La fonction `append` viens ajouter à la fin, et si il manque de la place, agrandis le stockage et renvoie le slice mise à jour. Elle retourne toujours un slice mise à jour.
+
+Elle prends en premier argument le slice dans lequel on souhaite vers l'ajout, en deuxième argument la valeur.
+On récupère ensuite la nouvelle référence du slice retourné par la fonction.
+
+Le **résultat de append doit toujours être conservé**.
+
+```go 
+func main(){
+	s := []int{1, 2} // création du slice 
+	s = append(s, 3) // ajout d 'un éléments dans le slice 
+	fmt.Prinln(s) // [1 2 3]
+}
+
+// utilisation dans des fonction 
+package main
+
+import "fmt"
+
+func addOne(s []int) []int {
+	s = append(s, 999)
+	return s
+}
+
+func main(){
+	s := []int{1, 2}
+	s = addOne(s) // on passe le slice, et on récupère le slice modifé
+	
+	fmt.Println(s) // [1 2 999]
+}
+```
+
+Lorsque l'on ajoute des éléments au slice, `len` grandit de façon prévisible. On en ajoute 1, la longueur augmente de 1.
+
+Pour `cap`, Go essaie d'allouer la mémoire, de sorte que les futurs `append` soient moins couteux, donc la capacité augmente par bond.
+
+```go 
+// exemple d'utilisation 
+package main 
+
+import "fmt"
+
+func addTask(tasks []string, title string) []string {
+	tasks = append(tasks, title) // ajout d'une nouvelle tâche
+	return tasks
+}
+
+func main(){
+	var tasks []string // init du slice 
+	
+	// on ajoute deux nouvelle tasks
+	tasks = addTask(tasks, "Faire les exercices")
+	tasks = addTask(tasks, "Caresser le chat")
+	
+	fmt.Println(tasks)
+}
+```
+
+### Préallocation de la capacité d'un slice 
+
+La préallocation de la capacité du slice empêche au `append` dans une boucle ne fasse des copies inutiles, ni d'allocations mémoire inutile.
+
+Il est possible de fixer le limite d'un slice, dans le cas ou l'on sait plus où moins la taille finale. Cela permet d'optimiser et de rendre prévisible le code.
+
+La préallocation est lorsque l'on vient créer un slice de longueur nulle, mais avec une capacité définie à l'avance.
+
+```go 
+func main(){
+	a := make([]int, 0, 5) // préallocation d'un slice vide d'une capacité de 5
+}
+```
+
+### Découpage de slice 
+
+C'est l'opération qui permet de créer une nouvelle fenêtre. On viens extraire des éléments du slice.
+
+Pour extraire des valeurs d'un slice, on utilise la syntaxe `s[a:b]`.
+- `a`: indice de départ
+- `b` : indice de fin non inclus
+
+```go 
+func main(){
+	s := []int{10, 20, 30, 40, 50}
+	part := s[1:4] // on extrait les valeurs du 2 au 4 élément
+	fmt.Println(part) // [20 30 40]
+}
+```
+
+Il existe plusieurs formes courantes d'extraction ou l'on omet une des deux bornes. 
+
+- `s[:b]`: tout depuis le début 
+- `s[a:]` : jusqu'a la fin 
+- `s[:]` : toutes les valeurs 
+
+```go 
+func main() {
+	s := []int{10, 20, 30, 40, 50}
+
+	fmt.Println(s[:2]) // [10 20]
+	fmt.Println(s[3:]) // [40 50]
+	fmt.Println(s[:])  // [10 20 30 40 50]
+}
+```
+
+| Comportement souhaité                            | Code           |
+| ------------------------------------------------ | -------------- |
+| Eléments de `a` à `b - 1`                        | `s[a:b]`       |
+| Les `n` premiers éléments                        | `s[:n]`        |
+| Tout sauf les `n` premiers                       | `s[n:]`        |
+| Les `k` derniers                                 | `s[len(s)-k:]` |
+| Inclure l'indice `i` dans le jusqu'a i           | `s[:i+1]`      |
+| Prendre exactement `n` positions à partir de `i` | `s[i:i+n]`     |
+On viens implémenter un CLI de gestionnaire de tâche. 
