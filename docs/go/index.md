@@ -2855,4 +2855,22 @@ func main() {
 | Les `k` derniers                                 | `s[len(s)-k:]` |
 | Inclure l'indice `i` dans le jusqu'a i           | `s[:i+1]`      |
 | Prendre exactement `n` positions à partir de `i` | `s[i:i+n]`     |
-On viens implémenter un CLI de gestionnaire de tâche. 
+
+### Underlying array sharing 
+
+Les sous slices partagent en général un même backing/underlying array. Les modifications effectuées sur un slice sont visible via un autre.
+
+Un slice n'est pas un mini tableau, mais une "fenêtre" sur les éléments contenu dans un array. C'est une petite structure descriptive: ou se trouvent les données, combien d'éléments sont visible, et combien peuvent l'être lors de la croissance.
+
+Un slice stocke `pointer + length + capacity` et deux slices peuvent regarder le même tableau.
+
+```
+underlying array (donnees):
+indices:  0   1   2   3   4
+         [A] [B] [C] [D] [E]
+
+s := s[0:5]      voit A B C D E
+t := s[1:4]      voit   B C D
+```
+
+Les données A et E sont physiquement les même, mais les fenêtre `s` et `t` sont différentes.
