@@ -2456,6 +2456,25 @@ func main(){
 }
 ```
 
+Pour passer des arguments multiples dans une fonctions variadiques, on utilise `...args` :
+
+```go 
+func sum(nums ...int) int {
+	var sum int
+	for _, num := range nums {
+		sum += num
+	}
+	return sum
+}
+
+func printSum(prefix string, nums ...int) {  
+	// on passe les différents valeurs à la fonction variadiques 
+    fmt.Printf("%s %d\n", prefix, sum(nums...))  
+}
+```
+
+
+
 ### Fonction anonymes 
 
 Une fonction anonyme est une fonction sans nom. Elle permet de transmettre un comportement.
