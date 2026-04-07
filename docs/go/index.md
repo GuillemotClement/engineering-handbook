@@ -2,6 +2,21 @@
 
 ## FONCTIONNEMENT 
 
+En Go, le compilateur Go transforme le texte source directement en code machine, spécifique à un système d'exploitation et à une architecture de processeur données (Windows, Linux, etc).
+
+Il dispose également d'une gestion automatique de la mémoire. Le garbage collector, le planificateur de goroutines et d'autres mécanismes de service constituent le `Go Runtime`. 
+Lors de la compilation, ce Runtime est simplement incorporé à l'intérieur du fichier binaire.
+
+### Go SQK 
+
+Pour transformer le code source en fichier exécutable, l'IDE à besoin d'un ensemble d'outils `Go SQK`. 
+C'est un répertoire sur le pc qui contient : 
+- des utilitaires pour la compilation et la construction : `go build`, `go run`
+- des outils de formatage et de test : `gofmt`, `go test`
+- la bibliothèque standard
+
+Le dossier racine dans lequel Go SQK est installé s'appelle **GOROOT**. L'IDE l'utilise comme "source de vérité". Si le SDK n'est pas connecté, l'IDE ne peut pas comprendre la syntaxe de la version actuelle du langage. 
+
 ### Compilateur 
 
 C'est un programme spécial qui compile le code. Il traduit le code Go en code compréhensible pour la machine.
@@ -245,47 +260,23 @@ func main() {
 ---
 ## CONSTANTE
 
-### Déclarer une constante
-
 Une constante désigne une valeur qui est définie une fois et qui ne change jamais. Elle doit également être **connue au moment de la compilation**. 
-
-```go
-const maxUsers = 100
-```
-
-Après cela, la constante ne peut plus être réassigné. 
-
 On utilise généralement les constantes pour des limites strictes, ou des réglages qui ne devraient pas changer.
 
 ```go 
-const minAge = 18
+const minAge = 18 // déclaration de la constante 
 
-if age >= minAge {
-    fmt.Println("welcome")
-}
-```
-
-### Groupe de constante 
-
-Les constantes sont généralement déclarée dans des groupes. 
-
-```go 
+// déclaration groupée
 const (
 	minAge = 18
 	maxUsers = 100 
 	appName = "DoorGuard"
 )
 ```
+###  untyped 
 
-### Constante untyped 
-
-Ce type de constante est sans type fixé. 
-
-```go 
-const n = 5 
-```
-
-La constante peut prendre un type `int`, `int64` ou `uint`. On pourras recevoir un type plus tard selon l'endoit où la constante est utilisée.
+C'est une constante sans type fixé. La constante contient une valeur, mais celle ci n'est pas encore typer.
+Le type sera appliquer au moment de l'utilisation.
 
 ```go 
 func main() {
@@ -298,16 +289,9 @@ func main() {
 	fmt.Printf("b=%v (%T)\n", b, b) // b=5 (int64)
 }
 ```
+### typed
 
-Ici c'est la variable qui reçoit le type. La constante se glisse dans le type attendu.
-
-### Constante typées 
-
-```go 
-const m int = 5 
-```
-
-Il s'agit d'une constante `typed`. Elle possède un type et obéit au même règle que les valeurs ordinaire de ce type.
+Constante qui possède un type explicite.
 
 ```go 
 func main() {
@@ -320,6 +304,137 @@ func main() {
 	fmt.Println(a, b) // 5 5
 }
 ```
+### iota - numérotation de constante
+
+Les iota permettent de numéroter les valeurs de façon uniforme pour que le code garde un sens et reste maintenable.
+
+Un `ioat` n'existe que dans un groupe de `const`, commence à `0` sur la première ligne du bloc, et augmente de `1` pour chaque ligne de ce groupe.
+
+Il repart à `0` dans chaque nouveau bloc
+
+```go 
+func main() {
+	const (
+		StatusNew = iota			// 0
+		StatusInProgress			// 1
+		StatusDone						// 2
+	)
+
+	fmt.Println(StatusDone) // 2
+}
+```
+
+#### Enum - valeur unique 
+
+En Go, pour créer une énumération, on créer un type numérique ( par exemple `type Status int`) et un ensemble de constante de ce type. On obtient un nombre, mais le code se lit comme un nom parlant.
+
+Le compilateur n'autorise pas de mélanger plusieurs types.
+
+```go 
+type TaskStatus int // création du type 
+
+// enum
+const (
+	StatusNew TaskStatus = iota // 0
+	StatusInProgress // 1
+	StatusDone // 2
+)
+
+func main() {
+	var s TaskStatus = StatusInProgress
+	
+	switch s {
+	// les case corresponde à l'enum
+	case StatusNew:
+		fmt.Println("status: new") // status: new
+	case StatusInProgress:
+		fmt.Println("status: in progress")
+	case StatusDone:
+		fmt.Println("status: done") // status: done
+	default:
+		fmt.Println("status: unknown")
+	}
+}
+```
+
+#### Bitmasks - conbinaison
+
+Un enum répond à la question "quelle variante est choisie". Mais parfois il est nécessaire de stocker un ensemble de caractéristiques indépendante.
+
+Par exemple, une tâche peut avoir plusieurs options (urgente, avec notification, archivée, etc), et elles peuvent se combiner dans n'importe quelle configuration.
+
+Pour cela, on utilise un flag : un seul nombre dans lequel chaque bit représente une case à cocher.
+
+Le modèle le plus courante ressemble à `1 << iota`: cela signifie "prends le nombre 1, et décale le bit à 1 de `iota` position".
+On obtient alors des puissance de deux : `1`, `2`, `4`, `8` ...
+
+```go
+type TaskFlag uint
+
+const (
+	FlagUrgent TaskFlag = 1 << iota
+	FlagNotify
+	FlagArchived
+)
+
+func main() {
+	var flagsCode uint
+	
+	fmt.Scan(&flagsCode)
+
+	flags := TaskFlag(flagsCode)
+
+	if flags&FlagUrgent != 0 {
+		fmt.Println("flag: urgent")
+	}
+	if flags&FlagNotify != 0 {
+		fmt.Println("flag: notify")
+	}
+	if flags&FlagArchived != 0 {
+		fmt.Println("flag: archived")
+	}
+}
+```
+
+#### Saut et démarrage non nul 
+
+Parfois, on souhaite que la valeur `0` signifie "inconnu", et que les vraies valeurs commence à `1`. C'est généralement ce qu'on réalise sur des valeurs venant de l'extérieur.
+
+avec `iota`, on peut donnez explicitement le premier élément, ou bien sauter la première ligne.
+
+```go
+type Level int
+
+// on spécifie la première valeur
+const (
+	LevelUnknown Level = 0
+	LevelLow     Level = iota // iota ici vaut 1, car c'est la deuxieme ligne
+	LevelHigh                 // 2
+)
+
+func main() {
+	fmt.Println(LevelUnknown, LevelLow, LevelHigh) // 0 1 2
+}
+
+// AVEC SAUT DE LIGNE 
+const (
+	_ = iota // nous avons saute 0
+	One      // 1
+	Two      // 2
+)
+
+func main() {
+	fmt.Println(One, Two) // 1 2
+}
+```
+
+
+
+
+
+
+
+
 
 ---
 
@@ -523,133 +638,6 @@ func main() {
 	fmt.Println(s) // 2
 }
 ```
-
-### ioat 
-
-Les iota permettent de numéroter les valeurs de façon uniforme pour que le code garde un sens et reste maintenable.
-
-```go 
-func main() {
-	const (
-		StatusNew = iota			// 0
-		StatusInProgress			// 1
-		StatusDone						// 2
-	)
-
-	fmt.Println(StatusDone) // 2
-}
-```
-
-Un `ioat` n'existe que dans un groupe de `const`, commence à `0` sur la première ligne du bloc, et augmente de `1` pour chaque ligne de ce groupe.
-
-Il repart à `0` dans chaque nouveau bloc
-
-#### Enum - valeur unique 
-
-En Go, pour créer une énumération, on créer un type numérique ( par exemple `type Status int`) et un ensemble de constante de ce type. On obtient un nombre, mais le code se lit comme un nom parlant.
-
-Le compilateur n'autorise pas de mélanger plusieurs types.
-
-```go 
-type TaskStatus int // création du type 
-
-// enum
-const (
-	StatusNew TaskStatus = iota // 0
-	StatusInProgress // 1
-	StatusDone // 2
-)
-
-func main() {
-	var s TaskStatus = StatusInProgress
-	
-	switch s {
-	// les case corresponde à l'enum
-	case StatusNew:
-		fmt.Println("status: new") // status: new
-	case StatusInProgress:
-		fmt.Println("status: in progress")
-	case StatusDone:
-		fmt.Println("status: done") // status: done
-	default:
-		fmt.Println("status: unknown")
-	}
-}
-```
-
-#### Bitmasks - conbinaison
-
-Un enum répond à la question "quelle variante est choisie". Mais parfois il est nécessaire de stocker un ensemble de caractéristiques indépendante.
-
-Par exemple, une tâche peut avoir plusieurs options (urgente, avec notification, archivée, etc), et elles peuvent se combiner dans n'importe quelle configuration.
-
-Pour cela, on utilise un flag : un seul nombre dans lequel chaque bit représente une case à cocher.
-
-Le modèle le plus courante ressemble à `1 << iota`: cela signifie "prends le nombre 1, et décale le bit à 1 de `iota` position".
-On obtient alors des puissance de deux : `1`, `2`, `4`, `8` ...
-
-```go
-type TaskFlag uint
-
-const (
-	FlagUrgent TaskFlag = 1 << iota
-	FlagNotify
-	FlagArchived
-)
-
-func main() {
-	var flagsCode uint
-	
-	fmt.Scan(&flagsCode)
-
-	flags := TaskFlag(flagsCode)
-
-	if flags&FlagUrgent != 0 {
-		fmt.Println("flag: urgent")
-	}
-	if flags&FlagNotify != 0 {
-		fmt.Println("flag: notify")
-	}
-	if flags&FlagArchived != 0 {
-		fmt.Println("flag: archived")
-	}
-}
-```
-
-#### Saut et démarrage non nul 
-
-Parfois, on souhaite que la valeur `0` signifie "inconnu", et que les vraies valeurs commence à `1`. C'est généralement ce qu'on réalise sur des valeurs venant de l'extérieur.
-
-avec `iota`, on peut donnez explicitement le premier élément, ou bien sauter la première ligne.
-
-```go
-type Level int
-
-// on spécifie la première valeur
-const (
-	LevelUnknown Level = 0
-	LevelLow     Level = iota // iota ici vaut 1, car c'est la deuxieme ligne
-	LevelHigh                 // 2
-)
-
-func main() {
-	fmt.Println(LevelUnknown, LevelLow, LevelHigh) // 0 1 2
-}
-
-// AVEC SAUT DE LIGNE 
-const (
-	_ = iota // nous avons saute 0
-	One      // 1
-	Two      // 2
-)
-
-func main() {
-	fmt.Println(One, Two) // 1 2
-}
-```
-
-
-
 
 
 
@@ -1610,10 +1598,6 @@ for cond {
 ```
 
 ```go
-package main
-
-import "fmt"
-
 func main() {
 	x := 1
 	for x < 100 {
@@ -1768,9 +1752,140 @@ func main() {
 }
 ```
 
+### Pattern de boucle 
 
+#### Accumulateur 
 
+Débute à zéro, et cumule les valeurs. La variable stocke le résultat intermédiaire, et chaque itération de la boucle, met à jour la variable.
 
+```go 
+func main(){
+	var n int  
+	fmt.Scan(&n)
+	
+	sum := 0 // accumulateur 
+	for i := 0; i < n; i++ {
+		var x int 
+		fmt.Scan(&x) // récupère une valeur saisis
+		sum = sum + x // cumul à chaque tour de boucle 
+	}
+	
+	fmt.Println(sum)
+}
+```
+
+#### Valeur maximale
+
+L'idée principale est la suivante : pour le maximum il est important de savoir d'où vient la valeur initiale.
+
+##### Initialisation par le premier élément 
+
+```go 
+func main(){
+	var n int 
+	fmt.Scan(&n)
+	
+	// pour une entrée vide, on affiche 0 
+	if n <= 0 {
+		fmt.Prinln(0)
+		return 
+	}
+	
+	// le premier élément devient le max
+	var max int 
+	fmt.Scan(&max)
+	
+	for i := 1; i < n; i++ {
+		var x int 
+		fmt.Scan(&x)
+		// si plus grand, on change la valeur max 
+		if x > max {
+			max = x
+		}
+	}
+}
+```
+
+##### Valeur max et index 
+
+PArfois, on as besoin de connaitre la valeur maximal, mais également sa postition. 
+
+```go 
+func main() {
+	var n int
+	fmt.Scan(&n)
+
+	if n <= 0 {
+		fmt.Println(-1) // pas d'éléments, donc pas d'indice
+		return
+	}
+
+	var max int
+	fmt.Scan(&max)
+	maxIndex := 0 // stocke l'index de la valeur max
+
+	for i := 1; i < n; i++ {
+		var x int
+		fmt.Scan(&x)
+		if x > max {
+			max = x
+			maxIndex = i
+		}
+	}
+
+	fmt.Println(maxIndex) // par exemple : 4
+}
+```
+
+#### Recherche avec drapeau 
+
+La recherche c'est lorsque l'on souhaite savoir si quelque chose apparaît dans les données. On utilise un flag, et si lever, on `break`.
+
+```go 
+// Recherche au flag 
+func main() {
+	var n, target int
+	fmt.Scan(&n, &target)
+
+	found := false // drapeau init a false 
+	for i := 0; i < n; i++ {
+		var x int
+		fmt.Scan(&x)
+		// si on trouve la donnée, on leve le drapeau 
+		if x == target {
+			found = true
+			break
+		}
+	}
+
+	fmt.Println(found) // true ou false
+}
+
+// Recherche du premier qui match 
+func main() {
+	var n int
+	fmt.Scan(&n)
+
+	found := false
+	firstNeg := 0
+
+	for i := 0; i < n; i++ {
+		var x int
+		fmt.Scan(&x)
+		if x < 0 {
+			firstNeg = x
+			found = true
+			break
+		}
+	}
+
+	if found {
+		fmt.Println(firstNeg) // par exemple : -7
+	} else {
+		fmt.Println(0) // convenons que s'il n'y a pas de nombres négatifs, on affiche 0
+	}
+}
+```
 
 ---
 
@@ -2801,6 +2916,27 @@ func main(){
 }
 ```
 
+#### Gestion du sous slice 
+
+```go 
+func main() {
+	tasks := []string{"A", "B", "C", "D"}
+	
+	// on récupère les deux premiers éléments 
+	head := tasks[:2]        // len=2, cap usually 4
+	head = append(head, "X") // we append the third element
+
+	// viens modifier les slice d'origine, et le la fenêtre
+	fmt.Println("head: ", head)  // head:  [A B X]
+	fmt.Println("tasks:", tasks) // tasks: [A B X D]
+}
+```
+
+Le `C` est devenu `X` car `head` voit une marge de capacité et `append` à décider d'écrire dans le slice.
+
+
+
+
 ### Préallocation de la capacité d'un slice 
 
 La préallocation de la capacité du slice empêche au `append` dans une boucle ne fasse des copies inutiles, ni d'allocations mémoire inutile.
@@ -2874,3 +3010,82 @@ t := s[1:4]      voit   B C D
 ```
 
 Les données A et E sont physiquement les même, mais les fenêtre `s` et `t` sont différentes.
+### copy 
+
+La méthode `copy` permet de copier un slice, elle réécrits les éléments. La fonction retourne le nombre d'éléments copié.
+
+```go 
+copy(<destination>, <source>)
+```
+
+
+
+
+
+
+
+
+Cette méthode permet de créer une copie d'un slice. `copy(dst, src)` copie les éléments de `src` vers `dst` et retourne le nombre d'éléments copiées.
+
+```go 
+func main(){
+	src := []int{10, 20, 30}
+	dst := make([]int, 2) // len 2 => création d'une fenêtre de 2 éléments
+	
+	n := copy(dst, src)
+	fmt.Println(n) // 2 
+	fmt.Println(dst) // [10 20]
+}
+```
+
+#### Création d'un backing array 
+
+On alloue un nouveau buffer, on y copie les éléments, on travail ensuite avec. `a` et `b` sont indépendants, ils ont des backing array différents.
+
+```go
+// clone un slice en entier 
+package main
+
+import "fmt"
+
+func cloneInts(src []int) []int {
+	dst := make([]int, len(src))
+	copy(dst, src)
+	return dst 
+} 
+
+func main(){
+	a := []int{1, 2, 3}
+	b := cloneInts(a)
+	
+	b[0] = 99
+	fmt.Println(a) // [1 2 3]
+	fmt.Println(b) // [99 2 3]
+}
+```
+
+### Copier une partie de slice 
+
+On choisit un intervalle, ensuite on lui crée son propre buffer.
+
+```go 
+package main 
+
+import "fmt"
+
+func clonePart(src []int, a, b int) []int{
+	part := src[a:b]
+	dst := make([]int, len(part))
+	copy(dst, part)
+	return dst
+}
+
+func main(){
+	s := []int{10, 20, 30, 40}
+	x := cloneParts(s, 1, 3) // [20 30]
+	
+	x[0] = 999
+	fmt.Println(s) // [10 20 30 40]
+	fmt.Println(x) // [999 30]
+}
+```
