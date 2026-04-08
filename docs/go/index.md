@@ -710,7 +710,7 @@ func main() {
 
 ### Débordement à la conversion d'entier 
 
-La convesion d'un type large vers un type plus étroit comme `int64` vers `int32` peut provoquer des problème.
+La conversions d'un type large vers un type plus étroit comme `int64` vers `int32` peut provoquer des problème.
 
 Il peut y avoir des perte de donnée (débordement de plage), et le programme ne plante pas forcément.
 
