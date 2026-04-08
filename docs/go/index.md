@@ -2888,9 +2888,32 @@ func main() {
 }
 ```
 
+### Tester les slices 
+
+#### Tester si le slice est vide 
+
+```go 
+if len(tasks) == 0 {
+	fmt.Println("Il n'y a pas encore de taches") // Il n'y a pas encore de taches
+}
+```
+
+#### Tester si le slice est initialisé
+
+```go 
+func main() {
+	var a []int  // nil
+	b := []int{} // empty
+
+	fmt.Println(len(a) == 0, a == nil) // true true
+	fmt.Println(len(b) == 0, b == nil) // true false
+}
+```
 
 
-=> 4. stop 11 - 03
+
+
+4 - 4
 
 ----
 old - refaire cette partie 
