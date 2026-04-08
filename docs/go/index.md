@@ -2618,159 +2618,164 @@ fmt.Println(c()) // 3
 ```
 
 ---
+## TABLEAU  
 
-## TABLEAU ET SLICE 
+Le tableau permet de contenir un ensemble de valeur de taille fixe connu à l'avance. Les données sont stockées côte à côte, et on y accède via un indice.
+Le premier élément est placé à l'index `0`
+### Création d'un tableau 
 
-### Tableau 
-
-Le tableau permet de contenir un ensemble de valeur de taille fixe connu à l'avance.
+Pour déclarer une tableau, on utilise `[N]T` ou `N` est le nombre d'éléments du tableau, et `T` le type des éléments de ce tableau.
 
 ```go 
-package main 
-
-import "fmt"
-
 func main(){
-	var myArray [7]int // instanciation de 7 int 0
-	week[3] = 100 // change la valeur du 4eme élément 
-	// itération du tableau
-	for i := 0; i < 7; i++ {
-		fmt.Scan(&week[i]) // on remplis le tableau 
-	}
-	
-
-	week := [3]int{10, 20, 30} // création est init d'un tableau
-	week[1] = 99 // on insere la valeur sur le 2eme élément
-	
-	fmt.Prinln(week) // [10 99 30]
+	week := [3]int{10, 20, 30} // création et initialisation d'un tableau
+	week[1] = 99 // on modifie l'élément à l'index 1 => le deuxième.
 }
 ```
 
-#### Copie d'un tableau 
+### Copie de tableau 
 
-Lorsque l'on affecte un tableau, tous les éléments sont copiés. 
+Lorsque l'on réalise une affectation, tous les éléments du tableau sont **copiés**. Chaque copie possède sa propre référence.
 
 ```go 
-package main 
-
-import "fmt"
-
 func main(){
 	a := [3]int{1, 2, 3}
-	b := a // on affecte le tableau 
-	b[0] = 99 
+	b := a // on copie le tableau dans la variable => les deux sont indépendnants
+	b[0] = 00
+	
 	
 	fmt.Println("a:", a) // a: [1 2 3]
 	fmt.Println("b:", b) // b: [99 2 3]
 }
 ```
 
-### Slice 
+### Passage de tableau à une fonction 
 
-Pour travailler avec les tableau, on utilise principalement les slice. Ce sont des tableau mais où l'on ne définit pas la longueur.
-
-```go 
-package main 
-
-import "fmt"
-
-func main(){
-	s := []int{1, 2, 3} // création du slice 
-	s[0] = 99 // changement de la valeur du 1er élément 
-	
-	fmt.Println(s) // [99 2 3]
-}
-
-```
-
-#### Affectation d'un slice 
-
-Lorsque l'on copie un slice, on ne copie pas tous les élément. Les éléments restent partagés.
-
-```go 
-package main 
-
-import "fmt"
-
-func main(){
-	s := []int{1, 2, 3}
-	t := s // copie 
-	t[0] = 99 
-	
-	fmt.Println("s:", s) // s: [99 2 3]
-	fmt.Println("t:", t) // s: [99 2 3]
-}
-```
-
-### Passage a une fonction 
-
-Le passage d'un tableau à une fonction ne change pas les valeurs de ce tableau. En revanche, lorsque l'on passe un slice, ces valeurs sont modifié en dehors de la fonction.
-
-```go 
-// la fonction prends en paramètre un tableau
-func setFirstArray(a [3]int) {
-	a[0] = 100
-}
-
-// la fonction prends en paramètre un slice
-func setFirstSlice(s []int) {
-	s[0] = 100
+```go
+// ma fonction attends un tableau de 7 entier 
+func sumWeek(week [7]int) int {
+	total := 0
+	for _, v := range week {
+		total += v
+	}
+	return total
 }
 
 func main() {
-	a := [3]int{1, 2, 3}
-	s := []int{1, 2, 3}
-
-	setFirstArray(a) // on passe le tableau comme copie
-	setFirstSlice(s) // on passe le slice comme référence
-
-	fmt.Println("array:", a) // array: [1 2 3]
-	fmt.Println("slice:", s) // slice: [100 2 3]
+	week := [7]int{100, 0, 50, 20, 10, 0, 70}
+	// on passe le tableau de 7 entier 
+	fmt.Println(sumWeek(week)) // 250
 }
 ```
 
-### Comparaison 
+### Comparaison de tableau 
 
-Les tableaux peuvent être comparé avec `==`, leurs éléments sont comparables.
-
-Un slice ne peut pas en revanche.
+On peut utiliser `==` pour comparer deux tableau, étant donné que c'est une copie d'éléments 
 
 ```go 
 func main() {
 	a := [2]int{1, 2}
 	b := [2]int{1, 2}
 	fmt.Println(a == b) // true
+}
+```
 
+---
+## SLICE 
+
+Un slice est une "fenêtre" qui pointe sur un tableau. Il se comporte comme un tableau. Le slice est une vue partielle d'un tableau, et différents slice peuvent regarder les même données.
+
+### Création de slice 
+
+Pour créer un slice, on ne définit pas le nombre d'éléments.
+
+```go 
+func main(){
+	s := []int{1, 2, 3}
+	s[0] = 99
+	
+	fmt.Println(s) // [99 2 3]
+}
+```
+
+### Affectation de slice 
+
+Lorsque l'on fait une affectation de slice, on ne copie pas les éléments, mais on copie la description du slice. Les éléments eux même restent partagés. 
+
+La modification d'un slice qui partage le même tableau, entraine la modification pour tous les slices partageant le même tableau.
+
+```go 
+func main(){
+	s := []int{1, 2, 3}
+	t := s // copie de la référence 
+	t[0] = 99 // modif pour les deux slices 
+	
+	fmt.Println("s:", s) // s: [99 2 3]
+	fmt.Println("t:", t) // t: [99 2 3]
+}
+```
+
+### Passage de slice au fonction 
+
+```go 
+// la fonction attends un slice de int 
+func sumDays(days []int) int {
+	total := 0
+	for _, v := range days {
+		total += v
+	}
+	return total
+}
+
+func main() {
+	days := []int{100, 0, 50, 20}
+	// on passe le slice à la fonction 
+	fmt.Println(sumDays(days)) // 170
+}
+```
+
+### Comparaison de slice 
+
+On ne peut pas utiliser de `==` pour comparer deux slice 
+
+```go 
+func main() {
 	s := []int{1, 2}
 	_ = s
 	fmt.Println(s == s) // erreur de compilation : les slices ne peuvent pas etre comparés ainsi
 }
 ```
 
-### Slice header 
+### Slice Header 
 
-La valeur d'un slice n'est pas un conteneur d'élément, mais une description d'une fenêtre  a travers laquelle on regarde un certain ensemble d'éléments en mémoire.
+Un **slice header** est une petite structure descriptive indiquant ou se trouvent les éléments et combien sont disponible.
+La valeur d'un slice n'est pas le "conteneur avec des éléments", mais une description d'une fenêtre permettant de voir un ensemble d'éléments.
 
-Cette description comporte trois parties 
+#### len - nombre d'élément du slice 
 
-#### len - nombre d'éléments du slice 
+`len(s)` permet de connaitre combien d'éléments sont accessibles à travers le slice. Il indique combien d'éléments peuvent être lire et écrit.
 
-Permet d'afficher le nombre d'éléments accessible dans le slice. Dépasser les limites provoque un arrêt brutale du programme `panic`. 
+- premier indice : `0`
+- dernier indice : `len(s) - 1`
+- `len(s)` : hors limite, et provoque une panique lors de l'accès
 
 ```go 
 func main() {
 	s := []int{10, 20, 30}
-	fmt.Prinln(len(s)) // 3 - affiche le nombre d'élément
-	
-	fmt.Println(s[0]) // 10
-	fmt.Println(s[2]) // 30 
-	fmt.Println(s[3]) // panic: out of range 
+	fmt.Println(len(s)) // 3 - le nombre d'élément dans le slice 
+
+	fmt.Println(s[0]) // 10 - élément à l'indice 1 
+	fmt.Println(s[2]) // 30 - élément à l'indice 3
+	fmt.Println(s[3]) // panic: index out of range
 }
 ```
 
-#### cap 
+#### cap - réserve du slice 
 
-Permet d'afficher combien d'éléments peuvent être stocker dans le slice (segment mémoire).
+La capacité `cap` définit combien d'éléments peuvent être stocker dans ce segment mémoire, à partir du début actuel du slice, sans déplacement ailleurs.
+C'est la réserve qui permet d'agrandir le slice.
+
+Il ne donne pas droit d'accéder par indice, l'indexation dépend de `len`
 
 ```go 
 func main() {
@@ -2780,12 +2785,12 @@ func main() {
 }
 ```
 
-- `len = 2` : signifie deux éléments disponible, tous deux valent pour l'instant zéro
-- `cap = 5` : jusqu'à 5 éléments peuvent tenir dans ce même bloc mémoire, mais pour le moment seuls 2 sont visible.
+- `len = 2` : deux éléments sont disponible dans le slice. Initialiser à zéro 
+- `cap = 5` : jusqu'à 5 éléments peuvent tenir dans ce bloc mémoire.
 
-#### pointer 
+### pointer 
 
-Dans le slice, se trouve une information indiquant où se trouve le premier élément. Deux valeurs de type slice différentes peuvent référence un même ensemble d'éléments.
+Dans un slice, se trouve une information indiquant où se trouve le premier élément (l'adresse du début des données). Deux valeurs de type slice différentes peuvent référence un même ensemble d'éléments.
 
 ```go 
 func main() {
@@ -2796,20 +2801,16 @@ func main() {
 	fmt.Println(s) // [99 2 3]
 	fmt.Println(t) // [99 2 3]
 }
-
-// schema
-s (header) ----+
-               |
-               v
-           [ 1 ][ 2 ][ 3 ]   (data)
-               ^
-               |
-t (header) ----+
 ```
 
-- `t := s` : vient copier le header du slice (`pointer` / `len` / `cap`)
-- Le `pointer` de `t` et celui de `s` pointe vers le même tableau sous jacent.
-- Les modification sur l'un des slice affecte également l'autre.
+- `t := s` : copie uniquement le header du slice ( pointer / len / cap)
+- le `pointer` de `t` et celui de `s` pointe vers le même tableau sous jacent (backing array)
+- la modification de `t[0]` modifie aussi les données pour `s` car c'est le backing array qui est modifié. 
+
+----
+old - refaire cette partie 
+
+
 
 ### nil slice 
 
@@ -3036,12 +3037,117 @@ t := s[1:4]      voit   B C D
 ```
 
 Les données A et E sont physiquement les même, mais les fenêtre `s` et `t` sont différentes.
-### copy 
+### copy - copie indépendante de slice 
 
 La méthode `copy` permet de copier un slice, elle réécrits les éléments. La fonction retourne le nombre d'éléments copié.
 
+La fonction réécrit chaque élément de la source vers la destination permettant ainsi de faire une vrai copie de slice. La destination aura un backing array complétement indépendant.
+
+Pour que la copie se réalise, il est nécessaire de préciser une `len` sur le nouveau backing array. Sinon, les éléments ne seront pas copiés.
+
 ```go 
 copy(<destination>, <source>)
+```
+
+```go 
+func main(){
+	tasks := []string{"buy milk", "read book", "write code"}
+	
+	// on précise la len issue du slice à copier
+	snapshot := make([]string, len(tasks)) // création d'un backing array 
+	copy(snapshot, tasks) // copié des éléments dans snapshot
+	
+	snapshot[0] = "buy coffe"
+	
+	fmt.Println(tasks)    // [buy milk read book write code]
+	fmt.Println(snapshot) // [buy coffee read book write code] 
+}
+```
+
+Pour utiliser une capacité déjà allouée, on peut étendre le slice par la longueur via reslice, mais seulement si `cap` le permet 
+
+```go 
+func main(){
+	src := []int{1, 2, 3}
+	
+	dst := make([]int, 0, 10)
+	dst = dst[:len(src)] // reslice pour augmenter le cap 
+	copy(dst, src)
+	
+	fmt.Println(dst) // [1 2 3]
+
+}
+```
+
+#### Déplacement des éléments 
+
+`copy` permet également de réaliser des déplacement au sein d'un slice.
+
+Par exemple, on as une liste de tâches, et on souhaite retirer un élément du milieux. On peut venir déplacer la queue vers la gauche.
+
+```go
+copy(s[i:], s[i+1])
+
+func main(){
+	s := []int{1, 2, 3, 4}
+	copy(s[1:], s[2:])
+	
+	fmt.Println(s) // [1 3 4 4]
+}
+```
+
+Le trous entre 2 et 3 est fermé, mais un doublon apparait à la fin.
+
+On peut également faire des déplacement vers la droite. Par exemple, pour insérer un élément au mileu. On ne peut pas déplacer vers la droite si il n'y a pas de place en longueur.
+La première étape est d'augmenter `len`.
+
+```go 
+func main(){
+	s := []int{10, 20, 30}
+	
+	i := 1
+	s = append(s, 0) // len+1 
+	copy(s[i+1], s[i:]) // déplacement vers la droite de 1 
+	s[i] = 99
+	
+	fmt.Println(s) // [10 99 20 30]
+}
+```
+
+Exemple d'un gestionnaire de tâche 
+
+```go 
+package main 
+
+import "fmt"
+
+// cloneStrings crée une copie indépendante du slice 
+func cloneStrings(src []string) []string {
+	dst := make([]string, len(src))
+	copy(dst, src)
+	return dst 
+}
+
+// déplacement vers la gauche
+func shiftLeftByOne(s []string, i int){
+	if i < 0 || i >= len(s)-1 {
+		return 
+	}
+	copy(s[i:], s[i+1:])
+}
+
+func main() {
+	tasks := []string{"buy milk", "read book", "write code"}
+	
+	view := cloneStrings(tasks)
+	view[0] = "buy coffee"
+	
+	fmt.Println("tasks:", tasks) // tasks: [buy milk read book write code]
+	fmt.Println("view: ", view)  // view:  [buy coffee read book write code]
+
+	shiftLeftByOne(tasks, 1)
+	fmt.Println("shift:", tasks) // shift: [buy milk write code write code]
+}
 ```
 
 
@@ -3113,5 +3219,19 @@ func main(){
 	x[0] = 999
 	fmt.Println(s) // [10 20 30 40]
 	fmt.Println(x) // [999 30]
+}
+```
+
+### clear 
+
+Fonction qui permet de réecrire la zero value pour les éléments de la plage.
+
+```go
+func main() {
+	s := []int{10, 20, 30}
+	clear(s)
+
+	fmt.Println(s)      // [0 0 0]
+	fmt.Println(len(s)) // 3
 }
 ```
