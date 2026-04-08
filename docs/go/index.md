@@ -39,6 +39,35 @@ Par exemple `main.go:7:6: undefined: something`
 
 ---
 
+
+## STRUCTURE 
+
+Dans les projets Go, il n'y a pas de hiérarchie stricte de dossier. Il n'existe pas de dossier `src` obligatoire pour les sources.
+
+Pour les petits utilitaires et micro services, les fichiers sources se trouvent directement à la racine du projet, à côté du fichier `go.mod`.
+
+A mesure que le projet grandit, le code est organiser en dossier, chacun devenant un package distinct. Un package étant un dossier physique dans le système de fichier.
+
+```tree
+// juste un package main 
+tasker/
+├── .idea/           # fichiers de service de GoLand, ne pas toucher
+├── go.mod           # fichier du module (dependances et version de Go)
+├── main.go          # point d'entree (package main)
+├── banner.go        # fichier auxiliaire (egalement package main)
+|-- logger/          # package logger
+|---- format.go
+└── README.md
+```
+
+Dans les package (dossier), on peut créer des fichiers `.go` comme on le souhaite, il n'y a pas de contrainte fixe liée au nom du package. Par exemple, dans le dossier `logger`, on peut créer un fichier `format.go` dans lequel on vient placer la logique de formatage du texte.
+
+Par convention, le nom du package doit correspondre au nom du dossier. Si le dossier s'appelle `logger`, alors sur toute première ligne des fichier `.go` du package, on retrouve `package logger`. Tous les fichiers du package doivent obligatoirement appartenir à ce package.
+
+Le compilateur fusionne les fichiers d'un même package au moment de la compilation. Cela signifie que des constantes déclarer dans un fichier d'un package, sont également disponible dans un autre fichier du package.
+
+Les import fonctionne dans un fichier donné, et non pour tout le package.
+
 ## COMMENTAIRE 
 
 ```go
@@ -108,37 +137,17 @@ func main(){
 
 ## VARIABLES
 
-### var 
-
-Permet de créer une variable. Par défaut, Go lui affecte la valeur par défaut pour ce type si on ne lui affecte rien.
-
-On l'utilise pour préparer une variable qui va recevoir une valeur. Par exemple, pour utiliser avec `fmt.Scan`, ou après une vérification de condition.
-
 ```go 
-func main() {
-	var count int // declared
-	count = 3     // assigned
-	fmt.Println(count) // 3
-	
-	var name = "Gopher" // inférence 
-	var age = 10
-	fmt.Println(name, age) // Gopher 10
-}
+// déclaration de variable 
+var x int
+var y = 10
+z := 10 
+
+// affectation 
+z = 20
 ```
 
-### := 
-
-Syntaxe courte pour déclarer une variable.
-
-```go
-func main() {
-	x := 10        // declared + initialized
-	x = x + 5      // updated an existing variable
-	fmt.Println(x) // 15
-}
-```
-
-L'utilisation de `:=` n'est autorisé que lorsqu'au moins une des variable est déclaré dans le bloc.
+L'utilisation de `:=` n'est autorisé que lorsqu'au moins une des variables est déclarées dans le bloc.
 - si tous les noms existent déjà, alors l'utilisation est interdite.
 - si une partie des variables existe déjà, mais qu'un moins un nouveau apparait, alors on peut l'utiliser, et les variables existante recevront la nouvelle valeur.
 
@@ -152,6 +161,19 @@ func main() {
 }
 ```
 
+En Go, les `{ }` définissent une portée. C'est la zone de code l'intérieur de laquelle les noms de variables sont accessibles.
+
+```go
+main {
+    x  // lives throughout main
+    if {
+        y // lives only inside if
+    }
+    // here y no longer exists
+}
+```
+
+- `y` n'existe que dans le bloc `if`
 ### Shadowing 
 
 Le shadowing, ou le masquage de variable est lorsque dans un bloc, on créer une nouvelle variable avec le même nom qu'une variable d'une bloc externe. Dans le bloc, la nouvelle variable, prends cette valeur, et celle du bloc exterene ne change pas.
@@ -185,8 +207,6 @@ func main() {
 }
 ```
 
-
-
 ### Affectation 
 
 L'affectation c'est lorsque l'on passe une nouvelle valeur à une variable. La variable doit être déclaré au préalable dans la portée courante.
@@ -199,24 +219,6 @@ func main() {
 	fmt.Println(total) // 70
 }
 ```
-
-### Portée des blocs 
-
-Les accolades définissent la portée, une zone de code à l'intérieur de laquelles les noms de variables existent et sont accessibles.
-
-```go 
-func main() {
-	x := 10
-
-	if x > 0 {
-		y := x * 2
-		fmt.Println("inside:", y) // inside: 20
-	}
-
-	fmt.Println("outside:", x) // outside: 10
-}
-```
-
 ### Assignation multiple 
 
 Il est possible d'assigner plusieurs valeurs à plusieurs variables en une seule fois : 
@@ -556,6 +558,12 @@ import "fmt"
 func main(){
 	isWeekend := true 
 }
+```
+
+On peut également vérifier une condition, et directement affecter le résultat de la comparaison dans une variable boolean 
+
+```go
+var canEnter bool = isAdmin && isCodeOK
 ```
 
 ### Valeurs par défaut 
@@ -1891,9 +1899,8 @@ func main() {
 
 ## PACKAGE 
 
-Un package est un dossier physique contenant le code source. 
+Un package est un dossier contenant le code source sur le disque. Il n'existe pas d'espaces de noms abstraits détachés du système de fichiers.
 
-Pour créer un nouveau package, on créer un nouveau dossier dans le projet.
 
 ### Package et espace de nom 
 
