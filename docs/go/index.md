@@ -2788,7 +2788,7 @@ func main() {
 - `len = 2` : deux éléments sont disponible dans le slice. Initialiser à zéro 
 - `cap = 5` : jusqu'à 5 éléments peuvent tenir dans ce bloc mémoire.
 
-### pointer 
+#### pointer 
 
 Dans un slice, se trouve une information indiquant où se trouve le premier élément (l'adresse du début des données). Deux valeurs de type slice différentes peuvent référence un même ensemble d'éléments.
 
@@ -2806,6 +2806,91 @@ func main() {
 - `t := s` : copie uniquement le header du slice ( pointer / len / cap)
 - le `pointer` de `t` et celui de `s` pointe vers le même tableau sous jacent (backing array)
 - la modification de `t[0]` modifie aussi les données pour `s` car c'est le backing array qui est modifié. 
+### nil-slice 
+
+Pour un slice `[]T`, la valeur zéro est `nil`, il n'y a pas de slice, il ne pointe vers aucun élément.
+
+```go 
+func main() {
+	// initialisation du slice 
+	var nums []int // valeur nil => il ne pointe sur rien 
+
+	fmt.Println(nums == nil)          // true
+	fmt.Println(len(nums), cap(nums)) // 0 0
+	fmt.Println(nums)                 // []
+}
+```
+
+### make - création de conteneur 
+
+`make` permet de créer des conteneur (slices, maps, canaux). 
+Avec le make, on peut définir de manière explicite le nombre d'éléments souhaité, et la capacité du slice.
+
+```go 
+tasks := make([]string, 0)
+```
+
+Cet instruction permet de créer un slice de `string` de longueur `0`, sans éléments. Le slice existe, et peut être transmis, retourne par des fonctions et étendu via `append`
+
+Pour les slice `make` prends deux formes :
+
+```go
+make([]T, n) // longueur x: les éléments existe et sont remplis par la zero valu
+make([]T, n, cap) // longueur n et cap >= n
+```
+
+Par exemple, pour créer un slice de 3 élément nul 
+
+```go 
+func main(){
+	// création d'un slice de 3 int nul 
+	a := make([]int, 3)
+	fmt.Println(a, len(a), cap(a)) // [0 0 0] 3 3
+}
+
+func main() {
+	// création d'un slice de 0 int avec une capa de 3
+	b := make([]int, 0, 3)
+	fmt.Println(b, len(b), cap(b)) // [] 0 3
+}
+```
+
+### Slice vide 
+
+Un slice vide est un slice pour lequel `len == 0` mais qui n'est pas égale à `nil`. C'est un slice de zéro élément.
+
+Il existe deux manière d'obtenir un slice vide 
+
+#### littéral 
+
+Cette manière indique clairement que c'est un slice vide mais qui existe.
+
+```go
+func main() {
+	tasks := []string{}
+
+	fmt.Println(tasks == nil)           // false
+	fmt.Println(len(tasks), cap(tasks)) // 0 0
+	fmt.Println(tasks)                  // []
+}
+```
+
+#### make 
+
+Avec cette manière on définis explicitement la taille du slice 
+
+```go 
+func main() {
+	tasks := make([]string, 0)
+
+	fmt.Println(tasks == nil)           // false
+	fmt.Println(len(tasks), cap(tasks)) // 0 0
+}
+```
+
+
+
+=> 4. stop 11 - 03
 
 ----
 old - refaire cette partie 
