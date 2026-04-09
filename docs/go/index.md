@@ -2910,181 +2910,239 @@ func main() {
 }
 ```
 
+### Append - ajouter un élément 
+
+La fonction `append` permet d'ajouter à la fin, et si la place manque, agrandir le stockage.
+Elle retourne le slice mis à jour.
+
+Le résultat de la fonction doit toujours être conservé.
+
+Lorsque l'on tente d'ajouter un élément dans un slice, mais que la `cap` est trop petite, alors Go viens prendre un nouvel emplacement mémoire, et y transfère tout le contenu et y place le nouvel élément.
+
+```go
+// syntaxe
+<slice> := append(<slice>, <valeur>)
+
+func main() {
+	s := []int{1, 2}
+	s = append(s, 3) // ajout dans le slice la valeur 3
+	fmt.Println(s) // [1 2 3]
+}
+```
+
+Avec des fonctions, il faut bien faire attention à retourner correctement le nouveau slice 
+
+```go 
+func addOne(s []int) []int {
+	s = append(s, 999)
+	return s
+}
+
+func main() {
+	s := []int{1, 2}
+	s = addOne(s)
+
+	fmt.Println(s) // [1 2 999]
+}
+```
+
+#### append et slice nil 
+
+On peut venir ajouter des éléments avec `append` dans un slice qui est `nil`. C'est très utiliser pour accumuler des données.
+
+```go 
+func main() {
+	var s []int // nil
+
+	s = append(s, 10)
+	s = append(s, 20)
+
+	fmt.Println(s, s == nil) // [10 20] false
+}
+```
+
+#### exemple 
+
+On réaliser une application. Une fonction permet d'ajouter des tâches 
+
+```go 
+package main
+
+import "fmt"
+
+// permet d'ajouter des tâches
+func addTask(tasks []string, title string) []string {
+	tasks = append(tasks, title)
+	return tasks
+}
+
+func main() {
+	// création du slice 
+	var tasks []string
+
+	// on viens ajouter les tâches
+	tasks = addTask(tasks, "Faire des exercices")
+	tasks = addTask(tasks, "Caresser le chat (le chat ne se caresse pas tout seul)")
+
+	fmt.Println(tasks) // [Faire des exercices Caresser le chat (le chat ne se caresse pas tout seul)]
+}
+```
+
+### Préallocation de la capacité d'un slice 
+
+La préalloction c'est lorsque l'on créer un slice de longueur nulle, mais avec une capacité définie à l'avance en utilisant un `make([]T, 0, <taille_attendu>)`.
+
+Cela permet d'optimiser le slice lorsque l'on ajoute plusieurs éléments dans le slice avec une boucle.
+
+```go 
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+	in := bufio.NewReader(os.Stdin)
+
+	var n int
+	fmt.Fscan(in, &n)
+
+	// préalocation du slice 
+	tasks := make([]string, 0, n) // len=0, cap=n
+	for i := 0; i < n; i++ {
+		var t string
+		fmt.Fscan(in, &t)
+		tasks = append(tasks, t)
+	}
+
+	fmt.Println(tasks) // [buy_code sleep repeat]
+}
+```
+
+### Découpage de slice 
+
+```go 
+part := s[a:b]
+
+func main() {
+	s := []int{10, 20, 30, 40, 50}
+	part := s[1:4] // Du deuxième au 3 eme élément
+	fmt.Println(part) // [20 30 40]
+}
+```
+
+- `a` : borne de départ 
+- `b`: borne de fin non inclut.
+
+Cela signifie de récupérer tous les éléments entre l'indice `a` et `b` non inclut.
+
+Si la borne de fin est supérieur à la limite, cela provoque une `panic`. La borne supérieur est comparée à `cap`, cette borne doit être inférieur à la valeur du `cap`. 
+
+#### Reslice 
+
+```go
+func main() {
+	s := make([]int, 0, 3) // len=0, cap=3
+
+	fmt.Println(s[0]) // panic: l'index 0 n'est pas disponible quand len=0
+
+	t := s[:1]             // ok: b=1 <= cap=3
+	fmt.Println(t, len(t)) // [0] 1
+}
+```
+
+#### Prédire le len et cap du résultat 
+
+Le slice `s[a:b]` retourne un nouveau slice ayant sont propre `len` et `cap`.
+
+- `len(s[a:b]) == b - a`
+- `cap(s[a:b]) == cap(s) - a` : généralement ainsi parce que le début de la fenêtre se déplace vers la droite.
+`cap` diminu de `a` car la capacité c'est "combien d'espace il reste à droite du début de la fenêtre jusqu'a la fin du backing array". Si on décale le début de la fenêtre, il y a moins de place à droite.
+
+```go 
+func main() {
+	s := make([]int, 5, 10) // len=5 cap=10
+	part := s[2:5]          // on prend 3 elements
+
+	fmt.Printf("len=%d cap=%d\n", len(part), cap(part)) // len=3 cap=8
+}
+```
+
+#### Omission de bornes 
+
+Il existe des syntaxe simplifier pour les découpage de slice.
+
+| Comportement souhaité                            | Code           |
+| ------------------------------------------------ | -------------- |
+| Sélection d'éléments                             | `s[a:b]`       |
+| Tout jusqu'a `n`                                 | `s[:n]`        |
+| Tout à partir de `n`                             | `s[n:]`        |
+| Les `k` derniers                                 | `s[len(s)-k:]` |
+| Inclure l'indice `i` dans le jusqu'a i           | `s[:i+1]`      |
+| Prendre exactement `n` positions à partir de `i` | `s[i:i+n]`     |
+
+
+```go
+func main() {
+	s := []int{10, 20, 30, 40, 50}
+
+	fmt.Println(s[:2]) // [10 20] => les deux premiers
+	fmt.Println(s[3:]) // [40 50] => à partir du 3eme élément
+	fmt.Println(s[:])  // [10 20 30 40 50]
+}
+```
+
+#### Protection du découpage 
+
+```go 
+func main() {
+	tasks := []string{"learn Go", "write code", "drink water", "sleep"}
+
+	var from, to int
+	fmt.Scan(&from, &to)
+
+	a := from - 1
+	b := to
+	// on protège contre les bornes incorrects pour le découpage
+	if a < 0 || b < 0 || a > b || b > len(tasks) {
+		fmt.Println([]string{}) // []
+		return
+	}
+
+	fmt.Println(tasks[a:b])
+}
+```
 
 
 
-4 - 4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ----
 old - refaire cette partie 
 
 
 
-### nil slice 
-
-En Go, presque chaque type à une valeur par défaut. Pour un slice, la valeur zéro est  `nil`.
-Cela signifie qu'il n'y a pas de slice, il ne pointe vers aucun élément.
-
-```go
-func main(){
-	var nums []int 
-	
-	fmt.Println(nums = nil) // true 
-	fmt.Println(len(nums), caps(nums)) // 0 0 
-	fmt.Println(nums) // []
-}
-```
-
-### make 
-
-`make` permet de créer des conteneurs prêt à l'emploi. Cette instruction permet de créer un slice, avec une longueur définis en second argument.
-
-L'instruction permet de choisir explicitement la forme du slice.
-
-```go
-make([]T, n) // n : longueur => élément inclus avec la zero value
-make([]T, n, cap) // on peut également passer la cap direct  
-```
-
-```go
-func main(){
-	a := make([]int, 3) // définis un slice de 3 éléments
-	fmt.Println(a, len(a), cap(a)) // [ 0 0 0 ] 3 3
-}
-
-func main(){
-	b := make([]int, 0, 3) // on passe une cap de 3 
-	fmt.Println(b, len(b), cap(b)) // [] 0 3 
-}
-```
-### slice vide 
-
-Un slice vide c'est un slice pour lequel `len == 0`, mais qui n'est pas égale à `nul`.
-Il existe deux manière d'obtenir un slice vide :
-
-```go 
-func main(){
-	// litteral  
-	tasks := []string{} // slice vide
-	
-	// avec make 
-	tasks := make([]string, 0)
-}
-```
-
-Ces deux méthodes sont équivalente : longueur `0`, cap `0`, non `nil`. Mais on peut garder cette association :
-- **litteral** : valeur vide dans le code 
-- **make** : création de conteneur 
-
-### Test de slice 
-
-```go 
-// savoir si des éléments sont présent :
-if len(tasks) == 0 {
-	fmt.Println("Il n'y a pas encore de tâches")
-}
-
-// le slice est initalisé
-
-if s == nil {
-	fmt.Println("le slice n'est pas initialisé")
-}
-```
-
-### append - ajout dans un slice
-
-La fonction `append` viens ajouter à la fin, et si il manque de la place, agrandis le stockage et renvoie le slice mise à jour. Elle retourne toujours un slice mise à jour.
-
-Elle prends en premier argument le slice dans lequel on souhaite vers l'ajout, en deuxième argument la valeur.
-On récupère ensuite la nouvelle référence du slice retourné par la fonction.
-
-Le **résultat de append doit toujours être conservé**.
-
-```go 
-func main(){
-	s := []int{1, 2} // création du slice 
-	s = append(s, 3) // ajout d 'un éléments dans le slice 
-	fmt.Prinln(s) // [1 2 3]
-}
-
-// utilisation dans des fonction 
-package main
-
-import "fmt"
-
-func addOne(s []int) []int {
-	s = append(s, 999)
-	return s
-}
-
-func main(){
-	s := []int{1, 2}
-	s = addOne(s) // on passe le slice, et on récupère le slice modifé
-	
-	fmt.Println(s) // [1 2 999]
-}
-```
-
-Lorsque l'on ajoute des éléments au slice, `len` grandit de façon prévisible. On en ajoute 1, la longueur augmente de 1.
-
-Pour `cap`, Go essaie d'allouer la mémoire, de sorte que les futurs `append` soient moins couteux, donc la capacité augmente par bond.
-
-```go 
-// exemple d'utilisation 
-package main 
-
-import "fmt"
-
-func addTask(tasks []string, title string) []string {
-	tasks = append(tasks, title) // ajout d'une nouvelle tâche
-	return tasks
-}
-
-func main(){
-	var tasks []string // init du slice 
-	
-	// on ajoute deux nouvelle tasks
-	tasks = addTask(tasks, "Faire les exercices")
-	tasks = addTask(tasks, "Caresser le chat")
-	
-	fmt.Println(tasks)
-}
-```
-
-#### Gestion du sous slice 
-
-```go 
-func main() {
-	tasks := []string{"A", "B", "C", "D"}
-	
-	// on récupère les deux premiers éléments 
-	head := tasks[:2]        // len=2, cap usually 4
-	head = append(head, "X") // we append the third element
-
-	// viens modifier les slice d'origine, et le la fenêtre
-	fmt.Println("head: ", head)  // head:  [A B X]
-	fmt.Println("tasks:", tasks) // tasks: [A B X D]
-}
-```
-
-Le `C` est devenu `X` car `head` voit une marge de capacité et `append` à décider d'écrire dans le slice.
 
 
 
 
-### Préallocation de la capacité d'un slice 
-
-La préallocation de la capacité du slice empêche au `append` dans une boucle ne fasse des copies inutiles, ni d'allocations mémoire inutile.
-
-Il est possible de fixer le limite d'un slice, dans le cas ou l'on sait plus où moins la taille finale. Cela permet d'optimiser et de rendre prévisible le code.
-
-La préallocation est lorsque l'on vient créer un slice de longueur nulle, mais avec une capacité définie à l'avance.
-
-```go 
-func main(){
-	a := make([]int, 0, 5) // préallocation d'un slice vide d'une capacité de 5
-}
-```
 
 ### Découpage de slice 
 
@@ -3117,15 +3175,6 @@ func main() {
 	fmt.Println(s[:])  // [10 20 30 40 50]
 }
 ```
-
-| Comportement souhaité                            | Code           |
-| ------------------------------------------------ | -------------- |
-| Eléments de `a` à `b - 1`                        | `s[a:b]`       |
-| Les `n` premiers éléments                        | `s[:n]`        |
-| Tout sauf les `n` premiers                       | `s[n:]`        |
-| Les `k` derniers                                 | `s[len(s)-k:]` |
-| Inclure l'indice `i` dans le jusqu'a i           | `s[:i+1]`      |
-| Prendre exactement `n` positions à partir de `i` | `s[i:i+n]`     |
 
 ### Underlying array sharing 
 
