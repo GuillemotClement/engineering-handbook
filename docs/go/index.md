@@ -492,8 +492,105 @@ func main() {
 
 La comparaison entre nombre flottant peut engendrer des résultats inattendu à cause de la précision.
 
+---
+## STRING 
 
-### string 
+En Go, une chaîne est une tableau d'octect. Elle est immuable. On ne peut pas modifier un des éléments interne, on peut seulement créer une nouvelle chaîne à partir de l'ancienne.
+
+### len() 
+
+Retourne la taille en octet de la chaîne. On ne peut pas compter le nombre de caractère via cette méthode.
+
+```go 
+func main() {
+	s := "Go"
+	fmt.Println(len(s)) // 2
+}
+```
+
+### Indexation de chaine 
+
+Lorsque l'on vient sélectionner un élément de la string, on ne retourne pas un caractère, mais un octect de cette séquence.
+Le type est `uint8` ou `byte`.
+
+```go 
+func main() {
+	s := "Go"
+
+	fmt.Println(s[0], s[1])  // 71 111
+	fmt.Printf("%T\n", s[0]) // uint8
+	
+	fmt.Printf("%c\n", s[0]) // G
+	fmt.Printf("%c\n", s[1]) // o
+}
+```
+
+### Modifier une chaîne 
+
+Pour changer une string, on vient en créer une nouvelle.
+
+```go 
+func main() {
+	s := "go"
+
+	// on prend "G" et on ajoute la fin de la chaine a partir de l'octet 1
+	s = "G" + s[1:]
+	fmt.Println(s) // Go
+	
+	s = "golang"
+	fmt.Println(s[:2])  // go
+	fmt.Println(s[2:])  // lang
+	fmt.Println(s[1:4]) // ola
+}
+```
+
+### strings 
+
+Package de la librairie standard qui fournit des méthodes pour travailler sur des string.
+
+#### strings.TrimSpace 
+
+Permet de nettoyer le début et la fin de la chaine des espaces.
+
+```go
+func main() {
+	raw := "   go,  strings, utf-8   "
+	clean := strings.TrimSpace(raw)
+
+	fmt.Printf("%q\n", raw)   // "   go,  strings, utf-8   "
+	fmt.Printf("%q\n", clean) // "go,  strings, utf-8"
+}
+```
+
+#### strings.Split 
+
+Permet de découper une string selon un séparateur. Retourne un slice 
+
+```go 
+func main() {
+	s := "go,strings,utf-8"
+	parts := strings.Split(s, ",") //
+
+	fmt.Println(parts) // [go strings utf-8]
+}
+```
+
+#### strings.Join 
+
+Permet de fusionner les éléments d'un slice . On ajoute un séparateur en deuxième argument.
+
+```go 
+func main() {
+	parts := []string{"go", "strings", "utf-8"}
+	out := strings.Join(parts, ", ")
+
+	fmt.Println(out) // go, strings, utf-8
+}
+```
+
+
+
+
 
 #### Caractères spéciaux 
 
@@ -528,21 +625,7 @@ func main(){
 
 Il n'est pas possible de mélanger une chaîne et des numbers pour réaliser des concaténation.
 
-#### len() - Longueur d'une chaîne 
-
-Cette fonction retourne la longueur d'une chaîne.
-
-```go
-package main
-
-import "fmt"
-
-func main() {
-    s := "golang"
-    fmt.Println(len(s)) // 6
-}
-```
-
+---
 
 ### bool 
 
@@ -3197,60 +3280,17 @@ func main() {
 }
 ```
 
+### clear 
 
-
-
-
-
-
-
-
-
-----
-old - refaire cette partie 
-
-
-
-
-### copy - copie indépendante de slice 
-
-La méthode `copy` permet de copier un slice, elle réécrits les éléments. La fonction retourne le nombre d'éléments copié.
-
-La fonction réécrit chaque élément de la source vers la destination permettant ainsi de faire une vrai copie de slice. La destination aura un backing array complétement indépendant.
-
-Pour que la copie se réalise, il est nécessaire de préciser une `len` sur le nouveau backing array. Sinon, les éléments ne seront pas copiés.
+Fonction qui permet de reset les valeurs d'un slice. Il permet également de supprimer la référence vers les données.
 
 ```go 
-copy(<destination>, <source>)
-```
+func main() {
+	s := []int{10, 20, 30}
+	clear(s)
 
-```go 
-func main(){
-	tasks := []string{"buy milk", "read book", "write code"}
-	
-	// on précise la len issue du slice à copier
-	snapshot := make([]string, len(tasks)) // création d'un backing array 
-	copy(snapshot, tasks) // copié des éléments dans snapshot
-	
-	snapshot[0] = "buy coffe"
-	
-	fmt.Println(tasks)    // [buy milk read book write code]
-	fmt.Println(snapshot) // [buy coffee read book write code] 
-}
-```
-
-Pour utiliser une capacité déjà allouée, on peut étendre le slice par la longueur via reslice, mais seulement si `cap` le permet 
-
-```go 
-func main(){
-	src := []int{1, 2, 3}
-	
-	dst := make([]int, 0, 10)
-	dst = dst[:len(src)] // reslice pour augmenter le cap 
-	copy(dst, src)
-	
-	fmt.Println(dst) // [1 2 3]
-
+	fmt.Println(s)      // [0 0 0]
+	fmt.Println(len(s)) // 3
 }
 ```
 
@@ -3324,12 +3364,6 @@ func main() {
 	fmt.Println("shift:", tasks) // shift: [buy milk write code write code]
 }
 ```
-
-
-
-
-
-
 
 
 Cette méthode permet de créer une copie d'un slice. `copy(dst, src)` copie les éléments de `src` vers `dst` et retourne le nombre d'éléments copiées.
@@ -3410,3 +3444,5 @@ func main() {
 	fmt.Println(len(s)) // 3
 }
 ```
+
+
