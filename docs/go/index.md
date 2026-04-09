@@ -3115,15 +3115,87 @@ func main() {
 }
 ```
 
+### Expression complète de slice 
 
+Le slice possède trois indices : `s[a:b:c]`. On définit la `len`, mais aussi la limite de `cap` du résultat.
 
+- `a` : len 
+- `b` : cap 
+- `c` : end of cap 
 
+Pour interdire la croissance vers la droite, et empêcher des conneries sur les backing array, on peut venir forcer la taille du `cap` pour que les `append` ne vienne pas casser.
 
+```go 
+func main() {
+	tasks := []string{"a", "b", "c", "d", "e"}
 
+	mid := tasks[1:3:3] // start=1, endLen=3, endCap=3
+	fmt.Println(mid)                // [b c]
+	fmt.Println(len(mid), cap(mid)) // 2 2
+}
+```
 
+### Copy
 
+La méthode copie les éléments de la `source` vers la `destination` et retourne le nombres d'éléments copiés.
 
+Pour le slice de destination, il faut définis le nombres d'éléments à copier.
 
+```go
+copy(<destination>, <source>)
+
+func main() {
+	src := []int{10, 20, 30}
+	dst := make([]int, 2) // len=2 => préparation de la destination
+
+	n := copy(dst, src) // copie du slice source dans la destination
+	fmt.Println(n)   // 2
+	fmt.Println(dst) // [10 20]
+}
+```
+
+Dans ce code, `dst` à une longueur de 2, il y aura donc 2 éléments de copiés.
+#### copie indépendante 
+
+Pour créer des slice totalement indépendant, on utilise ce pattern 
+
+```go 
+// la fonction permet de créer un clone du slice indépendant
+func cloneInts(src []int) []int {
+	dst := make([]int, len(src))
+	copy(dst, src)
+	return dst
+}
+
+func main() {
+	a := []int{1, 2, 3}
+	b := cloneInts(a) // on récupère une copie indépendante du premier slice 
+
+	b[0] = 99
+	fmt.Println(a) // [1 2 3]
+	fmt.Println(b) // [99 2 3]
+}
+```
+
+#### copie de sous slice 
+
+```go 
+func clonePart(src []int, a, b int) []int {
+	part := src[a:b] // on récupère une partie du slice 
+	dst := make([]int, len(part)) // on prépare la destination 
+	copy(dst, part) // on copie 
+	return dst
+}
+
+func main() {
+	s := []int{10, 20, 30, 40}
+	x := clonePart(s, 1, 3) // [20 30] copie indépendante 
+
+	x[0] = 999 
+	fmt.Println(s) // [10 20 30 40]
+	fmt.Println(x) // [999 30]
+}
+```
 
 
 
@@ -3140,60 +3212,6 @@ old - refaire cette partie
 
 
 
-
-
-
-
-### Découpage de slice 
-
-C'est l'opération qui permet de créer une nouvelle fenêtre. On viens extraire des éléments du slice.
-
-Pour extraire des valeurs d'un slice, on utilise la syntaxe `s[a:b]`.
-- `a`: indice de départ
-- `b` : indice de fin non inclus
-
-```go 
-func main(){
-	s := []int{10, 20, 30, 40, 50}
-	part := s[1:4] // on extrait les valeurs du 2 au 4 élément
-	fmt.Println(part) // [20 30 40]
-}
-```
-
-Il existe plusieurs formes courantes d'extraction ou l'on omet une des deux bornes. 
-
-- `s[:b]`: tout depuis le début 
-- `s[a:]` : jusqu'a la fin 
-- `s[:]` : toutes les valeurs 
-
-```go 
-func main() {
-	s := []int{10, 20, 30, 40, 50}
-
-	fmt.Println(s[:2]) // [10 20]
-	fmt.Println(s[3:]) // [40 50]
-	fmt.Println(s[:])  // [10 20 30 40 50]
-}
-```
-
-### Underlying array sharing 
-
-Les sous slices partagent en général un même backing/underlying array. Les modifications effectuées sur un slice sont visible via un autre.
-
-Un slice n'est pas un mini tableau, mais une "fenêtre" sur les éléments contenu dans un array. C'est une petite structure descriptive: ou se trouvent les données, combien d'éléments sont visible, et combien peuvent l'être lors de la croissance.
-
-Un slice stocke `pointer + length + capacity` et deux slices peuvent regarder le même tableau.
-
-```
-underlying array (donnees):
-indices:  0   1   2   3   4
-         [A] [B] [C] [D] [E]
-
-s := s[0:5]      voit A B C D E
-t := s[1:4]      voit   B C D
-```
-
-Les données A et E sont physiquement les même, mais les fenêtre `s` et `t` sont différentes.
 ### copy - copie indépendante de slice 
 
 La méthode `copy` permet de copier un slice, elle réécrits les éléments. La fonction retourne le nombre d'éléments copié.
