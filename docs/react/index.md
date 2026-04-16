@@ -2,6 +2,59 @@
 
 ## COMPOSANT 
 
+### Créer un nouveau composant 
+
+La fonction définis le composant React. Cette fonction peut contenir n'importe quelle expression JavaScript.
+
+Les `{ }` permettent d'afficher le résultat d'une expression JS dans le contenu afficher dans le DOM. 
+
+Chaque balise de JSX doit être fermé : `<br/>`
+
+```jsx
+function App() {
+  const now = new Date();
+  const a = 10;
+  const b = 20;
+
+  return (
+    <div>
+      <p>Hello world, it is {now.toString()}</p>
+      <p>
+        {a} plus {b} is {a + b}
+      </p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Composant multiple 
+
+```jsx
+// premier composant 
+const Hello = () => {
+  return (
+    <div>
+      <p>Hello World</p>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <div>
+      <h1>Greeting</h1>
+      // on utilise le composant 
+      <Hello />
+    </div>
+  );
+}
+
+export default App;
+```
+
+
 ### Early return 
 
 ```jsx
@@ -27,7 +80,39 @@ const Statistics = ({ stats }) => {
 ```
 
 ---
+## PROPS 
 
+### Parent => Enfant 
+
+```jsx
+// composant enfant
+const Hello = (props) => {
+  return (
+    <div>
+      <p>Hello {props.name}</p>
+    </div>
+  )
+}
+
+// composant parent 
+const App = () => {
+  return (
+    <div>
+      <h1>Greetings</h1>
+      <Hello name="George" />
+      <Hello name="Daisy" />
+    </div>
+  )
+}
+```
+
+
+
+
+
+
+
+---
 ## HOOK
 
 ### useState 

@@ -15,6 +15,8 @@ nav:
   - Symfony: symfony/index.md
   - Python: python/index.md
   - Curl: curl/index.md
+  - Linux:
+      - WSL: linux/wsl.md
 
 site_name: Engineering Handbook
 site_url: https://engineering-handbook.netlify.app

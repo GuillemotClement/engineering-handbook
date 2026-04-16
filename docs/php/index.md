@@ -83,3 +83,15 @@ Une fois les headers récupérés, on peut venir extraitre un token, par exemple
 $token = str_replace('Bearer ', '', $headers['Authorization'] ?? '');
 // $token = "eyJhbGci..."
 ```
+
+---
+
+## ARRAY 
+
+### in_array 
+
+Permet de trouver une valeur dans un array
+
+```php 
+in_array(<element_chercher>, <array>)
+```

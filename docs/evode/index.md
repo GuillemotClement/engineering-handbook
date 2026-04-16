@@ -1,6 +1,29 @@
 # Evode 
 
+## SQL 
+
+
+
 ## JQUERY
+
+### Récupérer un élément 
+
+```js
+// récupérer la valeur de l'input 
+let refArticle = $('#RefArticle').val();
+```
+
+### Toggle visibility 
+
+```js 
+ if (response == '1'){
+	errRefArticle.show();
+	return false
+} else {
+	errRefArticle.hide();
+}
+```
+
 ### Modale 
 
 Dans le fichier qui nécessite de d'afficher avec l'ajax une modale 
@@ -131,3 +154,48 @@ $listing->addClosure('Actions', function ($var) {
 ```
 
 ---
+
+### Fonction log_debug 
+
+La fonction viens récupérer des tableau de données, et les enregistre dans un fichier de log. 
+
+```php 
+// utilisation 
+dev_log([
+	'emetteur' => $emetteur,
+	'facture' => $facture
+], "Facturation:createPDF()");
+
+
+
+// placer dans fonction generique.php 
+function dev_log(array $data, string $label = '', string $log_file = __DIR__ . '/dev/dev.log'): void
+{
+    $dir = dirname($log_file);
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+
+    $timestamp = date('Y-m-d H:i:s');
+    $separator = str_repeat('-', 60);
+    $header    = $label !== '' ? " [{$label}]" : '';
+
+    $lines  = PHP_EOL . $separator . PHP_EOL;
+    $lines .= "[{$timestamp}]{$header}" . PHP_EOL;
+    $lines .= $separator . PHP_EOL;
+
+    foreach ($data as $key => $value) { // ← array_reverse() supprimé
+
+        $key_label = is_string($key) ? "[{$key}]" : "[item_{$key}]";
+        $formatted = is_scalar($value)
+                ? (string) $value
+                : print_r($value, true);
+
+        $lines .= "{$key_label}" . PHP_EOL . $formatted . PHP_EOL;
+    }
+
+    // Lire le contenu existant et prependre le nouveau log
+    $existing = file_exists($log_file) ? file_get_contents($log_file) : '';
+    file_put_contents($log_file, $lines . $existing, LOCK_EX); // ← FILE_APPEND supprimé
+}
+```
