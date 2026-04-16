@@ -2,7 +2,12 @@ nav:
   - Golang: go/index.md
   - PHP: php/index.md
   - Evode: evode/index.md
-  - SQL: SQL/01_index.md
+  - SQL: 
+    - Requête: sql/request.md 
+    - Table: sql/table.md
+  
+  
+  SQL/01_index.md
   - Java: Java/index.md
   - JQuery: jquery/index.md
   - TypeScript: typescript/index.md
