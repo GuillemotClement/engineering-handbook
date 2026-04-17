@@ -223,21 +223,6 @@ FROM products
 ORDER BY prix_remisé ASC;
 ```
 
-#### NULLS FIRST & NULLS LAST 
-
-Lorsque l'on souhaite trier des colonnes contenant des valeur `NULL`, on peut indiquer comment ranger ces valeurs.
-
-Par défaut, avec `ASC` les nul vont à la fin; et avec `DESC` les nul sont placé au début.
-
-```sql
-ORDER BY colonne ASC NULLS FIRST 
-ORDER BY colonne DESC NULLS LAST 
-
--- meilleurs notes en premier et les nul à la fin
-SELECT student_id, grade
-FROM grades 
-ORDER BY grade DESC NULLS LAST;
-```
 
 ---
 ## GROUP BY 
@@ -449,7 +434,7 @@ LIMIT 2;
 
 Le formatage permet de transformer les données dans un format lisible, de simplifier l'extraction de données, de préparer des données pour l'export ou l'intégration avec d'autres systèmes et de rendre les rapports et visualisation lisibles et précis.
 
-#### CONCAT()
+### CONCAT()
 
 Cette fonction permet de fusionner les donnée de plusieurs champ, ou des chaînes.
 
@@ -478,7 +463,7 @@ SELECT
 FROM students
 ```
 
-#### CONCAT_WS() - gestion des NULL
+### CONCAT_WS() - gestion des NULL
 
 Si une des valeurs passer dans le concat et `NULL`, cela provoque des bugs. Toutes les valeurs seront `NULL`, et il n'y aura pas de données affichée.
 Pour corriger, utiliser la fonction `CONCAT_WS()`
@@ -488,7 +473,7 @@ CONCAT_WS(<separator>, <value1>, <value2>, ...)
 
 CONCAT_WS(' - ', produit.produit_libelle, produit.produit_reference) AS 'Libellé produit',
 ```
-#### UPPER ()
+### UPPER ()
 
 Permet de transformer une chaîne en texte majuscule.
 
@@ -499,7 +484,7 @@ SELECT
 FROM students;
 ```
 
-#### LOWER()
+### LOWER()
 
 Permet de transformer une chaîne en minuscule. Cette fonction permet de standardiser les emails par exemple.
 
@@ -514,7 +499,7 @@ UPDATE students
 SET email = LOWER(email);
 ```
 
-#### NOW() - date complète
+### NOW() - date complète
 
 Retourne la date et l'heure actuelles du serveur de la base de données. 
 
@@ -528,7 +513,7 @@ INSERT INTO orders (order_id, order_date, total_amount)
 VALUES (1, NOW(), 150.00);
 ```
 
-#### CURRENT_DATE - date
+### CURRENT_DATE - date
 
 Retourne la date du jour sans l'heure. 
 
@@ -541,7 +526,7 @@ FROM orders
 WHERE order_date = CURRENT_DATE;
 ```
 
-#### DATE_PART() - récupération d'une partie de la date 
+### DATE_PART() - récupération d'une partie de la date 
 
 Cette fonction permet de récupérer une partie précise d'une date (année, mois, jour, heure, minute).
 
@@ -582,7 +567,7 @@ SELECT
 FROM users;
 ```
 
-#### AGE() - intervalle date 
+### AGE() - intervalle date 
 
 Retourne l'intervalle entre une date passer en argument, et la date du jour sous forme de date
 
@@ -592,7 +577,7 @@ SELECT
 FROM students;
 ```
 
-#### CAST() - conversion de type 
+### CAST() - conversion de type 
 
 Cette fonction permet de convertir une valeur d'un type de données à un autre. La conversion de type est nécessaire pour comparer des données, faire des opération.
 
@@ -638,7 +623,7 @@ FROM orders
 WHERE amount > 300
 	AND order_date::DATE >= '2023-09-01' AND order_date::DATE <= '2023-09-30';
 ```
-#### TO_CHAR() - formatage 
+### TO_CHAR() - formatage 
 
 Permet de formater une valeur. 
 
@@ -662,7 +647,7 @@ FROM
 -- 999,999.00 : définit le format avec séparateur de milliers et deux décimales
 ```
 
-#### LENGTH() - longueur de chaîne 
+### LENGTH() - longueur de chaîne 
 
 Retourne le nombre de caractère d'une chaîne.
 
@@ -675,7 +660,7 @@ SELECT
 FROM students;
 ```
 
-#### TRIM() - retirer les espaces 
+### TRIM() - retirer les espaces 
 
 Permet de supprimer les espaces au début et fin de string.
 
@@ -687,7 +672,7 @@ TRIM(string)
 SELECT '[' || TRIM('   Art   ') || ']' AS cleaned;
 ```
 
-#### SUBSTRING() - extraction de string
+### SUBSTRING() - extraction de string
 
 Permet d'extraire une substring d'une string.
 
@@ -710,7 +695,7 @@ SELECT
 FROM students;
 ```
 
-#### POSITION() - chercher une substring 
+### POSITION() - chercher une substring 
 
 Retourne la position où commence la substring.
 
@@ -733,7 +718,7 @@ FROM users;
 
 On peut ensuite l'utiliser avec `SUBSTRING()` pour extraire des partie de string.
 
-#### REPLACE() - remplacer une substring 
+### REPLACE() - remplacer une substring 
 
 Remplace les occurrences d'une substring par une autre.
 
@@ -747,7 +732,7 @@ SELECT
 FROM students;
 ```
 
-#### INITCAP() - première lettre en majuscule 
+### INITCAP() - première lettre en majuscule 
 
 Transforme la string pour que la première lettre de chaque mot soit en majuscule, les autres en minuscules.
 
@@ -764,7 +749,7 @@ Fonction spéciale SQL qui travaillent sur des groupes de lignes et retourne un 
 
 SQL exécute une fonction d'agrégation après avoir sélectionné les données dans `SELECT`.
 
-#### COUNT() - compter le nombre de lignes
+### COUNT() - compter le nombre de lignes
 
 Retourne le nombre total de ligne dans le résultat, ou le nombre de valeurs non nul dans une colonne précise.
 
@@ -791,7 +776,7 @@ SELECT
 FROM students;
 ```
 
-#### SUM()
+### SUM()
 
 Additionne toutes les valeurs d'une colonne numérique. Les `NULL` sont ignoré dans la somme.
 
@@ -815,7 +800,7 @@ SELECT
 FROM salaries;
 ```
 
-#### AVG()
+### AVG()
 
 Calcule la moyenne des valeurs numérique d'une colonne. Les `NULL` sont ignorés
 
@@ -843,7 +828,7 @@ SELECT AVG(quantity * price) AS average_total_sale
 FROM sales;
 ```
 
-#### MIN() & MAX()
+### MIN() & MAX()
 
 Retourne la plus grande et la plus petite valeur d'une colonne. Ces fonctions sont utilisable sur des colonnes numérique ou bien textuelle. Dans ce cas, elles sont comparé par ordre alphabétique.
 
@@ -1016,10 +1001,282 @@ FROM orders
 WHERE NULLIF(original_price, discounted_price) IS NOT NULL;
 ```
 
+### NULLS FIRST & NULLS LAST 
+
+Lorsque l'on souhaite trier des colonnes contenant des valeur `NULL`, on peut indiquer comment ranger ces valeurs.
+
+Par défaut, avec `ASC` les nul vont à la fin; et avec `DESC` les nul sont placé au début.
+
+```sql
+ORDER BY colonne ASC NULLS FIRST 
+ORDER BY colonne DESC NULLS LAST 
+
+-- meilleurs notes en premier et les nul à la fin
+SELECT student_id, grade
+FROM grades 
+ORDER BY grade DESC NULLS LAST;
+```
+
+---
+## CONDITION 
+
+### CASE 
+
+Equivalent au `switch`. Il compare l'expression à plusieurs valeurs, et exécute le bloc qui match.
+
+```sql
+CASE expression
+    WHEN value1 THEN result1
+    WHEN value2 THEN result2
+    ...
+    ELSE default_result
+END
+
+-- gestion des notes 
+SELECT
+    name,
+    grade,
+    CASE grade
+        WHEN 5 THEN 'Excellent'
+        WHEN 4 THEN 'Bien'
+        WHEN 3 THEN 'Satisfaisant'
+        WHEN 2 THEN 'Insuffisant'
+        ELSE 'Inconnu'
+    END AS note_en_mots
+FROM students;
+
+-- gestion du null 
+SELECT
+    user_id,
+    status,
+    CASE status
+        WHEN 'active' THEN 'Actif'
+        WHEN 'blocked' THEN 'Bloqué'
+        WHEN status IS NULL THEN 'Pas de statut'
+        ELSE 'Inconnu'
+    END AS etat_utilisateur
+FROM users;
+```
+### CASE WHEN 
+
+```sql
+ CASE
+    WHEN condition1 THEN résultat1
+    WHEN condition2 THEN résultat2
+    ...
+    ELSE résultat_par_défaut
+END
+
+-- classification de produit 
+SELECT
+    name AS product_name,
+    price,
+    CASE
+        WHEN price IS NULL THEN 'Inconnu'
+        WHEN price < 50 THEN 'Économique'
+        WHEN price BETWEEN 50 AND 100 THEN 'Standard'
+        ELSE 'Premium'
+    END AS price_category
+FROM products;
+
+-- groupement avec des null 
+SELECT
+    CASE
+        WHEN status IS NULL THEN 'Aucun statut'
+        ELSE status
+    END AS order_status,
+    COUNT(*)
+FROM orders
+GROUP BY
+    CASE
+        WHEN status IS NULL THEN 'Aucun statut'
+        ELSE status
+    END;
+```
+
+- `CASE` : début de la condition 
+- `WHEN`: condition que l'on teste
+- `THEN`: ce qui est retourner 
+- `ELSE`: si aucune condition ne match
+- `END` : indique la fin de la condition 
+
+### GREATEST() & LEAST()
+
+Retourne la plus grande ou petite valeur passer.
+
+Les deux fonctions ignorent les valeurs `NULL` quand elle cherchent la valeur max ou min. Si toutes les valeurs sont `NULL`, retourne `NULL`
+
+```sql 
+SELECT
+    student_id,
+    GREATEST(exam_1, exam_2, exam_3) AS highest_score,
+    LEAST(exam_1, exam_2, exam_3) AS lowest_score
+FROM students_scores;
+```
+
 ---
 
-## CONDITION 
-10.0
+## JOINTURE 
+
+| Type              | Description                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
+| `INNER JOIN`      | Retourne les lignes ayant des correspondance dans les deux tables                                |
+| `LEFT JOIN`       | Retourne les lignes de la table de gauche, et seulement les correspondance de la table de droite |
+| `RIGHT JOIN`      | Retourne les lignes de droite, et seulement les correspondance de la table de gauche             |
+| `FULL OUTER JOIN` | Retourne les lignes des deux tables, en mettant `NULL` pour les cas sans correspondance.         |
+ La table de gauche correspond à la table parent. Par exemple :
+```sql
+SELECT students.name, courses.title
+FROM enrollments
+	JOIN students ON enrollments.student_id = students.id
+	JOIN courses ON enrollments.course_id = courses.id;
+```
+
+Ou ici `enrollments` est la table de gauche pour les deux autres tables.
+
+### INNER JOIN 
+
+Retourne les lignes où les deux tables ont des correspondance. Utiliser dans les cas ou on on souhaite retourner des valeurs qui ont une correspondance, par exemple les commandes qui ont un client.
+
+```sql 
+SELECT colonnes
+FROM table1 INNER 
+	JOIN table2 ON table1.champ = table2.champ;
+	
+-- récupération des inscriptions des étudiants et leurs cours 
+SELECT 
+	students.name, 
+	enrollments.course_id
+FROM students 
+	INNER JOIN enrollments ON students.student_id = enrollments.student_id;
+```
+
+La requête retourne la correspondance entre un étudiant et le cours. Uniquement les étudiants qui sont inscrits à des cours sont retourné. Un étudiant n'étant pas inscrit ne sera pas retourné.
+
+### LEFT JOIN 
+
+Retourne toutes les lignes de la table de gauche, et les correspondances de la table de droite.
+Dans les cas ou il n'y a pas de correspondance, les colonnes de la table de droite seront `NULL`.
+
+```sql 
+SELECT
+    table1.colonne1,
+    table1.colonne2,
+    table2.colonne1,
+    table2.colonne2
+FROM
+    table1 LEFT JOIN table2
+ON
+    table1.colonne_commune = table2.colonne_commune;
+```
+
+- `table1` : table de gauche 
+- `table2` : table de droite 
+- `colonne_commune`: colonne permettant de faire la jointure (commune au deux tables)
+
+Par exemple, on souhaite obtenir la liste des étudiants, même ceux n'étant pas inscrits à un cours.
+
+```sql
+SELECT
+    students.name,
+    enrollments.course
+FROM
+    students LEFT JOIN enrollments
+ON
+    students.student_id = enrollments.student_id;
+```
+
+Pour gérer les valeurs `NULL` on pourras venir utiliser `COALESCE()`
+
+```sql 
+SELECT
+    students.name,
+    COALESCE(enrollments.course, 'Cours non choisi') AS course
+FROM
+    students LEFT JOIN enrollments
+ON
+    students.student_id = enrollments.student_id;
+```
+
+### RIGHT JOIN 
+
+Retourne les lignes de la table de droit et seulement les correspondances de la table de gauche. Si il n'y a pas de valeur, alors `NULL`.
+
+Par exemple, on veux obtenir la liste de toutes les inscriptions, et les infos sur les étudiants s'il existent. Si l'étudiants n'est pas trouvé, on aura `NULL`
+
+```sql 
+SELECT
+    enrollments.enrollment_id,
+    enrollments.course_name,
+    students.name AS student_name
+FROM
+    students RIGHT JOIN enrollments
+    ON
+    students.student_id = enrollments.student_id;
+```
+
+### FULL OUTER JOIN 
+
+Les lignes des deux tables sont retournées. Si une ligne n'as pas de correspondances, les valeurs manquantes seront `NULL`.
+
+La requête permet de faire une liste complète des étudiants et des cours, y compris ceux qui ne sont inscrits à aucun cours, et les cours sans étudiants.
+
+```sql 
+SELECT
+    s.student_id,
+    s.nom,
+    e.cours
+FROM
+    students s
+FULL OUTER JOIN
+    enrollments e
+ON
+    s.student_id = e.student_id;
+```
+
+### ON ... AND ... 
+
+Permet d'ajouter des conditions supplémentaire dans la jointure. Permet d'optimiser la jointure, en filtrant avec une condition supplémentaire.
+
+De cette manière, PG optimise le plan de jointure, et traite moins de ligne.
+
+On souhaite obtenir les étudiants qui ont des cours actifs :
+
+```sql 
+SELECT
+    students.name AS student_name,
+    courses.name AS course_name
+FROM students
+INNER JOIN enrollments
+    ON students.id = enrollments.student_id
+    AND enrollments.status = 'active' -- ajout d'une conditon
+INNER JOIN courses
+    ON enrollments.course_id = courses.id;
+```
+
+### SELF JOIN 
+
+Permet de joindre une table avec elle même. Par exemple une table `employee`, et chaque employé à un manager. Les manager est aussi un employé, dans ses infos sont dans la même table.
+
+Un `SELF JOIN` c'est un `JOIN` mais qui utilise le même table deux fois en lui donnant des alias.
+
+```sql
+ SELECT
+    e.name AS employee_name,
+    m.name AS manager_name
+FROM
+    employees e
+LEFT JOIN
+    employees m -- on donne un alias 
+ON
+    e.manager_id = m.employee_id;
+```
+
+ ---
+
+## REQUETE IMBRIQUE
+
+// stop 13
 
 ---
 ## OLD
