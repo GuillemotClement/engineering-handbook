@@ -1,5 +1,15 @@
 # Git 
 
+## REMOTE 
+
+```shell
+# supprimer le remote 
+git remote remove origin
+
+# ajouter un nouveau remote 
+git remote add origin <url_repo>
+```
+
 ## Configuration 
 
 ```shell
