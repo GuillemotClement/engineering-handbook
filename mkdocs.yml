@@ -3,8 +3,8 @@ nav:
   - PHP: php/index.md
   - Evode: evode/index.md
   - SQL: 
-    - Requête: sql/request.md 
-    - Table: sql/table.md
+    - Requête: SQL/request.md 
+    - Table: SQL/table.md
   - Java: Java/index.md
   - JQuery: jquery/index.md
   - TypeScript: typescript/index.md
