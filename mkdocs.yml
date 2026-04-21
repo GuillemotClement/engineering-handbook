@@ -5,9 +5,6 @@ nav:
   - SQL: 
     - Requête: sql/request.md 
     - Table: sql/table.md
-  
-  
-  SQL/01_index.md
   - Java: Java/index.md
   - JQuery: jquery/index.md
   - TypeScript: typescript/index.md
