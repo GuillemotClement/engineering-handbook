@@ -1276,6 +1276,275 @@ ON
 
 ## REQUETE IMBRIQUE
 
+Requête SQL utiliser à l'intérieur d'une autre requête SQL. Cette sous requête s'exécute en premier, et son résultat est utilisé par la requête principale.
+
+### Requête imbriquée dans SELECT 
+
+Une sous requête dans le `SELECT` permet de calculer des valeurs directement pendant l'exécution de la requête principale. Permet de combiner des calculs agrégés, des filtres complexes, ou d'autres collections de données.
+
+Elles sont puissant mais sont à utiliser avec précautions car chaque SR s'exécute pour chaque ligne de la requête principale, ce qui peut ralentir l'exécution de la requête si les tables sont grosses.
+
+Par exemple, cette requête affiche les noms des étudiants, leurs notes et la note maximale du groupe.
+
+```sql 
+SELECT
+    s.name AS student_name,
+    g.grade AS student_grade,
+    (
+	    -- sous requête
+        SELECT MAX(grade) -- cette requête retourne une seule valeur
+        FROM grades
+        INNER JOIN students ON grades.student_id = students.student_id
+        WHERE students.group_id = s.group_id -- fait référence à la requête principale
+    ) AS max_group_grade
+FROM
+    students s
+INNER JOIN
+    grades g ON s.student_id = g.student_id
+```
+
+1. Pour chaque étudiant, on récupère son nom et sa note (`s.name`, `g.grade`)
+2. `SELECT MAX(grade)` - c'est la sous requête qui permet de retourner la note maximale
+3. La SR s'exécute pour chaque ligne de la requête principale, et utilise la condition pour limiter la sélection à un seul groupe.
+
+#### Ajout de colonne supplémentaire 
+
+Il est possible de venir ajouter des colonnes supplémentaires avec des valeurs calculées ou des données qui dépendant d'autres enregistrements ou tables.
+
+```sql 
+-- ajouter la moyenne d'un étudiant 
+SELECT
+    s.id,
+    s.name,
+    (SELECT AVG(g.grade)
+     FROM grades g
+     WHERE g.student_id = s.id) AS average_grade -- nouvelle colone avec valeur calculée
+FROM students s;
+```
+
+
+### IN & NOT IN
+
+Permet de simplifier les conditions de filtrage. Les valeurs passée, seront celle vérifier par la condition du `IN`.
+
+```sql
+SELECT colonnes
+FROM table
+WHERE colonne IN (valeur1, valeur2, valeur3, ...);
+
+-- trouver les étudiants qui suivent certains cours 
+SELECT name, course
+FROM students
+WHERE course IN ('Programmation', 'Mathématiques', 'Physique');
+
+-- NOT IN
+SELECT name, course
+FROM students
+WHERE course NOT IN ('Programmation', 'Mathématiques', 'Physique');
+
+-- gestion des NULL
+SELECT student_id
+FROM grades
+WHERE grade NOT IN ('A', 'B', 'C')
+   OR grade IS NULL;
+```
+
+#### Utilisation avec SOUS-REQUETE 
+
+La sous requête retourne la liste dans résultat dans le `IN`.  Dans la requête principal, on obtient alors que les valeurs qui correspondent aux résultat retourné par la sous requête.
+
+```sql 
+SELECT name
+FROM students
+WHERE course_id IN (
+    SELECT id
+    FROM courses
+);
+```
+
+### EXISTS & NOT EXISTS - vérifier l'existence de données
+
+Permet de vérifier l'existence d'enregistrements dans le résultats d'une sous requête. Si la SR renvoie au moins une ligne, la condition retourne `TRUE`.
+
+Cet opération est plus rapide que `IN` car il arrête la sous requête dès qu'une correspondance est trouvé.
+
+`NOT EXISTS` retourne `TRUE` si la SR ne retourne aucune ligne.
+
+```sql
+SELECT colonnes
+FROM table
+WHERE EXISTS (
+    SELECT 1
+    FROM autre_table
+    WHERE condition
+);
+
+-- vérifier si des étudiants ont une note > à 4
+SELECT 'Il y a des étudiants avec une bonne note !'
+WHERE EXISTS (
+    SELECT 1
+    FROM students
+    WHERE grade > 4
+);
+
+-- retourner les étudiants sans note 
+SELECT *
+FROM students s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM students
+    WHERE grade IS NOT NULL
+    AND id = s.id
+);
+```
+
+### Requête imbriquée dans FROM 
+
+Permet de créer des tables temporaire qui devient une partie de la requête principale.
+
+```sql 
+SELECT colonnes
+FROM (
+    SELECT colonnes
+    FROM table
+    WHERE condition
+) AS alias
+WHERE condition_externe;
+
+-- obtenir la liste des étudiants et leur moyenne de note 
+SELECT g.student_id, g.avg_grade, g.max_grade
+FROM (
+    SELECT student_id,
+           AVG(grade) AS avg_grade,
+           MAX(grade) AS max_grade
+    FROM grades
+    GROUP BY student_id
+) AS g;
+
+-- etudiant avec une moyenne supérieur à 80
+SELECT s.student_name, g.avg_grade
+FROM students AS s
+JOIN (
+    SELECT student_id, AVG(grade) AS avg_grade
+    FROM grades
+    GROUP BY student_id
+) AS g ON s.student_id = g.student_id
+WHERE g.avg_grade > 80;
+```
+
+Dans la requête principale pour obtenir la liste des étudiants et leurs moyenne, on fait référence à la table temporaire créer avec la sous requête, et référence avec le `g`.
+
+### Requête imbriquée dans HAVING 
+
+`HAVING` permet de filtrer les données issue des requêtes agrégées.
+
+Une SR dans le `HAVING` permet d'ajouter de la flexibilité lorsque l'on filtre des données agrégées. Elle permet de comparer des agrégats comme une moyenne ou le max avec des valeurs calculées ailleurs dans la base.
+
+```sql 
+-- filtrer les facs par note moyenne
+SELECT department, AVG(grade) AS avg_grade
+FROM students
+GROUP BY department
+HAVING AVG(grade) > (SELECT AVG(grade) FROM students);
+
+-- comparer des facs par moyenne et groupe d'étudiants 
+SELECT department, AVG(grade) AS avg_grade, COUNT(*) AS student_count
+FROM students
+GROUP BY department
+HAVING AVG(grade) > ( SELECT AVG(grade) FROM students )
+   AND COUNT(*) > (
+       SELECT COUNT(*)
+       FROM students
+       GROUP BY department
+       ORDER BY AVG(grade)
+       LIMIT 1
+   );
+```
+
+
+-- 14-3
+
+
+
+
+
+---
+## VIEW
+
+Les `VIEW` permette de "sauvegarder" une requête à laquelle on donne un nom et que l'on peut utiliser comme une table. Elle ne stocke pas les données mais la structure de la requête.
+
+On déclarer un fichier SQL avec les différentes views, et on exécute ensuite une migration pour enregistrer dans la DB.
+
+Par exemple, une view qui permet d'analyser les étudiants et qui affiche le nom, le nombre d'inscriptions aux cours, et leur note moyenne. On peut donc créer deux vues, puis on viens les combiner
+
+```sql 
+-- view qui permet de compter le nombre de cours suivis par un étudiant 
+CREATE VIEW student_course_count AS
+SELECT
+    student_id,
+    COUNT(*) AS course_count
+FROM
+    enrollments
+GROUP BY student_id;
+
+-- view qui calcule la note moyenne
+CREATE VIEW student_avg_grade AS
+SELECT
+	student_id,
+	AVG(grade) AS avg_grade
+FROM
+enrollments
+WHERE grade IS NOT NULL
+GROUP BY student_id;
+
+-- utilisation des view
+SELECT
+    s.name,
+    c.course_count,
+    a.avg_grade
+FROM
+    students s
+-- on fait référence au view
+LEFT JOIN student_course_count c ON s.student_id = c.student_id
+LEFT JOIN student_avg_grade a ON s.student_id = a.student_id;
+```
+
+### Update avec des view 
+
+Il est possible d'utiliser des view pour mettre à jour des données, si la view ne contient pas de `JOIN`, `GROUP BY`, d'agrégats ou de sous requête.
+
+```sql 
+-- création de la view modifiable 
+CREATE VIEW active_students AS
+SELECT * FROM students WHERE active = true;
+
+-- update avec cette view 
+UPDATE active_students SET name = 'Ivan Petrov' WHERE student_id = 2;
+```
+
+### Supprimer une view
+
+```sql 
+-- supression d'une view 
+DROP VIEW student_avg_grade;
+```
+
+### Modifier une view 
+
+```sql 
+CREATE OR REPLACE VIEW student_avg_grade AS
+SELECT 
+	student_id, 
+	ROUND(AVG(grade), 2) AS avg_grade
+FROM grades
+GROUP BY student_id;
+```
+
+
+
+
+
+
 
 
 
