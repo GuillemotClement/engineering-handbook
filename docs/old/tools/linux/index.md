@@ -134,6 +134,12 @@ ln -s <path_projet_parent> <path_esclave>
 
 # exemple
 sudo ln -s /home/debian/projects/Ubrun/front/dist /var/www/html/ubrun
+
+# machine debian 
+ln -s ~/workspaces/codeberg/dotfiles/nvim ~/.config/nvim
+
+# afficher les dossier avec détail 
+ls -l
 ```
 
 Une fois le lien symbolique créer, on peut lancer la commande pour vérifier si le lien est bien créer 
