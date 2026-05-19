@@ -203,6 +203,19 @@ Nombre à virgule
 `float` : 4 octet 
 `double` : 8 octect
 
+---
+## BOOLEAN
+
+Peut prendre une valeur `true`ou `false`.
+
+```java
+int age = 20;
+boolean isAdult = age >= 18;   // true (20 est supérieur ou égal à 18)
+boolean isTeenager = age >= 13 && age < 18; // false (20 n'est pas inférieur à 18)
+boolean isEven = age % 2 == 0; // true (20 est divisible par 2)
+```
+
+
 
 ---
 ## INT
@@ -439,10 +452,10 @@ else
 ### Comparaison 
 
 ```java
-if (number == 10)
-if (age != 18)
-if (temperature > 36)
-if (balance <= 0)
+if (number == 10) // égalité
+if (age != 18) // différend de 
+if (temperature > 36) // supérieur
+if (balance <= 0) // inférieur ou égale
 
 // comparaison chaîne
 String password = console.nextLine();
@@ -451,3 +464,50 @@ if (password.equals("qwerty"))            // on appelle la méthode equals() et 
     System.out.println("Vous êtes connecté !");
 }
 
+(0 < a) && (a < 100) // ET
+(!a) && (!b) // OU
+!(!a || !b) // NOT
+
+```
+
+### Ternaire 
+
+Les deux valeurs d'une opération ternaire doivent être du même type.
+
+```java
+int age = 25;
+
+// syntaxe if else 
+int money;
+if (age > 30)
+   money = 100;
+else
+   money = 50;
+   
+// ternaire 
+int money = age > 30 ? 100 : 50;
+```
+
+---
+
+## BOUCLE 
+
+### While 
+
+```java
+int i = 1;
+while (i <= 5)
+{
+    System.out.println("Étape n° " + i);
+    i++; // N’oubliez pas d’incrémenter le compteur !
+}
+
+// boucle de saisie
+String password = "";
+while (!password.equals("qwerty"))
+{
+    System.out.print("Entrez le mot de passe : ");
+    password = console.nextLine();
+}
+System.out.println("Bienvenue !");
+```
