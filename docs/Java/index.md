@@ -40,7 +40,20 @@ Bonjour à tous !
 Aujourd’hui, nous apprenons à programmer en Java !
 ```
 
-### System.out.println
+---
+
+### Affichage 
+
+#### System.out
+
+C'est un objet spécial qui affiche du texte à l'écran. On l'appelle aussi la console.
+
+Cette console est le moyen le plus répandus d'interaction entre un programme et un humain.
+
+Lorsque l'utilisateur tape des commandes au clavier, et que le programme lui répond par du texte à l'écran, les développeur disent que le programme travaille avec la console.
+
+Travailler avec la console, c'est afficher du texte à l'écran et saisir des données au clavier.
+#### System.out.println
 
 Cette commande permet d'afficher du texte à l'écran et ajoute une passage à la ligne suivante.
 
@@ -56,7 +69,7 @@ System.out.println("Best");
 
 - `println`: `print` + `line`.
 
-### System.out.print
+#### System.out.print
 
 Cette commande permet d'afficher du texte, mais n'ajoute pas de nouvelle ligne.
 
@@ -69,15 +82,7 @@ System.out.print("Best");
 //
 ```
 
-#### System.out
 
-C'est un objet spécial qui affiche du texte à l'écran. On l'appelle aussi la console.
-
-Cette console est le moyen le plus répandus d'interaction entre un programme et un humain.
-
-Lorsque l'utilisateur tape des commandes au clavier, et que le programme lui répond par du texte à l'écran, les développeur disent que le programme travaille avec la console.
-
-Travailler avec la console, c'est afficher du texte à l'écran et saisir des données au clavier.
 
 ## COMPILATEUR
 
@@ -184,6 +189,20 @@ b = a + 1;		// La valeur 2 est placée dans la variable b.
 x = 3;			// La valeur 3 est placée dans la variable x.
 x = x + 1;		// À cette ligne, la valeur de x augmente de 1, x vaut maintenant 4.
 ```
+
+---
+## TYPE 
+
+Number :
+`byte` : 1 octect 
+`short`: 2 octects
+`int`: 4 octect 
+`long`: 8 octect 
+
+Nombre à virgule 
+`float` : 4 octet 
+`double` : 8 octect
+
 
 ---
 ## INT
@@ -347,7 +366,7 @@ int a = 5;
 String name = "Anya" + a; //"Anya5"         
 ```
 
-### Integer.ParseInt()
+### String => Int
 
 Dans le cas où une chaîne ne contient que des nombres, il est possible de la convertir. La méthode `Integer.parseInt()` permet de réaliser la conversion.
 
@@ -359,5 +378,76 @@ int number1 = Integer.parseInt(str); // 123
 ```
 
 ---
+## SAISIE CLAVIER 
 
+### Scanner 
+La classe `Scanner` (`java.util.Scanner`) permet de lire des données à partir de différentes sources : console, fichiers, internet.
+
+Elle prend en paramètre la source des données. 
+
+#### Récupérer une saisie clavier 
+
+```java
+void main()
+{
+	// instanciation de l'objet avec le clavier en source
+    Scanner console = new Scanner(System.in);
+    // permet de lire une string
+    String name = console.nextLine();
+    // permet de lire un nombre
+    int age = console.nextInt();
+
+    System.out.println("Name: " + name);
+    System.out.println("Age: " + age);
+}
+```
+
+A l'instanciation, on définit le type `Scanner`, puis son nom et enfin la classe qui est instancier.
+
+Le code `new Scanner(System.in)` créer un nouvel objet de type `Scanner`, et on lui passe en parmètre la source à partir de laquelle l'objet lira les données - `System.in` qui correspond au saisie clavier.
+
+On peut ensuite lire les données depuis le clavier.
+
+`scanner.nextLine()` est la méthode permettant de lire la saisie issue du clavier. Lorsque le programme atteins cette ligne, il attends la saisie et à l'appuie sur `Enter` enregistre ce qui a été saisie.
+
+- `scanner.nextLine()`: permet de récupérer des string 
+- `scanner.nextInt()`: permet de récupérer des int 
+- `scanner.nextDouble()`: permet de récupérer des float
+
+Si le type attendu n'est pas respecté, une erreur est provoquée.
+
+---
+## CONDITION
+
+### if else 
+
+```java
+if (condition1)
+{
+    // S’exécute si condition1 est vrai
+}
+else if (condition2)
+{
+    // S’exécute si condition2 est vrai, et condition1 — faux
+}
+else
+{
+    // S’exécute si aucune des conditions ci-dessus ne convient
+}
+```
+
+### Comparaison 
+
+```java
+if (number == 10)
+if (age != 18)
+if (temperature > 36)
+if (balance <= 0)
+
+// comparaison chaîne
+String password = console.nextLine();
+if (password.equals("qwerty"))            // on appelle la méthode equals() et on lui passe la deuxième chaîne
+{
+    System.out.println("Vous êtes connecté !");
+}
 
