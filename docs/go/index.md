@@ -24,9 +24,6 @@ C'est un programme spécial qui compile le code. Il traduit le code Go en code c
 Il prend le texte en Go, le décomposer, le vérifie pour détecter les erreurs et le transforme en code machine.
 
 Le compilateur peut également optimiser le code, signaler les erreur, etc.
-
-![[Pasted image 20260401113513.png]]
-
 ### Lire les erreurs de compilateur 
 
 Le message d'erreur contient en général :
@@ -3448,3 +3445,9 @@ func main() {
 
 # 13.3
 https://codegym.cc/fr/quests/lectures/fr.codegym.golang.core.lecture.level13.lecture03
+
+
+---
+
+## ERROR 
+
