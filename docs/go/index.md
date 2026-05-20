@@ -29,7 +29,84 @@ func main(){
 - `%d` : entier 
 - `%s` : string 
 ---
+## RECUPERATION DE SAISIE
+
+### fmt.Scan - lire une valeur depuis l'entree standard
+
+La fonction `Scan` accepte des pointeurs en argument et retourne deux valeur : `count` et `err`.
+- `count` : indique combien de valeurs ont reellement pu etre reconnues et ecrit dans la variables.
+- `err` : contient l'erreur si la fonction rencontre une erreur. `nil` si aucune erreur n'est rencontrer
+
+L'utilisation des pointeur se fait via `&` qui vient passer l'adresse mémoire d'une variable. On viendras créer une variable avant d'utiliser la méthode.
+
+Elle récupère la saisie depuis l'entrée standard.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// recuperation d'une saisie
+	var n int // on prepare la variable qui viendras stocker la valeur
+	fmt.Scan(&n) // lecture de la saisie
+	fmt.Println(n) // affichage de la saisie
+	
+	// recuperation de plusieurs saisie 
+	var a, b int // on prepare deux variables
+	fmt.Scan(&a, &b) // on recupere la saisie
+	sum := a + b // calcul avec les valeurs saisie
+	fmt.Println(sum) // affichage du resultat
+	
+	// traitement des valeurs retourne
+	var x int 
+	count, err := fmt.Scan(&x) // on recupere les valeurs retourner 
+	
+	fmt.Println("count:", count) // par exemple : count: 1
+	fmt.Println("err:", err)     // en cas de succes : err: <nil>
+	fmt.Println("x:", x)         // si vous avez saisi 42, alors : x: 42
+	
+	// gestion d'erreur => la seconde valeur n'est pas saisie
+	var a, b int 
+	count, err := fmt.Scan(&a, &b)
+	
+	fmt.Println("count:", count) // probablement : count: 1
+	fmt.Println("err:", err)     // ne sera pas <nil>, il y aura une description de l'erreur
+	fmt.Println("a:", a)         // a: 10
+	fmt.Println("b:", b)         // b: 0 (restera a sa valeur zero)
+}
+```
+
+### fmt.Fscan - entrée avec source explicite
+
+La méthode `Fscan` prends en premier argument, la source d'entree qui sera recuperer. On passe ensuite les pointeurs des variables qui contiendront les saisies.
+
+`os.Stdin` représente l'entrée standard.
+
+```go
+package main 
+
+import (
+	"fmt"
+	"os"
+)
+
+func main(){
+	var a, b int
+	fmt.Fscan(os.Stdin, &a, &b) // on passe explicitement la stdin
+	
+	fmt.Println(a * b)
+}
+```
+---
 ## VARIABLES
+
+### Déclaration
+
+Convention de nommage :
+- ne peut pas commencer par un chiffre 
+- ne peux pas contenir de caractère spéciaux hormis `_`
+- `camelCase`
 
 ```go 
 package main
@@ -41,59 +118,27 @@ func main() {
 	var a, b int     // declaration multiple
 	var reportBase int = 1
 	
+	var city string // preparation d'une variable
+	
 	appName := "SuperApp" // syntaxe courte
 	
 	i = 3 // affectation
-}
-```
-
-Convention de nommage :
-- ne peut pas commencer par un chiffre 
-- ne peux pas contenir de caractère spéciaux hormis `_`
-- `camelCase`
-
-### Operation d'affectation
-
-```go
-x := 10
-
-x += 5  // x = 15
-x -= 3  // x = 12
-x *= 2  // x = 24
-x /= 4  // x = 6
-
-s := "Hello"
-s += " World" // "Hello World"
-```
-
-
-L'utilisation de `:=` n'est autorisé que lorsqu'au moins une des variables est déclarées dans le bloc.
-- si tous les noms existent déjà, alors l'utilisation est interdite.
-- si une partie des variables existe déjà, mais qu'un moins un nouveau apparait, alors on peut l'utiliser, et les variables existante recevront la nouvelle valeur.
-
-```go 
-func main() {
+	
+	city = "Tokyo" // affectation de la variable preparer precedement
+	
+	// affectation avec calcul 
 	x := 10
-	y := 20
-
-	x, z := y, 30 // z est un nouveau nom, donc := est autorise
-	fmt.Println(x, y, z) // 20 20 30
+	
+	x += 5  // x = 15
+	x -= 3  // x = 12
+	x *= 2  // x = 24
+	x /= 4  // x = 6
+	
+	// affectation avec concatenation
+	s := "Hello"
+	s += " World" // "Hello World"
 }
 ```
-
-En Go, les `{ }` définissent une portée. C'est la zone de code l'intérieur de laquelle les noms de variables sont accessibles.
-
-```go
-main {
-    x  // lives throughout main
-    if {
-        y // lives only inside if
-    }
-    // here y no longer exists
-}
-```
-
-- `y` n'existe que dans le bloc `if`
 ### Shadowing 
 
 Le shadowing, ou le masquage de variable est lorsque dans un bloc, on créer une nouvelle variable avec le même nom qu'une variable d'une bloc externe. Dans le bloc, la nouvelle variable, prends cette valeur, et celle du bloc exterene ne change pas.
@@ -437,21 +482,13 @@ func main() {
 }
 ```
 
-
-
-
-
-
-
-
-
 ---
-
 ## TYPE 
 
 ### int
 
-Prends des nombre entier positif et négatif.
+Prends des nombre entier positif et négatif. C'est le type par défaut pour les entiers.
+La taille de `int` dépend de la plateforme (32 ou 64). 
 ```go 
 func main() {
 	fmt.Println("int size:", strconv.IntSize, "bits") // par exemple: int size: 64 bits
@@ -498,13 +535,11 @@ La comparaison entre nombre flottant peut engendrer des résultats inattendu à 
 ---
 ## STRING 
 
-En Go, une chaîne est une tableau d'octect. Elle est immuable. On ne peut pas modifier un des éléments interne, on peut seulement créer une nouvelle chaîne à partir de l'ancienne.
+En Go, une chaîne est une tableau d'octet. Elle est immuable. On ne peut pas modifier un des éléments interne, on peut seulement créer une nouvelle chaîne à partir de l'ancienne.
 
 ### Concatenation 
 
-Les chaines peuvent être concaténer avec `+`.
-
-Un nombre n'est pas convertis automatiquement, il sera nécessaire de le convertir avant de pouvoir l'utiliser dans une concaténation.
+Les chaines peuvent être concaténer avec `+`. Il n'est pas possible de realiser des concatenation de type different, il sera nécessaire de faire une conversion avant de pouvoir l'utiliser.
 
 ```go
 package main
@@ -528,17 +563,49 @@ func main() {
 	// concatenation abrege
 	s := "Hello"
 	s += " World" // "Hello World"
+	
+	// affichage mixte sans concatenation
+	name := "Ann"
+    age := 20
+    fmt.Println("Name:", name, "Age:", age) // Name: Ann Age: 20
 }
 ```
+
+### Caractere speciaux 
+
+- `\n` : saut de ligne 
+- `\t` : tabulation 
+- `\"` : guillemot double échapper
+- `\\` : antislash
 ### len() 
 
-Retourne la taille en octet de la chaîne. On ne peut pas compter le nombre de caractère via cette méthode.
+Retourne la taille en octet de la chaîne en type `int`. 
+On ne peut pas compter le nombre de caractère via cette méthode.
 
 ```go 
 func main() {
-	s := "Go"
-	fmt.Println(len(s)) // 2
+    s := "golang"
+    fmt.Println(len(s)) // 6
+    fmt.Println(len("Hello"))  // 12 (probablement)
+    
+    // mini app 
+	firstName := "John"
+    lastName := "Doe"
+    role := "Junior Gopher"
+
+    fullName := firstName + " " + lastName
+
+    fmt.Println("=== BADGE ===")                  // === BADGE ===
+    fmt.Println("Name:", fullName)               // Name: John Doe
+    fmt.Println("Role:", role)                   // Role: Junior Gopher
+    fmt.Println("Name length:", len(fullName))   // Name length: 11
 }
+
+/*
+Representation reel
+"Go"      -> [ 'G' ][ 'o' ]                 -> len = 2 octets
+"Hello"  -> [ P ][ r ][ i ][ v ][ e ][ t ] -> chaque bloc ≈ 2 octets -> len ≈ 12 octets
+*/
 ```
 
 ### Indexation de chaine 
@@ -912,8 +979,16 @@ func main() {
 	fmt.Println(7 / 2) // 3
 	fmt.Println(9 / 3) // 3
 	fmt.Println(1 / 2) // 0
+	
+	// calcul de pourcentage decimal 
+	planned := 10
+	done := 3
+
+	percent := (done * 100) / planned
+	fmt.Println(percent) // 30
 }
 ```
+
 
 #### Division des nombres négatifs 
 
@@ -1228,95 +1303,6 @@ func main() {
 
 ---
 
-## SAISIE DE DONNEES
-
-En Go, pour lire des valeurs depuis l'entrée standard `stdin` et afficher le résultat sur la sortie standards `stdout` se fait via la librairie standard `Scan`
-
-### fmt.Scan - lire une valeur 
-
-La fonction prends un pointeur, et retourne deux valeurs `count`, et `err`
-Elle permet de récupérer la saisie depuis la `stdin`, la console.
-
-- `count`: indique combine de valeurs ont réellement pu être reconnues et écrite dans les variables. Si une valeur n'as pas pu être lu, `err` contiendras alors une valeur non `nill` qui descrit l'erreur.
-
-Scan prends des pointeur. On lui passe l'adresse des variables créer au préalable pour qu'il puisse venir stocker dans ces variables les valeurs issue de la `stdin`.
-
-- `&a` : transmet l'adresse mémoire de la variable 
-- `a` : transmet la valeur de la variable
-
-```go 
-package main 
-
-import "fmt"
-
-func main(){
-	var a, b int // on prépare les variables 
-	fmt.Scan(&a, &b) // récupération depuis la stdin
-	
-	sum := a + b
-	fmt.Println(sum)
-}
-
-// exemple 
-package main
-
-import "fmt"
-
-func main() {
-	var x int
-	count, err := fmt.Scan(&x) // on récupère les valeurs retourné
-
-	fmt.Println("count:", count) // par exemple : count: 1
-	fmt.Println("err:", err)     // en cas de succes : err: <nil>
-	fmt.Println("x:", x)         // si vous avez saisi 42, alors : x: 42
-}
-```
-
-### Ignorer une valeur de retour d'une fonction 
-
-Dans le cas où une valeur retournée n'est pas utile, on peut l'ignorer avec un **blank identifier** `_`.
-
-Par exemple, il n'est pas forcément nécessaire d'utiliser la variable `count`, on peut alors l'ignore 
-
-```go 
-package main 
-
-import "fmt"
-
-func main(){
-	var n int 
-	-, err := fmt.Scan(&n)
-	
-	fmt.Println("err:", err) 
-	fmt.Println(n)
-}
-```
-
-### Panic 
-
-Parfois dans un programme Go, il peut s'arrêter brutalement. C'est ce qu'on appelle une `panic`.
-
-C'est un signal qui dit que quechose de potentiellement dangereux est arrivé. 
-
-### fmt.Fscan - entrée avec source explicite
-
-Lorsque l'on souhaite lire des entrée depuis une autre source que la `stdin` (fichier, chaîne, réseau), on peut venir utiliser cette méthode.
-
-```go
-package main 
-
-import (
-	"fmt"
-	"os"
-)
-
-func main(){
-	var a, b int
-	fmt.Fscan(os.Stdin, &a, &b) // on passe explicitement la stdin
-	
-	fmt.Println(a * b)
-}
-```
 
 ---
 
