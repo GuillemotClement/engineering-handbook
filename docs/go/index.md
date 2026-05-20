@@ -1,125 +1,24 @@
 # Golang 
 
-## FONCTIONNEMENT 
-
-En Go, le compilateur Go transforme le texte source directement en code machine, spécifique à un système d'exploitation et à une architecture de processeur données (Windows, Linux, etc).
-
-Il dispose également d'une gestion automatique de la mémoire. Le garbage collector, le planificateur de goroutines et d'autres mécanismes de service constituent le `Go Runtime`. 
-Lors de la compilation, ce Runtime est simplement incorporé à l'intérieur du fichier binaire.
-
-### Go SQK 
-
-Pour transformer le code source en fichier exécutable, l'IDE à besoin d'un ensemble d'outils `Go SQK`. 
-C'est un répertoire sur le pc qui contient : 
-- des utilitaires pour la compilation et la construction : `go build`, `go run`
-- des outils de formatage et de test : `gofmt`, `go test`
-- la bibliothèque standard
-
-Le dossier racine dans lequel Go SQK est installé s'appelle **GOROOT**. L'IDE l'utilise comme "source de vérité". Si le SDK n'est pas connecté, l'IDE ne peut pas comprendre la syntaxe de la version actuelle du langage. 
-
-### Compilateur 
-
-C'est un programme spécial qui compile le code. Il traduit le code Go en code compréhensible pour la machine.
-
-Il prend le texte en Go, le décomposer, le vérifie pour détecter les erreurs et le transforme en code machine.
-
-Le compilateur peut également optimiser le code, signaler les erreur, etc.
-### Lire les erreurs de compilateur 
-
-Le message d'erreur contient en général :
-- le fichier 
-- la ligne 
-- la colonne
-- text de l'erreur 
-
-Par exemple `main.go:7:6: undefined: something`
-
----
-
-
-## STRUCTURE 
-
-Dans les projets Go, il n'y a pas de hiérarchie stricte de dossier. Il n'existe pas de dossier `src` obligatoire pour les sources.
-
-Pour les petits utilitaires et micro services, les fichiers sources se trouvent directement à la racine du projet, à côté du fichier `go.mod`.
-
-A mesure que le projet grandit, le code est organiser en dossier, chacun devenant un package distinct. Un package étant un dossier physique dans le système de fichier.
-
-```tree
-// juste un package main 
-tasker/
-├── .idea/           # fichiers de service de GoLand, ne pas toucher
-├── go.mod           # fichier du module (dependances et version de Go)
-├── main.go          # point d'entree (package main)
-├── banner.go        # fichier auxiliaire (egalement package main)
-|-- logger/          # package logger
-|---- format.go
-└── README.md
-```
-
-Dans les package (dossier), on peut créer des fichiers `.go` comme on le souhaite, il n'y a pas de contrainte fixe liée au nom du package. Par exemple, dans le dossier `logger`, on peut créer un fichier `format.go` dans lequel on vient placer la logique de formatage du texte.
-
-Par convention, le nom du package doit correspondre au nom du dossier. Si le dossier s'appelle `logger`, alors sur toute première ligne des fichier `.go` du package, on retrouve `package logger`. Tous les fichiers du package doivent obligatoirement appartenir à ce package.
-
-Le compilateur fusionne les fichiers d'un même package au moment de la compilation. Cela signifie que des constantes déclarer dans un fichier d'un package, sont également disponible dans un autre fichier du package.
-
-Les import fonctionne dans un fichier donné, et non pour tout le package.
-
-## COMMENTAIRE 
-
-```go
-// commentiare one line 
-fmt.Println("Bonjour, monde !") // Ceci affiche une salutation a l'ecran
-
-/*
-commentaire multiligne
-*/
-```
-
----
 ## AFFICHAGE 
 
-### fmt
-
-C'est le package permettant d'utiliser les fonction lié à l'affiche. Il est nécessaire de l'importer avant d'utiliser les méthodes.
-
 ```go
+package main
+
 import "fmt"
-```
 
-### fmt.Print()
-
-Cette fonction affiche du texte à l'écran sans ajouter de retour à la ligne
-```go
 func main(){
+	// affichage sans nouvelle ligne 
 	fmt.Print("Hello")
-}
-```
-### fmt.Println()
 
-Cette fonction affiche du texte a l'écran et ajoute un retour à la ligne.
-
-```go
-// afficher une string
-fmt.Println("hello world")
-// afficher une rune
-fmt.Println('A')
-// afficher un number 
-fmt.Println(1)
-// afficher plusieurs valeurs 
-fmt.Println("Mon age :", 28)
-```
-
-### fmt.Printf()
-
-Cette fonction permet d'ajouter des espaces réservé. 
-
-L'utilise de `%s` permet d'ajouter une string, `%d` permet d'ajouter un nomber.
-
-```go
-fmt.Printf("Name: %s, Score: %d\n", "Alice", 42)
-
-func main(){
+	/// affichage avec saut de ligne	
+	fmt.Println("Mon age :", 28)
+	fmt.Println("Nous sommes en", 2026, "annee.")
+	
+	// affichage avec concatenation
+	fmt.Println("Ami" + "go") // Amigo
+	
+	// affichage avec espace réservé
 	x := 10 
 	fmt.Printf("x=%v type=%T\n", x, x) // x=10 type=int 
 }
@@ -129,20 +28,44 @@ func main(){
 - `%T` : affiche le type de valeur 
 - `%d` : entier 
 - `%s` : string 
-
 ---
-
 ## VARIABLES
 
 ```go 
-// déclaration de variable 
-var x int
-var y = 10
-z := 10 
+package main
 
-// affectation 
-z = 20
+import "fmt"
+
+func main() {
+	var i int        // declaration simple 
+	var a, b int     // declaration multiple
+	var reportBase int = 1
+	
+	appName := "SuperApp" // syntaxe courte
+	
+	i = 3 // affectation
+}
 ```
+
+Convention de nommage :
+- ne peut pas commencer par un chiffre 
+- ne peux pas contenir de caractère spéciaux hormis `_`
+- `camelCase`
+
+### Operation d'affectation
+
+```go
+x := 10
+
+x += 5  // x = 15
+x -= 3  // x = 12
+x *= 2  // x = 24
+x /= 4  // x = 6
+
+s := "Hello"
+s += " World" // "Hello World"
+```
+
 
 L'utilisation de `:=` n'est autorisé que lorsqu'au moins une des variables est déclarées dans le bloc.
 - si tous les noms existent déjà, alors l'utilisation est interdite.
@@ -255,6 +178,93 @@ func main() {
 	fmt.Printf("range: %d..%d\n", from, to) // par exemple : range: 3..10
 }
 ```
+
+
+
+## FONCTIONNEMENT 
+### Compilateur 
+
+Programme qui vient traduire le code Go en code machine. Il prends le code Go, le décompose, le vérifie pour détecter les erreurs et le transforme en code machine
+### Lecture d'erreur 
+
+`main.go:7:6: undefined: something`
+
+- `main.go` : fichier qui provoque l'erreur
+- `7` : ligne 
+- `6` : colonne
+- `undefined: something` : message d'erreur
+
+Il existe plusieurs type d'erreurs :
+- `undefined` : nom introuvable
+- `cannot use ... as ...` : type ne correspondent pas
+- `declared and not used`: une variable n'est pas utilise
+- `imported and not used`: importer mais non utiliser
+- `syntax error` : erreur de syntaxe
+
+
+
+
+
+*En Go, le compilateur Go transforme le texte source directement en code machine, spécifique à un système d'exploitation et à une architecture de processeur données (Windows, Linux, etc).*
+
+*Il dispose également d'une gestion automatique de la mémoire. Le garbage collector, le planificateur de goroutines et d'autres mécanismes de service constituent le `Go Runtime`.* 
+*Lors de la compilation, ce Runtime est simplement incorporé à l'intérieur du fichier binaire.*
+
+
+
+### Go SQK 
+
+Pour transformer le code source en fichier exécutable, l'IDE à besoin d'un ensemble d'outils `Go SQK`. 
+C'est un répertoire sur le pc qui contient : 
+- des utilitaires pour la compilation et la construction : `go build`, `go run`
+- des outils de formatage et de test : `gofmt`, `go test`
+- la bibliothèque standard
+
+Le dossier racine dans lequel Go SQK est installé s'appelle **GOROOT**. L'IDE l'utilise comme "source de vérité". Si le SDK n'est pas connecté, l'IDE ne peut pas comprendre la syntaxe de la version actuelle du langage. 
+
+---
+## COMMENTAIRE 
+
+```go
+// commentiare one line 
+
+/*
+commentaire multiligne
+*/
+```
+
+---
+## STRUCTURE 
+
+Dans les projets Go, il n'y a pas de hiérarchie stricte de dossier. Il n'existe pas de dossier `src` obligatoire pour les sources.
+
+Pour les petits utilitaires et micro services, les fichiers sources se trouvent directement à la racine du projet, à côté du fichier `go.mod`.
+
+A mesure que le projet grandit, le code est organiser en dossier, chacun devenant un package distinct. Un package étant un dossier physique dans le système de fichier.
+
+```tree
+// juste un package main 
+tasker/
+├── .idea/           # fichiers de service de GoLand, ne pas toucher
+├── go.mod           # fichier du module (dependances et version de Go)
+├── main.go          # point d'entree (package main)
+├── banner.go        # fichier auxiliaire (egalement package main)
+|-- logger/          # package logger
+|---- format.go
+└── README.md
+```
+
+Dans les package (dossier), on peut créer des fichiers `.go` comme on le souhaite, il n'y a pas de contrainte fixe liée au nom du package. Par exemple, dans le dossier `logger`, on peut créer un fichier `format.go` dans lequel on vient placer la logique de formatage du texte.
+
+Par convention, le nom du package doit correspondre au nom du dossier. Si le dossier s'appelle `logger`, alors sur toute première ligne des fichier `.go` du package, on retrouve `package logger`. Tous les fichiers du package doivent obligatoirement appartenir à ce package.
+
+Le compilateur fusionne les fichiers d'un même package au moment de la compilation. Cela signifie que des constantes déclarer dans un fichier d'un package, sont également disponible dans un autre fichier du package.
+
+Les import fonctionne dans un fichier donné, et non pour tout le package.
+
+
+---
+
 
 ---
 ## CONSTANTE
@@ -441,10 +451,7 @@ func main() {
 
 ### int
 
-Stocke les nombres entiers sans la partie décimale. Il prends les négatif et les positifs. 
-
-Il est possible de savoir combien de bits représente le `int`
-
+Prends des nombre entier positif et négatif.
 ```go 
 func main() {
 	fmt.Println("int size:", strconv.IntSize, "bits") // par exemple: int size: 64 bits
@@ -473,8 +480,7 @@ func main(){
 ```
 
 ### float64 
-
-Permet de stocker des valeurs décimale. C'est le type par défaut pour les nombres à virgule.
+Prends les nombre a virgule postifi et negatif.
 
 Attention à la précision avec les float.
 ```go 
@@ -494,6 +500,36 @@ La comparaison entre nombre flottant peut engendrer des résultats inattendu à 
 
 En Go, une chaîne est une tableau d'octect. Elle est immuable. On ne peut pas modifier un des éléments interne, on peut seulement créer une nouvelle chaîne à partir de l'ancienne.
 
+### Concatenation 
+
+Les chaines peuvent être concaténer avec `+`.
+
+Un nombre n'est pas convertis automatiquement, il sera nécessaire de le convertir avant de pouvoir l'utiliser dans une concaténation.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	s := "Amigo" + " the best" // s contiendra Amigo the best
+	fmt.Println(s)
+
+	s = "" // s contiendra une chaîne vide — sans aucun caractère.
+	fmt.Println(s)
+
+	x := 333
+	s = "Amigo" + strconv.Itoa(x) // s contiendra Amigo333
+	fmt.Println(s)
+	
+	// concatenation abrege
+	s := "Hello"
+	s += " World" // "Hello World"
+}
+```
 ### len() 
 
 Retourne la taille en octet de la chaîne. On ne peut pas compter le nombre de caractère via cette méthode.
