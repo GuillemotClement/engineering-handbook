@@ -75,6 +75,20 @@ func main() {
 	fmt.Println("a:", a)         // a: 10
 	fmt.Println("b:", b)         // b: 0 (restera a sa valeur zero)
 }
+
+// mini calculatrice 
+func main() {
+	// read
+	var price int
+	var qty int
+	fmt.Scan(&price, &qty) // lecture des saisies
+
+	// compute
+	total := price * qty
+
+	// print
+	fmt.Println(total) // si vous avez saisi 120 3, cela affichera : 360
+}
 ```
 
 ### fmt.Fscan - entrée avec source explicite
@@ -98,6 +112,39 @@ func main(){
 	fmt.Println(a * b)
 }
 ```
+
+### Conversion de saisie 
+
+Généralement, on récupère une chaine depuis la méthode `Scan`. Il sera nécessaire de la convertir pour utiliser les nombre et réaliser des calculs par exemple.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	// read: on lit l'ID comme une chaine (par exemple : 100)
+	var idStr string
+	fmt.Scan(&idStr)
+
+	// parse: on essaie de convertir la chaine en int
+	id, err := strconv.Atoi(idStr)
+
+	// compute: on calcule le prochain ID (si err n'est pas nil, id vaudra 0)
+	nextID := id + 1
+
+	// print: on affiche tout, y compris err, pour comprendre ce qui s'est passe
+	fmt.Println("id =", id)         // par exemple : id = 100
+	fmt.Println("nextID =", nextID) // par exemple : nextID = 101
+	fmt.Println("err =", err)       // <nil> ou texte de l'erreur
+}
+```
+
+
+
 ---
 ## VARIABLES
 
@@ -306,10 +353,6 @@ Par convention, le nom du package doit correspondre au nom du dossier. Si le dos
 Le compilateur fusionne les fichiers d'un même package au moment de la compilation. Cela signifie que des constantes déclarer dans un fichier d'un package, sont également disponible dans un autre fichier du package.
 
 Les import fonctionne dans un fichier donné, et non pour tout le package.
-
-
----
-
 
 ---
 ## CONSTANTE
@@ -608,9 +651,61 @@ Representation reel
 */
 ```
 
+### strconv 
+
+Package qui permet de faire des conversion de string.
+#### strconv.Atoi - string => int 
+
+Cette methode prendre une chaine et tente de la convertir en `int`. Elle retourne deux valeur : `num` et `err`.
+
+L'utilisation d'une chaine vide un d'un entier plus grand que ce que peux contenir un `int` provoque une erreur.
+
+```go 
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	// utilisation basique 
+	s := "42" // chaine qui contient un nombre
+	n, err := strconv.Atoi(s) // on tente la conversion 
+
+	fmt.Println("n =", n)     // n = 42
+	fmt.Println("err =", err) // err = <nil>
+	
+	// conversion echouer 
+	s := "42x" // contient un x donc echec de la conversion
+	n, err := strconv.Atoi(s)
+
+	fmt.Println("n =", n)     // n = 0
+	fmt.Println("err =", err) // err = strconv.Atoi: parsing "42x": invalid syntax
+}
+```
+
+#### strconv.Itoa - nombre => string
+
+Cette méthode prend un nombre et le convertis en chaine.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	nextID := 101
+	msg := "next id = " + strconv.Itoa(nextID) // concatenation possible car convertis
+	fmt.Println(msg) // next id = 101
+}
+```
 ### Indexation de chaine 
 
-Lorsque l'on vient sélectionner un élément de la string, on ne retourne pas un caractère, mais un octect de cette séquence.
+Lorsque l'on vient sélectionner un élément de la string, on ne retourne pas un caractère, mais un octet de cette séquence.
 Le type est `uint8` ou `byte`.
 
 ```go 
@@ -836,46 +931,6 @@ func main() {
 
 ## CONVERSION
 
-Le package `strconv` permet de convertir les types. 
-
-### strconv.Atoi - str -> int 
-
-Conversion `str` vers `int`. Retourne deux valeurs.
-
-```go
-package main 
-
-import (
-	"fmt"
-	"strconv"
-)
-
-func main(){
-	s := "42"
-	n, err := strconv.Atoi(s) // on fait la conversion 
-	
-	fmt.Println("n =", n) // 42
-	fmt.Println("err =", err) // err = nil
-}
-```
-### strconv.Itoa - int -> str
-
-Convertion `int` vers `str`. 
-
-```go
-package main 
-
-import (
-	"fmt"
-	"strconv"
-)
-
-func main(){
-	nextID := 101 
-	msg := "next id = " + strconv.Itoa(nextID) // conversion 
-	fmt.Println(msg) // "next id = 101"
-}
-```
 
 ### Conversion explicite 
 
@@ -3464,12 +3519,5 @@ func main() {
 }
 ```
 
-
-# 13.3
-https://codegym.cc/fr/quests/lectures/fr.codegym.golang.core.lecture.level13.lecture03
-
-
 ---
-
-## ERROR 
 
