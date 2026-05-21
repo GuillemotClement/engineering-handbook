@@ -1,5 +1,15 @@
 # Golang 
+## COMMENTAIRE 
 
+```go
+// commentiare one line 
+
+/*
+commentaire multiligne
+*/
+```
+
+---
 ## AFFICHAGE 
 
 ```go
@@ -143,8 +153,6 @@ func main() {
 }
 ```
 
-
-
 ---
 ## VARIABLES
 
@@ -186,9 +194,29 @@ func main() {
 	s += " World" // "Hello World"
 }
 ```
+
+### Portée de variable
+
+Une variable déclarer dans un bloc de code, c'est a dire, a l'intérieur des `{ }` ne sera disponible que dans ce bloc de code.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// x est disponible uniquement dans le bloc if
+	if x := 10; x%2 == 0 {
+		fmt.Println("x est pair :", x) // x est pair : 10
+	} else {
+		fmt.Println("x est impair :", x)
+	}
+	// fmt.Println(x) // impossible : x n'est pas visible en dehors de if
+}
+```
 ### Shadowing 
 
-Le shadowing, ou le masquage de variable est lorsque dans un bloc, on créer une nouvelle variable avec le même nom qu'une variable d'une bloc externe. Dans le bloc, la nouvelle variable, prends cette valeur, et celle du bloc exterene ne change pas.
+Le shadowing, ou le masquage de variable est lorsque dans un bloc, on créer une nouvelle variable avec le même nom qu'une variable d'une bloc externe. Dans le bloc, la nouvelle variable, prends cette valeur, et celle du bloc externe ne change pas.
 
 ### Variable globale
 
@@ -270,310 +298,6 @@ func main() {
 	fmt.Printf("range: %d..%d\n", from, to) // par exemple : range: 3..10
 }
 ```
-
-
-
-## FONCTIONNEMENT 
-### Compilateur 
-
-Programme qui vient traduire le code Go en code machine. Il prends le code Go, le décompose, le vérifie pour détecter les erreurs et le transforme en code machine
-### Lecture d'erreur 
-
-`main.go:7:6: undefined: something`
-
-- `main.go` : fichier qui provoque l'erreur
-- `7` : ligne 
-- `6` : colonne
-- `undefined: something` : message d'erreur
-
-Il existe plusieurs type d'erreurs :
-- `undefined` : nom introuvable
-- `cannot use ... as ...` : type ne correspondent pas
-- `declared and not used`: une variable n'est pas utilise
-- `imported and not used`: importer mais non utiliser
-- `syntax error` : erreur de syntaxe
-
-
-
-
-
-*En Go, le compilateur Go transforme le texte source directement en code machine, spécifique à un système d'exploitation et à une architecture de processeur données (Windows, Linux, etc).*
-
-*Il dispose également d'une gestion automatique de la mémoire. Le garbage collector, le planificateur de goroutines et d'autres mécanismes de service constituent le `Go Runtime`.* 
-*Lors de la compilation, ce Runtime est simplement incorporé à l'intérieur du fichier binaire.*
-
-
-
-### Go SQK 
-
-Pour transformer le code source en fichier exécutable, l'IDE à besoin d'un ensemble d'outils `Go SQK`. 
-C'est un répertoire sur le pc qui contient : 
-- des utilitaires pour la compilation et la construction : `go build`, `go run`
-- des outils de formatage et de test : `gofmt`, `go test`
-- la bibliothèque standard
-
-Le dossier racine dans lequel Go SQK est installé s'appelle **GOROOT**. L'IDE l'utilise comme "source de vérité". Si le SDK n'est pas connecté, l'IDE ne peut pas comprendre la syntaxe de la version actuelle du langage. 
-
----
-## COMMENTAIRE 
-
-```go
-// commentiare one line 
-
-/*
-commentaire multiligne
-*/
-```
-
----
-## STRUCTURE 
-
-Dans les projets Go, il n'y a pas de hiérarchie stricte de dossier. Il n'existe pas de dossier `src` obligatoire pour les sources.
-
-Pour les petits utilitaires et micro services, les fichiers sources se trouvent directement à la racine du projet, à côté du fichier `go.mod`.
-
-A mesure que le projet grandit, le code est organiser en dossier, chacun devenant un package distinct. Un package étant un dossier physique dans le système de fichier.
-
-```tree
-// juste un package main 
-tasker/
-├── .idea/           # fichiers de service de GoLand, ne pas toucher
-├── go.mod           # fichier du module (dependances et version de Go)
-├── main.go          # point d'entree (package main)
-├── banner.go        # fichier auxiliaire (egalement package main)
-|-- logger/          # package logger
-|---- format.go
-└── README.md
-```
-
-Dans les package (dossier), on peut créer des fichiers `.go` comme on le souhaite, il n'y a pas de contrainte fixe liée au nom du package. Par exemple, dans le dossier `logger`, on peut créer un fichier `format.go` dans lequel on vient placer la logique de formatage du texte.
-
-Par convention, le nom du package doit correspondre au nom du dossier. Si le dossier s'appelle `logger`, alors sur toute première ligne des fichier `.go` du package, on retrouve `package logger`. Tous les fichiers du package doivent obligatoirement appartenir à ce package.
-
-Le compilateur fusionne les fichiers d'un même package au moment de la compilation. Cela signifie que des constantes déclarer dans un fichier d'un package, sont également disponible dans un autre fichier du package.
-
-Les import fonctionne dans un fichier donné, et non pour tout le package.
-
----
-## CONSTANTE
-
-Une constante désigne une valeur qui est définie une fois et qui ne change jamais. Elle doit également être **connue au moment de la compilation**. 
-On utilise généralement les constantes pour des limites strictes, ou des réglages qui ne devraient pas changer.
-
-```go 
-const minAge = 18 // déclaration de la constante 
-
-// déclaration groupée
-const (
-	minAge = 18
-	maxUsers = 100 
-	appName = "DoorGuard"
-)
-```
-###  untyped 
-
-C'est une constante sans type fixé. La constante contient une valeur, mais celle ci n'est pas encore typer.
-Le type sera appliquer au moment de l'utilisation.
-
-```go 
-func main() {
-	const n = 5 // untyped
-
-	var a int = n
-	var b int64 = n
-
-	fmt.Printf("a=%v (%T)\n", a, a) // a=5 (int)
-	fmt.Printf("b=%v (%T)\n", b, b) // b=5 (int64)
-}
-```
-### typed
-
-Constante qui possède un type explicite.
-
-```go 
-func main() {
-	const n = 5     // untyped
-	const m int = 5 // typed
-
-	var a int64 = n        // ok
-	var b int64 = int64(m) // conversion nécessaire
-
-	fmt.Println(a, b) // 5 5
-}
-```
-### iota - numérotation de constante
-
-Les iota permettent de numéroter les valeurs de façon uniforme pour que le code garde un sens et reste maintenable.
-
-Un `ioat` n'existe que dans un groupe de `const`, commence à `0` sur la première ligne du bloc, et augmente de `1` pour chaque ligne de ce groupe.
-
-Il repart à `0` dans chaque nouveau bloc
-
-```go 
-func main() {
-	const (
-		StatusNew = iota			// 0
-		StatusInProgress			// 1
-		StatusDone						// 2
-	)
-
-	fmt.Println(StatusDone) // 2
-}
-```
-
-#### Enum - valeur unique 
-
-En Go, pour créer une énumération, on créer un type numérique ( par exemple `type Status int`) et un ensemble de constante de ce type. On obtient un nombre, mais le code se lit comme un nom parlant.
-
-Le compilateur n'autorise pas de mélanger plusieurs types.
-
-```go 
-type TaskStatus int // création du type 
-
-// enum
-const (
-	StatusNew TaskStatus = iota // 0
-	StatusInProgress // 1
-	StatusDone // 2
-)
-
-func main() {
-	var s TaskStatus = StatusInProgress
-	
-	switch s {
-	// les case corresponde à l'enum
-	case StatusNew:
-		fmt.Println("status: new") // status: new
-	case StatusInProgress:
-		fmt.Println("status: in progress")
-	case StatusDone:
-		fmt.Println("status: done") // status: done
-	default:
-		fmt.Println("status: unknown")
-	}
-}
-```
-
-#### Bitmasks - conbinaison
-
-Un enum répond à la question "quelle variante est choisie". Mais parfois il est nécessaire de stocker un ensemble de caractéristiques indépendante.
-
-Par exemple, une tâche peut avoir plusieurs options (urgente, avec notification, archivée, etc), et elles peuvent se combiner dans n'importe quelle configuration.
-
-Pour cela, on utilise un flag : un seul nombre dans lequel chaque bit représente une case à cocher.
-
-Le modèle le plus courante ressemble à `1 << iota`: cela signifie "prends le nombre 1, et décale le bit à 1 de `iota` position".
-On obtient alors des puissance de deux : `1`, `2`, `4`, `8` ...
-
-```go
-type TaskFlag uint
-
-const (
-	FlagUrgent TaskFlag = 1 << iota
-	FlagNotify
-	FlagArchived
-)
-
-func main() {
-	var flagsCode uint
-	
-	fmt.Scan(&flagsCode)
-
-	flags := TaskFlag(flagsCode)
-
-	if flags&FlagUrgent != 0 {
-		fmt.Println("flag: urgent")
-	}
-	if flags&FlagNotify != 0 {
-		fmt.Println("flag: notify")
-	}
-	if flags&FlagArchived != 0 {
-		fmt.Println("flag: archived")
-	}
-}
-```
-
-#### Saut et démarrage non nul 
-
-Parfois, on souhaite que la valeur `0` signifie "inconnu", et que les vraies valeurs commence à `1`. C'est généralement ce qu'on réalise sur des valeurs venant de l'extérieur.
-
-avec `iota`, on peut donnez explicitement le premier élément, ou bien sauter la première ligne.
-
-```go
-type Level int
-
-// on spécifie la première valeur
-const (
-	LevelUnknown Level = 0
-	LevelLow     Level = iota // iota ici vaut 1, car c'est la deuxieme ligne
-	LevelHigh                 // 2
-)
-
-func main() {
-	fmt.Println(LevelUnknown, LevelLow, LevelHigh) // 0 1 2
-}
-
-// AVEC SAUT DE LIGNE 
-const (
-	_ = iota // nous avons saute 0
-	One      // 1
-	Two      // 2
-)
-
-func main() {
-	fmt.Println(One, Two) // 1 2
-}
-```
-
----
-## TYPE 
-
-### int
-
-Prends des nombre entier positif et négatif. C'est le type par défaut pour les entiers.
-La taille de `int` dépend de la plateforme (32 ou 64). 
-```go 
-func main() {
-	fmt.Println("int size:", strconv.IntSize, "bits") // par exemple: int size: 64 bits
-}
-```
-
-### int64 
-
-Utiliser lorsque l'on souhaite travailler avec une taille fixe, et une grand plage. C'est utiliser lorsque l'on stocke des nombres potentiellement grand, ou lorsque le format doit être identiques sur différentes machines.
-
-- argent en unité minimales, par exemple en centimes. Généralement, pour le stockage de valeur numéraire, on préfère stocker en centimes pour éviter les erreur de précision.
-- compteur et accumulations 
-- les nombres venant de l'extérieur (numéro de transactions, Id user)
-
-### uint 
-
-Peut prendre que des nombre positif. 
-- travail avec les masques de bits et des aspects de bas niveau 
-- lorsque l'api exige ce type spécifique 
-- lorsque l'on travail avec des identifiant 
-
-```go 
-func main(){
-	u := uint(17)
-}
-```
-
-### float64 
-Prends les nombre a virgule postifi et negatif.
-
-Attention à la précision avec les float.
-```go 
-func main() {
-	x := 0.1
-	var y float32 = 0.1
-
-	fmt.Printf("x=%v, type=%T\n", x, x) // x=0.1, type=float64
-	fmt.Printf("y=%v, type=%T\n", y, y) // y=0.1, type=float32
-}
-```
-
-La comparaison entre nombre flottant peut engendrer des résultats inattendu à cause de la précision.
 
 ---
 ## STRING 
@@ -821,28 +545,513 @@ func main(){
 Il n'est pas possible de mélanger une chaîne et des numbers pour réaliser des concaténation.
 
 ---
+## BOOLEAN 
 
-### bool 
+Le type `bool` peut prendre une valeur `true` ou `false`. Il permet de réaliser des comparaison
 
-Le type  `bool` ou boolean, contient une valeur `true` ou `false`. 
+```go
+package main
 
-Pour le nom des variables boolean, on utilise généralement ce type de nom `isAdult`, `hasTicket`, etc.
+import "fmt"
+
+func main() {
+	isWeekend := true // boolean
+	fmt.Println(isWeekend) // true
+}
+```
+
+Une comparaison est une expression dont le résultat est toujours `bool`. On utilise les operateur de comparaison pour comparer deux valeurs.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	a := 10
+	b := 7
+
+	greater := a > b // comparaison
+	fmt.Println(greater) // true
+}
+```
+
+Pour garder le code propre, on viens utiliser des nom de variable pour les boolean qui reflète leur but 
+
+```go 
+package main
+
+import "fmt"
+
+func main() {
+	age := 20
+	hasTicket := true
+
+	isAdult := age >= 18
+	canEnter := isAdult == true // pour l’instant sans operateurs logiques
+
+	fmt.Println(isAdult)   // true
+	fmt.Println(canEnter)  // true
+	fmt.Println(hasTicket) // true
+}
+```
+
+---
+## CONDITION 
+
+### If, else, else if
+
+```go 
+func main(){
+	age := 12 
+	
+	if age < 7 {
+		fmt.Println("Entrée gratuite")
+	} else if age < 18 {
+		fmt.Println("Billet enfant")
+	} else {
+		fmt.Println("Billet adulte")
+	}
+}
+```
+
+En Go, on ne peut pas faire une vérif directement sur une variable non nul `if age { }`, il faut utiliser une condition explicite.
+
+```go 
+if age != 0 {
+	...
+}
+```
+
+### if avec initialiseur 
+
+Go permet d'écrire un `if` avec une valeur initialiseur. La variable est disponible que pour cette condition.
+
+```go
+if init; cond {
+	...
+} else {
+	...
+}
+```
+
+Par exemple, pour gérer les erreurs de conversion de type 
 
 ```go 
 package main 
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 func main(){
-	isWeekend := true 
+	ageStr := "21"
+	
+	// age et err n'existe que dans le if/else
+	if age, err := strconv.Atoi(ageStr); err == nil {
+		fmt.Println("Age : ", age)
+	} else {
+		fmt.Println("Age incorrect")
+	}
+}
+```
+### early return
+
+On peut utiliser l'operateur `return` pour terminer directement dans une condition l'exécution du script courant.
+Cela permet d'éviter des `if` imbriquer.
+
+```go
+if isBanned {
+	fmt.Println("denied: banned")
+	return 
+}
+
+if isVIP || (isAdult && hasTicket) {
+	fmt.Println("welcome")
+}
+```
+### Switch 
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	op := "*" // variale checker dans le switch
+
+	switch op {
+	// check plusieurs valeurs 
+	case "+", "add":
+		fmt.Println("addition")
+	case "-":
+		fmt.Println("soustraction")
+	case "*":
+		fmt.Println("multiplication")
+	default:
+		fmt.Println("operation inconnue")
+	}
+	
+	// plusieurs execution pour un cas 
+	day := 7
+
+	switch day {
+		case 6, 7:
+			fmt.Println("jour de repos")
+		default:
+			fmt.Println("jour ouvrable")
+	}
+	
+	// switch sans expression
+	// entre dans le premier case qui retourne true
+	score := 82
+
+	switch {
+		case score >= 90:
+			fmt.Println("A")
+		case score >= 75:
+			fmt.Println("B")
+		default:
+			fmt.Println("C")
+	}
+	
+	// switch avec conditon
+	n := -4
+
+	switch {
+	case n > 0 && n%2 == 0:
+		fmt.Println("positif pair")
+	case n > 0:
+		fmt.Println("positif impair")
+	default:
+		fmt.Println("non positif")
+	}
 }
 ```
 
-On peut également vérifier une condition, et directement affecter le résultat de la comparaison dans une variable boolean 
+- `default` : c'est le cas qui s'exécute si aucune valeur ne match avec les différents case. Il n'est pas obligatoire.
+
+Par défaut, chaque case est `break` automatiquement.. `fallthrough` permet d'empêcher ce comportement.
+
+#### Menu CLI 
+
+Le switch permet d'évaluer des actions utilisateurs, et exécuter du code selon la saisis. Par exemple, une mini calculatrice, ou on réalise le calcul selon le choix de l'utilisateur 
 
 ```go
-var canEnter bool = isAdmin && isCodeOK
+package main
+
+import "fmt"
+
+func main() {
+	var op string
+	var a, b int
+	fmt.Scan(&op, &a, &b)
+
+	switch op {
+	case "add", "+":
+		fmt.Println(a + b)
+	case "sub", "-":
+		fmt.Println(a - b)
+	case "mul", "*":
+		fmt.Println(a * b)
+	case "div", "/":
+		// on check le diviseur 
+		if b == 0 {
+			fmt.Println("division by zero")
+			return // terminer l'execution de la fonction main()
+		}
+		fmt.Println(a / b)
+	default:
+		fmt.Println("unknown op")
+	}
+}
 ```
+
+---
+## FONCTIONNEMENT 
+### Compilateur 
+
+Programme qui vient traduire le code Go en code machine. Il prends le code Go, le décompose, le vérifie pour détecter les erreurs et le transforme en code machine
+### Lecture d'erreur 
+
+`main.go:7:6: undefined: something`
+
+- `main.go` : fichier qui provoque l'erreur
+- `7` : ligne 
+- `6` : colonne
+- `undefined: something` : message d'erreur
+
+Il existe plusieurs type d'erreurs :
+- `undefined` : nom introuvable
+- `cannot use ... as ...` : type ne correspondent pas
+- `declared and not used`: une variable n'est pas utilise
+- `imported and not used`: importer mais non utiliser
+- `syntax error` : erreur de syntaxe
+
+### Go SQK 
+L'ensemble des outils de l'IDE pour transformer le code source en un fichier exécutable. C'est un répertoire sur l'ordinateur qui content :
+- les utilitaire pour la compilation et la construction : `go build`, `go run`
+- les outils de formatage et de test : `gofmt`, `go test`
+- la bibliothèque standard
+
+Le dossier racine dans lequel Go SDK est installer s'appelle `GOROOT`. L'IDE utilise celui ci comme source de vérité.
+
+---
+## STRUCTURE 
+
+### Architecture de projet
+
+Dans les projets Go, il n'y a pas de hiérarchie stricte de dossier. Il n'existe pas de dossier `src` obligatoire pour les sources.
+Pour les petits utilitaires et micro services, les fichiers sources se trouvent directement à la racine du projet, à côté du fichier `go.mod`.
+A mesure que le projet grandit, le code est organiser en dossier, chacun devenant un package distinct. 
+
+Un package étant un dossier physique dans le système de fichier.
+
+```tree
+// juste un package main 
+tasker/
+├── .idea/           # fichiers de service de GoLand, ne pas toucher
+├── go.mod           # fichier du module (dependances et version de Go)
+├── main.go          # point d'entree (package main)
+├── banner.go        # fichier auxiliaire (egalement package main)
+|-- logger/          # package logger
+|---- format.go
+└── README.md
+```
+
+Dans les package (dossier), on peut créer des fichiers `.go` comme on le souhaite, il n'y a pas de contrainte fixe liée au nom du package. Par exemple, dans le dossier `logger`, on peut créer un fichier `format.go` dans lequel on vient placer la logique de formatage du texte.
+
+Par convention, le nom du package doit correspondre au nom du dossier. Si le dossier s'appelle `logger`, alors sur toute première ligne des fichier `.go` du package, on retrouve `package logger`. Tous les fichiers du package doivent obligatoirement appartenir à ce package.
+
+Le compilateur fusionne les fichiers d'un même package au moment de la compilation. Cela signifie que des constantes déclarer dans un fichier d'un package, sont également disponible dans un autre fichier du package.
+
+Les import fonctionne dans un fichier donné, et non pour tout le package.
+
+---
+## CONSTANTE
+
+Une constante désigne une valeur qui est définie une fois et qui ne change jamais. Elle doit également être **connue au moment de la compilation**. 
+On utilise généralement les constantes pour des limites strictes, ou des réglages qui ne devraient pas changer.
+
+```go 
+const minAge = 18 // déclaration de la constante 
+
+// déclaration groupée
+const (
+	minAge = 18
+	maxUsers = 100 
+	appName = "DoorGuard"
+)
+```
+###  untyped 
+
+C'est une constante sans type fixé. La constante contient une valeur, mais celle ci n'est pas encore typer.
+Le type sera appliquer au moment de l'utilisation.
+
+```go 
+func main() {
+	const n = 5 // untyped
+
+	var a int = n
+	var b int64 = n
+
+	fmt.Printf("a=%v (%T)\n", a, a) // a=5 (int)
+	fmt.Printf("b=%v (%T)\n", b, b) // b=5 (int64)
+}
+```
+### typed
+
+Constante qui possède un type explicite.
+
+```go 
+func main() {
+	const n = 5     // untyped
+	const m int = 5 // typed
+
+	var a int64 = n        // ok
+	var b int64 = int64(m) // conversion nécessaire
+
+	fmt.Println(a, b) // 5 5
+}
+```
+### iota - numérotation de constante
+
+Les iota permettent de numéroter les valeurs de façon uniforme pour que le code garde un sens et reste maintenable.
+
+Un `ioat` n'existe que dans un groupe de `const`, commence à `0` sur la première ligne du bloc, et augmente de `1` pour chaque ligne de ce groupe.
+
+Il repart à `0` dans chaque nouveau bloc
+
+```go 
+func main() {
+	const (
+		StatusNew = iota			// 0
+		StatusInProgress			// 1
+		StatusDone						// 2
+	)
+
+	fmt.Println(StatusDone) // 2
+}
+```
+
+#### Enum - valeur unique 
+
+En Go, pour créer une énumération, on créer un type numérique ( par exemple `type Status int`) et un ensemble de constante de ce type. On obtient un nombre, mais le code se lit comme un nom parlant.
+
+Le compilateur n'autorise pas de mélanger plusieurs types.
+
+```go 
+type TaskStatus int // création du type 
+
+// enum
+const (
+	StatusNew TaskStatus = iota // 0
+	StatusInProgress // 1
+	StatusDone // 2
+)
+
+func main() {
+	var s TaskStatus = StatusInProgress
+	
+	switch s {
+	// les case corresponde à l'enum
+	case StatusNew:
+		fmt.Println("status: new") // status: new
+	case StatusInProgress:
+		fmt.Println("status: in progress")
+	case StatusDone:
+		fmt.Println("status: done") // status: done
+	default:
+		fmt.Println("status: unknown")
+	}
+}
+```
+
+#### Bitmasks - conbinaison
+
+Un enum répond à la question "quelle variante est choisie". Mais parfois il est nécessaire de stocker un ensemble de caractéristiques indépendante.
+
+Par exemple, une tâche peut avoir plusieurs options (urgente, avec notification, archivée, etc), et elles peuvent se combiner dans n'importe quelle configuration.
+
+Pour cela, on utilise un flag : un seul nombre dans lequel chaque bit représente une case à cocher.
+
+Le modèle le plus courante ressemble à `1 << iota`: cela signifie "prends le nombre 1, et décale le bit à 1 de `iota` position".
+On obtient alors des puissance de deux : `1`, `2`, `4`, `8` ...
+
+```go
+type TaskFlag uint
+
+const (
+	FlagUrgent TaskFlag = 1 << iota
+	FlagNotify
+	FlagArchived
+)
+
+func main() {
+	var flagsCode uint
+	
+	fmt.Scan(&flagsCode)
+
+	flags := TaskFlag(flagsCode)
+
+	if flags&FlagUrgent != 0 {
+		fmt.Println("flag: urgent")
+	}
+	if flags&FlagNotify != 0 {
+		fmt.Println("flag: notify")
+	}
+	if flags&FlagArchived != 0 {
+		fmt.Println("flag: archived")
+	}
+}
+```
+
+#### Saut et démarrage non nul 
+
+Parfois, on souhaite que la valeur `0` signifie "inconnu", et que les vraies valeurs commence à `1`. C'est généralement ce qu'on réalise sur des valeurs venant de l'extérieur.
+
+avec `iota`, on peut donnez explicitement le premier élément, ou bien sauter la première ligne.
+
+```go
+type Level int
+
+// on spécifie la première valeur
+const (
+	LevelUnknown Level = 0
+	LevelLow     Level = iota // iota ici vaut 1, car c'est la deuxieme ligne
+	LevelHigh                 // 2
+)
+
+func main() {
+	fmt.Println(LevelUnknown, LevelLow, LevelHigh) // 0 1 2
+}
+
+// AVEC SAUT DE LIGNE 
+const (
+	_ = iota // nous avons saute 0
+	One      // 1
+	Two      // 2
+)
+
+func main() {
+	fmt.Println(One, Two) // 1 2
+}
+```
+
+---
+## TYPE 
+
+### int
+
+Prends des nombre entier positif et négatif. C'est le type par défaut pour les entiers.
+La taille de `int` dépend de la plateforme (32 ou 64). 
+```go 
+func main() {
+	fmt.Println("int size:", strconv.IntSize, "bits") // par exemple: int size: 64 bits
+}
+```
+
+### int64 
+
+Utiliser lorsque l'on souhaite travailler avec une taille fixe, et une grand plage. C'est utiliser lorsque l'on stocke des nombres potentiellement grand, ou lorsque le format doit être identiques sur différentes machines.
+
+- argent en unité minimales, par exemple en centimes. Généralement, pour le stockage de valeur numéraire, on préfère stocker en centimes pour éviter les erreur de précision.
+- compteur et accumulations 
+- les nombres venant de l'extérieur (numéro de transactions, Id user)
+
+### uint 
+
+Peut prendre que des nombre positif. 
+- travail avec les masques de bits et des aspects de bas niveau 
+- lorsque l'api exige ce type spécifique 
+- lorsque l'on travail avec des identifiant 
+
+```go 
+func main(){
+	u := uint(17)
+}
+```
+
+### float64 
+Prends les nombre a virgule postifi et negatif.
+
+Attention à la précision avec les float.
+```go 
+func main() {
+	x := 0.1
+	var y float32 = 0.1
+
+	fmt.Printf("x=%v, type=%T\n", x, x) // x=0.1, type=float64
+	fmt.Printf("y=%v, type=%T\n", y, y) // y=0.1, type=float32
+}
+```
+
+La comparaison entre nombre flottant peut engendrer des résultats inattendu à cause de la précision.
+
+---
+
+---
 
 ### Valeurs par défaut 
 
@@ -931,7 +1140,6 @@ func main() {
 
 ## CONVERSION
 
-
 ### Conversion explicite 
 
 Go utilise une syntaxe de conversion `T(x)` ou `T` est le type cycle, et `x` la valeur à convertir.
@@ -1008,6 +1216,133 @@ func main() {
 
 ## OPERATEURS
 
+### Opérateur de comparaison 
+
+On ne peut faire des comparaison que sur des types compatibles.
+
+- `==` : vérifie une égalité 
+- `!=` : vérifie une différence 
+- `<` : inférieur à 
+- `<=` : inférieur ou égale à 
+- `>` : supérieur à 
+- `>=` : supérieur ou égale à 
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+	x := 5 
+	
+	isFive := x == 5
+	isNotFive := x != 5 
+	
+	fmt.Println(isFive) // true 
+	fmt.Println(isNotFive) // false 
+	
+	// comparaison de chaine 
+	role := "admin"
+
+	isAdmin := role == "admin"
+	isGuest := role != "admin"
+
+	fmt.Println(isAdmin) // true
+	fmt.Println(isGuest) // false
+	
+	// comparaison taille de chaine 
+	login := "gopher"
+
+	isEmpty := len(login) == 0
+	isLong := len(login) >= 8
+
+	fmt.Println(isEmpty) // false
+	fmt.Println(isLong)  // false
+	
+	// ============================
+	
+	score := 82 
+	
+	isHight := score >= 90
+	isMedium := score >= 75 
+	
+	fmt.Println(isHight) // false 
+	fmt.Println(isMedium) // true 
+}
+```
+### Opérateur logique
+
+- `&&` : les deux condition doivent être `true` 2
+- `||` : une des conditions doit être `true` 3
+- `!` : inversion - 1
+
+```go 
+// && exemple 
+func main(){
+	age := 20
+	hasTicket := true 
+	
+	if age >= 18 && hasTicket {
+		fmt.Println("welcome")
+	} else {
+		fmt.Println("no entry")
+	}
+}
+
+// || exemple 
+func main(){
+	role := "editor"
+	
+	isAdmin := role == "admin"
+	isEditor := role == "editor"
+	
+	canEdit := isAdmin || isEditor
+	fmt.Println(canEdit)
+}
+
+// ! exemple 
+func main(){
+	name := "user"
+	
+	ifEmpty := name == ""
+	fmt.Println(isEmpty) // false 
+	fmt.Println(!isEmpty) // true
+}
+```
+
+#### Short circuit 
+
+Les opérateurs `&&` et `||` ont un comportement spécifique : 
+- `A && B` : la partie B n'est pas évalué si A est `false`
+- `A || B` : la partie B n'est pas évalué si A est `true`
+##### Protection division par zero
+
+```go 
+func main(){
+	a := 10 
+	denom := 0
+	
+	// partie droit non exécuté sur denom == 0
+	ok := denom != 0 && (a/denom > 1)
+	flt.Println(ok) // false
+}
+```
+
+Si la valeur est `0`, on passe directement à `false`. Sinon, le calcul est effectué 
+
+##### Check role 
+
+```go 
+func main(){
+	role := "admin"
+	hasPaid := false 
+	
+	canUseFeature := role == "admin" || hasPaid
+	fmt.Println(canUseFeature) // true 
+}
+```
+
+Si l'user est admin, la condition sera vraie.
 ### Opérateur arithmétique 
 
 ```go 
@@ -1354,302 +1689,7 @@ func main() {
 }
 ```
 
-
-
 ---
-
-
----
-
-## CONDITION 
-
-### Comparaison 
-
-La comparaison est une expression qui retourne un `bool`. 
-
-```go 
-package main 
-
-import "fmt"
-
-func main(){
-	a := 10 
-	b := 7 
-	
-	greater := a > b // la variable contient la valeur boolean 
-	fmt.Println(greater) // true 
-}
-```
-
-### Opérateur de comparaison 
-
-On ne peut faire des comparaison que sur des types compatibles.
-
-- `==` : vérifie une égalité 
-- `!=` : vérifie une différence 
-- `<` : inférieur à 
-- `<=` : inférieur ou égale à 
-- `>` : supérieur à 
-- `>=` : supérieur ou égale à 
-
-```go 
-package main 
-
-import "fmt"
-
-func main(){
-	x := 5 
-	
-	isFive := x == 5
-	isNotFive := x != 5 
-	
-	fmt.Println(isFive) // true 
-	fmt.Println(isNotFive) // false 
-	
-	// ============================
-	
-	score := 82 
-	
-	isHight := score >= 90
-	isMedium := score >= 75 
-	
-	fmt.Println(isHight) // false 
-	fmt.Println(isMedium) // true 
-}
-```
-
-### If, else, else if
-
-```go 
-func main(){
-	age := 12 
-	
-	if age < 7 {
-		fmt.Println("Entrée gratuite")
-	} else if age < 18 {
-		fmt.Println("Billet enfant")
-	} else {
-		fmt.Println("Billet adulte")
-	}
-}
-```
-
-En Go, on ne peut pas faire une vérif directement sur une variable non nul `if age { }`, il faut obligatoirement utiliser ce code : 
-
-```go 
-if age != 0 {
-	...
-}
-```
-
-### Portée de variable 
-
-Une variable peut exister uniquement dans une conditon `if`.
-
-Dans le code, `x` est déclaré dans l'initialisateur de `if`. La variable est donc accessible dans les deux blocs de la condition.
-
-```go 
-func main(){
-	if x := 10; x%2 == 0 {
-		fmt.Println("x est pair :", x) // x est pair 
-	} else {
-		fmt.Println("x est impair :", x)
-	}
-}
-```
-
-### if avec initialiseur 
-
-Go permet d'écrire un `if` avec une valeur initialisateur. La variable est disponible que pour cette condition.
-
-```go
-if init; cond {
-	...
-} else {
-	...
-}
-```
-
-Par exemple, pour gérer les erreurs de conversion de type 
-
-```go 
-package main 
-
-import (
-	"fmt"
-	"strconv"
-)
-
-func main(){
-	ageStr := "21"
-	
-	if age, err := strconv.Atoi(ageStr); err == nil {
-		fmt.Println("Age : ", age)
-	} else {
-		fmt.Println("Age incorrect")
-	}
-}
-```
-
-Les variable `age` et `err` n'existent que dans le bloc de conditions.
-
-### Opération logique 
-
-- `&&` : les deux condition doivent être `true` 2
-- `||` : une des conditions doit être `true` 3
-- `!` : inversion - 1
-
-```go 
-// && exemple 
-func main(){
-	age := 20
-	hasTicket := true 
-	
-	if age >= 18 && hasTicket {
-		fmt.Println("welcome")
-	} else {
-		fmt.Println("no entry")
-	}
-}
-
-// || exemple 
-func main(){
-	role := "editor"
-	
-	isAdmin := role == "admin"
-	isEditor := role == "editor"
-	
-	canEdit := isAdmin || isEditor
-	fmt.Println(canEdit)
-}
-
-// ! exemple 
-func main(){
-	name := "user"
-	
-	ifEmpty := name == ""
-	fmt.Println(isEmpty) // false 
-	fmt.Println(!isEmpty) // true
-}
-```
-
-### Short circuit 
-
-Les opérateurs `&&` et `||` ont un comportement spécifique : 
-- `A && B` : la partie B n'est pas évalué si A est `false`
-- `A || B` : la partie B n'est pas évalué si A est `true`
-
-```go 
-func main(){
-	a := 10 
-	denom := 0
-	
-	// partie droit non exécuté sur denom == 0
-	ok := denom != 0 && (a/denom > 1)
-	flt.Println(ok) // false
-}
-```
-
-Si la valeur est `0`, on passe directement à `false`. Sinon, le calcul est effectué 
-
-```go 
-func main(){
-	role := "admin"
-	hasPaid := false 
-	
-	canUseFeature := role == "admin" || hasPaid
-	fmt.Println(canUseFeature) // true 
-}
-```
-
-Si l'user est admin, la condition sera vraie.
-
-### return 
-
-L'opérateur `return` termine immédiatement l'exécution de la fonction courante.
-
-De cette manière, on peut éviter les imbrications profondes de `if`
-
-```go
-if isBanned {
-	fmt.Println("denied: banned")
-	return 
-}
-
-if isVIP || (isAdult && hasTicket) {
-	fmt.Println("welcome")
-}
-```
-
-### Exemple DoorGuard 
-
-Programme qui vient vérifier si un utilisateur à les droits d'accès.
-
-```go 
-package main 
-
-import "fmt"
-
-func main(){
-	// déclaration des variables
-	var age int 
-	var ticketStr string 
-	var vipStr string 
-	var bannedStr string 
-	
-	// récupération saisie stdin 
-	fmt.Scan(&age, &ticketStr, &vipStr, &bannedStr)
-	
-	// conversion texte en boolean 
-	hasTicket := ticketStr == "yes"
-	isVIP := vipStr == "yes"
-	isBanned := bannedStr == "yes"
-	isAdult := age >= 18
-
-	// vérification 
-	if isBanned {
-		fmt.Println("denied: banned")
-		return 
-	}
-	
-	if isVIP || (isAdult && hasTicket) {
-		fmt.Println("welcome")
-	} else {
-		fmt.Println("denied: need ticket and age 18+")
-	}
-}
-```
-
-### Switch 
-
-```go
-package main
-
-import "fmt"
-
-func main() {
-	op := "*" // variale checker dans le switch
-
-	switch op {
-	// check plusieurs valeurs 
-	case "+", "add":
-		fmt.Println("addition")
-	case "-":
-		fmt.Println("soustraction")
-	case "*":
-		fmt.Println("multiplication")
-	default:
-		fmt.Println("operation inconnue")
-	}
-}
-```
-
-- `default` : c'est le cas qui s'exécute si aucune valeur ne match avec les différents case. Il n'est pas obligatoire.
-
-Par défaut, chaque case est `break` automatiquement.. `fallthrough` permet d'empêcher ce comportement.
-
----
-
 ## ERREUR 
 
 ### Vérification des erreurs
@@ -1657,12 +1697,52 @@ Par défaut, chaque case est `break` automatiquement.. `fallthrough` permet d'em
 En go, de nombreuses fonctions retourne `error`, et cette valeur est soit `nil` soit non `nil`.
 Lorsque la fonction s'est bien exécuté, la valeur de `error` sera `nil`. 
 
+Si une fonction peut retourner une erreur, alors on la traite directement. De cette manière, on traite directement les cas d'erreur, et on ne garde pas des valeurs potentiellement mauvaise.
+
 En Go, on utilise ce pattern : `appel -> check -> use` :
 1. Appelle de la fonction 
 2. Vérifier `err`
 3. Utiliser le résultat de la fonction 
 
-Chaque appel d'une fonction pouvant retourner une erreur doit être gérer directement.
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var x int
+	_, err := fmt.Scan(&x)
+
+	if err != nil {
+		fmt.Println("impossible de lire le nombre") // par exemple, si l'on a saisi "abc"
+		return		// sortie de main()
+	}
+
+	fmt.Println("x =", x)
+}
+```
+
+On peut utiliser les `if` avec initialiseur en utilisant les variables temporaire pour simplifier le code.
+De cette manière, les variables ne sont que temporaire.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	if n, err := strconv.Atoi("100"); err != nil {
+		fmt.Println("erreur de parsing :", err)
+	} else {
+		fmt.Println(n + 1) // 101
+	}
+}
+```
+
+#### Mini app : calculatrice
 
 ```go 
 package main
@@ -1705,65 +1785,65 @@ func main() {
 }
 ```
 
-Dans le cas ou la valeur doit être uniquement dans un endroit unique, il est possible d'utiliser la syntaxe avec initialiseur. Dans ce cas, les variables n'existe que dans le bloc `if/else` 
-
-```go
-package main
-
-import (
-	"fmt"
-	"strconv"
-)
-
-func main() {
-	if n, err := strconv.Atoi("100"); err != nil {
-		fmt.Println("erreur de parsing :", err)
-	} else {
-		fmt.Println(n + 1) // 101
-	}
-} 
-```
-
 --- 
 
 ## BOUCLE 
+En Go, il n'existe qu'**une seule forme de boucle**. On utilise `for` mais avec plus ou mois d'arguments.
+### for
+Elle prends trois arguments dans sa forme de base :
+- `init`: initialisation de la valeur et réaliser en début de boucle
+- `cond` : condition d'arrêt vérifier a chaque itération
+- `post` : incrémentation, applique a chaque itération de la boucle
 
-### Boucle for 
-
-En Go, il n'existe qu'une seule boucle `for`. 
-
-```go
-for init; cond; post {
-	// corps de la boucle 
-}
-```
-
+Par convention, on utilise `i` pour les variable compteur.
 
 ```go 
 
 func main(){
+	// syntaxe
+	for init; cond; post {
+    // corps de la boucle
+	}
+
+	// exemple compteur
 	for i := 0; i < 3; i++ {
+		// executer a chaque itereation
 		fmt.Println("Itération :", i)
+	}
+	
+	// repetition et affichage 
+	var n int
+	fmt.Scan(&n) // recupere la nombre d'iteration
+
+	for i := 1; i <= n; i++ {
+		var title string
+		fmt.Scan(&title) // recupere la saisie utilisateur
+		fmt.Println(i, "-", title) // exemple : 1 - buy_milk
+	}
+	
+	// boucle de calcul des carre
+	var n int
+	fmt.Scan(&n)
+
+	for i := 1; i <= n; i++ {
+		fmt.Println(i, "->", i*i) // si n=3 : 1->1, 2->4, 3->9
 	}
 }
 ```
+### for while 
 
-- `init`: création et initialisation d'une variable compteur. Elle se fait une fois au début de la boucle.
-- `cond` : condition d'arrête. Elle est vérifié avant chaque itération de la boucle.
-- `post` : étapes entre itération. S'exécute après le code de la boucle. Par exemple, augmenter ou diminuer la variable compteur.
-
-#### Boucle while 
-
-La boucle s'exécute tant que la condition est `true`.
+On peut mettre en place des boucle `while` en Go. La boucle viens s'exécuter tant que la condition est évaluer a `true`.
 
 ```go 
-for cond {
-	// code de la boucle 
-}
-```
 
-```go
+
 func main() {
+	// syntaxe
+	for cond {
+		// code de la boucle 
+	}
+	
+	// double un nombre tant qu'il est < 100
 	x := 1
 	for x < 100 {
 		x = x * 2
@@ -1772,29 +1852,40 @@ func main() {
 }
 ```
 
-#### Boucle infinie
+### for infinie
 
-Pour une CLI par exemple, on attends la saisie de l'utilisateur tant qu'il ne souhaite pas sortie explicitement de la boucle.
-Dans ce cas, on peut utiliser une boucle infinie : 
+Il est parfois nécessaire de faire tourner une boucle de manière infinie. Pour une CLI par exemple, on attends la saisie de l'utilisateur tant qu'il ne souhaite pas sortie explicitement de la boucle.
+
+Il faut obligatoirement ajouter un point de sortie lorsqu'une condition est atteinte.
 
 ```go 
 func main(){
+	// exemple
+	for {
+	    // on fait quelque chose
+	    // si il faut terminer — break
+	}
+	
+	// exemple : lire jusqu'a zero
 	balance := 0 
 	
+	// on lance une boucle infinie
 	for { 
 		var x int 
 		-, err := fmt.Scan(&x) // récupère la saisis
 
+		// si err on sort de la boucle
 		if err != nil {
 			break
 		}
 		
-		// sortie de la boucle 
+		// si on atteind zero on sort de la boucle
 		if x == 0 {
 			break
 		}
 		
 		// si valeur trop grande on skip 
+		// on utilise une syntaxe plus lisible pour ecrire le nombre
 		if x > 1_000_000 || x < -1_000_000 {	
 			fmt.Println("montant trop grand, j'ignore")
 			continue
@@ -1812,47 +1903,67 @@ L'instruction `break` permet de sortir de la boucle.
 
 ### continue 
 
-L'instruction `continue` permet de passer à l'itération suivante. 
+L'instruction `continue` permet de passer à l'itération suivante. Attention au placement de l'instruction.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	i := 1
+	for i <= 5 {
+		if i == 3 {
+			i++ // on fait l'etape avant continue
+			continue
+		}
+		fmt.Println(i)
+		i++
+	}
+}
+```
 
 ### range - parcourir une séquence
 
-Cette instruction permet de parcourir les éléments d'une séquence. La fonction retourne deux valeurs. (index, et value)
-
-```go 
-for index, value := range s {
-	// code de la boucle 
-}
-```
-
+Permet de parcourir une séquence. Elle retourne deux valeurs :
 - `index` : la position de l'élément dans la séquence 
 - `value` : la valeur en cours d'itération 
 
-#### Parcourir une chaîne 
+La valeur correspond a la valeur numérique du caractère lorsque l'on parcourt une chaine.
 
 ```go 
 func main(){
-	message := "Go"
-	
-	// on parcour la chaîne 
-	for i, v := range message {
-		fmt.Printf("Index: %v\n", i)
-		fmt.Prinf("Valeur: %v\n", v)
+	// syntaxe 
+	for index, value := range s {
+		// code de la boucle 
 	}
-}
+	
+	// parcourir une chaine 
+	s := "Go"
 
-```
+	for i, v := range s {
+		fmt.Println(i, v)
+	}
+	// 0 71		  71 - code du caractère 'G'
+	// 1 111	 111 - code du caractère 'o
+	
+	// compter le nombre de caracteres
+	s := "gopher"
 
-#### Vérification de caractère 
+	count := 0
+	for _, v := range s {
+		if v == 'o' {		// 'o' symbole
+			count++
+		}
+	}
 
-Pour vérifier un caractère unique, on utiliseras un `rune`.
-
-```go
-func main() {
+	fmt.Println(count) // 1
+	
+	// detection de caractere interdit 
 	s := "go#lang"
 
 	hasHash := false
 	for _, v := range s {
-	// on compare avec une rune
 		if v == '#' {
 			hasHash = true
 			break
@@ -1890,92 +2001,121 @@ func main() {
 	fmt.Println(replacedCount)
 }
 ```
+### Pattern
 
-### Protection contre les boucle infinie 
+#### Accumulateur 
 
-Si une boucle provoque potentiellement une boucle infinie, on peut utiliser ce pattern pour log ce qui se passe, et ajouter une limite pour le debug.
+1. Initialisation d'une variable a zéro.
+2. Cumul des valeurs dans la variable initial
+3. Affiche le résultat final après les itération qui représente le cumul de valeur
 
 ```go 
+func main(){
+	// definit le nombre d'iteration a faire 
+	var n int 
+	fmt.Scan(&n)
+	
+	sum := 0 // initialisation de la variable accumulateur
+	for i := 0; i < n; i++ {
+		// on demande une saisie utilisateur a chaque iteration
+		var x int 
+		fmt.Scan(&x) // recupere la valeur saisis 
+		sum = sum + x // incrementation dans la variable accu 
+	}
+	
+	fmt.Println(sum) // affichage somme total
+}
+```
+
+#### Somme sous condition 
+On souhaite additionner les nombres seulement sous certaines condition, par exemple les nombres paires.
+
+On garde le même pattern que pour l'accumulateur, mais on ajoute un `if` permettant de d'incrémenter seulement avec les nombres qui vérifie la condition.
+```go
 package main
 
 import "fmt"
 
 func main() {
-	i := 0
-	limit := 20
+	var n int
+	fmt.Scan(&n)
 
-	for i < 5 {
-		i++
-		fmt.Println("i =", i) // i = 1, i = 2, ...
-
-		limit--
-		if limit == 0 {
-			fmt.Println("stop: safety limit reached")
-			break
+	sumEven := 0
+	for i := 0; i < n; i++ {
+		var x int
+		fmt.Scan(&x)
+		// ajoute de la condition
+		if x%2 == 0 {
+			sumEven = sumEven + x
 		}
 	}
+
+	fmt.Println(sumEven) // par exemple : 12
 }
 ```
 
-### Pattern de boucle 
+#### Compter les caractères dans une chaine 
+Ici, on cherche a savoir combien de fois un caractère est présent dans une chaine.
+```go
+package main
 
-#### Accumulateur 
+import "fmt"
 
-Débute à zéro, et cumule les valeurs. La variable stocke le résultat intermédiaire, et chaque itération de la boucle, met à jour la variable.
+func main() {
+	s := "bananas"
 
-```go 
-func main(){
-	var n int  
-	fmt.Scan(&n)
-	
-	sum := 0 // accumulateur 
-	for i := 0; i < n; i++ {
-		var x int 
-		fmt.Scan(&x) // récupère une valeur saisis
-		sum = sum + x // cumul à chaque tour de boucle 
+	countA := 0
+	for _, ch := range s {
+		// on verifie le caractere rechercher
+		if ch == 'a' {
+			countA++
+		}
 	}
-	
-	fmt.Println(sum)
+
+	fmt.Println(countA) // 3
 }
 ```
-
 #### Valeur maximale
+La recherche du maximum (et minimum) peut être problématique lorsque l'on rencontre des valeurs négative et que la valeur max est initialiser a zéro.
 
-L'idée principale est la suivante : pour le maximum il est important de savoir d'où vient la valeur initiale.
+Pour que la recherche soit fiable, on peut venir utiliser la premier valeur, et se baser dessus en itérant sur les valeurs suivantes :
+```go
+package main
 
-##### Initialisation par le premier élément 
+import "fmt"
 
-```go 
-func main(){
-	var n int 
+func main() {
+	var n int
 	fmt.Scan(&n)
-	
-	// pour une entrée vide, on affiche 0 
+
 	if n <= 0 {
-		fmt.Prinln(0)
-		return 
+		fmt.Println(0) // convenons que pour une entrée vide, on affiche 0
+		return
 	}
-	
-	// le premier élément devient le max
-	var max int 
-	fmt.Scan(&max)
-	
+
+	var max int
+	fmt.Scan(&max) // le premier élément devient le maximum de départ
+
 	for i := 1; i < n; i++ {
-		var x int 
+		// x contient la saisis utilisateur
+		var x int
 		fmt.Scan(&x)
-		// si plus grand, on change la valeur max 
 		if x > max {
 			max = x
 		}
 	}
+
+	fmt.Println(max) // par exemple : 42
 }
 ```
+#### Valeur maximal et position 
+On as parfois besoin de connaitre la valeur maximal et sa position. 
 
-##### Valeur max et index 
+```go
+package main
 
-PArfois, on as besoin de connaitre la valeur maximal, mais également sa postition. 
+import "fmt"
 
-```go 
 func main() {
 	var n int
 	fmt.Scan(&n)
@@ -1987,14 +2127,14 @@ func main() {
 
 	var max int
 	fmt.Scan(&max)
-	maxIndex := 0 // stocke l'index de la valeur max
+	maxIndex := 0
 
 	for i := 1; i < n; i++ {
 		var x int
 		fmt.Scan(&x)
 		if x > max {
 			max = x
-			maxIndex = i
+			maxIndex = i // stocke l'index ou le max est trouver
 		}
 	}
 
@@ -2002,21 +2142,21 @@ func main() {
 }
 ```
 
-#### Recherche avec drapeau 
-
+#### Recherche
 La recherche c'est lorsque l'on souhaite savoir si quelque chose apparaît dans les données. On utilise un flag, et si lever, on `break`.
-
+1. On initialise un flag a `false`
+2. on itère, si un match arrive, on passe le flag a `true` et on stop la boucle
 ```go 
-// Recherche au flag 
+// recherche parmis des nombres
 func main() {
 	var n, target int
-	fmt.Scan(&n, &target)
+	fmt.Scan(&n, &target) // on recupere la valeur rechercher
 
 	found := false // drapeau init a false 
 	for i := 0; i < n; i++ {
 		var x int
-		fmt.Scan(&x)
-		// si on trouve la donnée, on leve le drapeau 
+		fmt.Scan(&x) // on recupere la saisie
+		// si on trouve la donnée, on leve le drapeau et on stop la boucle 
 		if x == target {
 			found = true
 			break
