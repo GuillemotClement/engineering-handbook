@@ -1,24 +1,71 @@
 nav:
-  - Golang: go/index.md
-  - PHP: php/index.md
-  - Evode: evode/index.md
-  - SQL: 
-    - Requête: SQL/request.md 
-    - Table: SQL/table.md
-  - Java: Java/index.md
+  - Git: git/index.md
+  - Linux:
+      - WSL: linux/wsl.md
+      - Commandes: linux/commande.md
+      - Curl: linux/curld.md
+      - Old: linux/old.md
+  - Go:
+      - New: go/index.md
+      - Old: go/old_index.md
+      - Old2: go/old2.md
+  - Php:
+      - Php: php/index.md
+      - Old: php/old.md
+  - Symfony: symfony/index.md
+  - Evode:
+      - Last: evode/index.md
+      - Old_version: evode/old_index.md
+  - SQL:
+      - Requête: sql/request.md
+      - Table: sql/table.md
+  - Java:
+      - Java: java/index.md
+      - Types: java/types.md
+  - JavaScript:
+      - New: javascript/index.md
+      - Old: javascript/old.md
+  - Jest: jest/index.md
   - JQuery: jquery/index.md
   - TypeScript: typescript/index.md
   - React: react/index.md
   - NextJS: nextJS/index.md
   - Docker: docker/index.md
-  - Git: git/index.md
   - GitHubAction: githubaction/index.md
   - Homelab: homelab/index.md
-  - Symfony: symfony/index.md
-  - Python: python/index.md
-  - Curl: curl/index.md
-  - Linux:
-      - WSL: linux/wsl.md
+  - Python:
+      - Python: python/index.md
+      - Old: python/old.md
+      - Fonction: python/fonctions.md
+  - C++: c++/index.md
+  - Github Action: github_action/index.md
+  - IA: ia/index.md
+  - C: c/index.md
+  - Bun: bun/index.md
+  - HTML: html/index.md
+  - CSS:
+      - Base: css/index.md
+      - Formulaire: css/formulaire.md
+  - Elysia: elysia/index.md
+  - Express: express/index.md
+  - Tanstack:
+      - TanstackForm: tanstack/tanstackForm.md
+      - TanstackRouter: tanstack/tanstackRouter.md
+      - TanstackTable: tanstack/tanstackTable.md
+      - TanstackQuery: tanstack/tanstackQuery.md
+  - Svelte:
+      - Svelte: svelte/index.md
+  - Rust:
+      - Rust: rust/index.md
+  - Biome:
+      - Biome: biome/index.md
+  - Drizzle:
+      - Drizzle: drizzle/index.md
+  - Fish-Shell:
+      - Fish-Shell: fishShell/index.md
+  - Mkdoc: mkdocs/index.md
+  - Nvim: nvim/index.md
+  - Pnpm: pnpm/index.md
 
 site_name: Engineering Handbook
 site_url: https://engineering-handbook.netlify.app
