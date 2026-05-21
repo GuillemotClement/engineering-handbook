@@ -139,4 +139,56 @@ mv my_file.txt /home/user/document
 
 # renommer 
 mv old_name.txt new_name.txt
-````
+```
+
+## cat 
+Permet d'afficher le contenu d'un fichier 
+
+```shell
+cat [file_name]
+cat example.txt
+
+# combiner et inserer dans un fichier 
+cat file1.txt file2.txt > combined.txt 
+```
+
+## less 
+Lorsque le fichier est trop gros pour etre lisible avec `cat`.
+
+- `space` : page suivante 
+- `b` : page precedente 
+- `/[mot]` : recherche un mot dans le texte 
+- `q` : quitter  
+
+```shell
+less [file_name]
+less example.txt
+```
+
+## nano 
+Permet de modifier un fichier texte 
+
+- `Ctrl+o` : sauvegarde du fichier 
+- `Ctrl+X` : quitter 
+- `Ctrl+K` : couper une ligne 
+- `Ctrl+U` : coller une ligne 
+
+```shell
+nano [file_name]
+nane example.txt
+```
+
+## vim 
+Editeur de texte 
+
+- `i` : mode edition
+- `echap` : revenir en mode commande 
+- `:w` : enregistrer 
+- `:q` : quitter 
+- `:wq` : enregistrer et quitter 
+- `:q!` : exit forcer
+
+
+```shell
+vim [file_name]
+vim example.txt

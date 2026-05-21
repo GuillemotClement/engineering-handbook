@@ -3,7 +3,7 @@ nav:
   - Linux:
       - WSL: linux/wsl.md
       - Commandes: linux/commande.md
-      - Curl: linux/curld.md
+      - Curl: linux/curl.md
       - Old: linux/old.md
   - Go:
       - New: go/index.md
