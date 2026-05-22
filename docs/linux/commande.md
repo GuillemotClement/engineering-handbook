@@ -94,6 +94,10 @@ touch [file_name.txt]
 
 # creation de fichier multiple 
 touch [file1.txt] [file2.txt]
+
+# creation et ajout de texte
+echo "texte" > example.txt # remplace la ligne 
+echo "texte" >> example.txt # ajoute a la suite 
 ```
 
 ## rm 

@@ -1,8 +1,9 @@
 nav:
   - Git: git/index.md
   - Linux:
-      - WSL: linux/wsl.md
       - Commandes: linux/commande.md
+      - Gestion des droits: linux/droitAcces.md
+      - WSL: linux/wsl.md
       - Curl: linux/curl.md
       - Old: linux/old.md
   - Go:
