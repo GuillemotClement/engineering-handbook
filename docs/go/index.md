@@ -158,32 +158,12 @@ func main() {
 
 ### Déclaration
 
-Convention de nommage :
-- ne peut pas commencer par un chiffre 
-- ne peux pas contenir de caractère spéciaux hormis `_`
-- `camelCase`
-
 ```go 
 package main
 
 import "fmt"
 
 func main() {
-	var i int        // declaration simple 
-	var a, b int     // declaration multiple
-	var reportBase int = 1
-	
-	var city string // preparation d'une variable
-	
-	appName := "SuperApp" // syntaxe courte
-	
-	i = 3 // affectation
-	
-	city = "Tokyo" // affectation de la variable preparer precedement
-	
-	// affectation avec calcul 
-	x := 10
-	
 	x += 5  // x = 15
 	x -= 3  // x = 12
 	x *= 2  // x = 24
@@ -195,25 +175,6 @@ func main() {
 }
 ```
 
-### Portée de variable
-
-Une variable déclarer dans un bloc de code, c'est a dire, a l'intérieur des `{ }` ne sera disponible que dans ce bloc de code.
-
-```go
-package main
-
-import "fmt"
-
-func main() {
-	// x est disponible uniquement dans le bloc if
-	if x := 10; x%2 == 0 {
-		fmt.Println("x est pair :", x) // x est pair : 10
-	} else {
-		fmt.Println("x est impair :", x)
-	}
-	// fmt.Println(x) // impossible : x n'est pas visible en dehors de if
-}
-```
 ### Shadowing 
 
 Le shadowing, ou le masquage de variable est lorsque dans un bloc, on créer une nouvelle variable avec le même nom qu'une variable d'une bloc externe. Dans le bloc, la nouvelle variable, prends cette valeur, et celle du bloc externe ne change pas.

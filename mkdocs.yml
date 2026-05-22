@@ -10,6 +10,7 @@ nav:
       - Old: linux/old.md
   - Go:
       - New: go/index.md
+      - Variable: go/variable.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:
