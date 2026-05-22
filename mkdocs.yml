@@ -10,8 +10,10 @@ nav:
       - Old: linux/old.md
   - Go:
       - New: go/index.md
+      - Commentaire: go/commentaire.md
+      - Affichage: go/affichage.md
       - Variable: go/variable.md
-      - Types : go/types.md 
+      - Types: go/types.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:

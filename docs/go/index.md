@@ -1,49 +1,11 @@
-# Golang 
-## COMMENTAIRE 
+# Golang
 
-```go
-// commentiare one line 
-
-/*
-commentaire multiligne
-*/
-```
-
----
-## AFFICHAGE 
-
-```go
-package main
-
-import "fmt"
-
-func main(){
-	// affichage sans nouvelle ligne 
-	fmt.Print("Hello")
-
-	/// affichage avec saut de ligne	
-	fmt.Println("Mon age :", 28)
-	fmt.Println("Nous sommes en", 2026, "annee.")
-	
-	// affichage avec concatenation
-	fmt.Println("Ami" + "go") // Amigo
-	
-	// affichage avec espace réservé
-	x := 10 
-	fmt.Printf("x=%v type=%T\n", x, x) // x=10 type=int 
-}
-```
-
-- `%v` : spécificateur universel 
-- `%T` : affiche le type de valeur 
-- `%d` : entier 
-- `%s` : string 
----
 ## RECUPERATION DE SAISIE
 
 ### fmt.Scan - lire une valeur depuis l'entree standard
 
 La fonction `Scan` accepte des pointeurs en argument et retourne deux valeur : `count` et `err`.
+
 - `count` : indique combien de valeurs ont reellement pu etre reconnues et ecrit dans la variables.
 - `err` : contient l'erreur si la fonction rencontre une erreur. `nil` si aucune erreur n'est rencontrer
 
@@ -61,32 +23,32 @@ func main() {
 	var n int // on prepare la variable qui viendras stocker la valeur
 	fmt.Scan(&n) // lecture de la saisie
 	fmt.Println(n) // affichage de la saisie
-	
-	// recuperation de plusieurs saisie 
+
+	// recuperation de plusieurs saisie
 	var a, b int // on prepare deux variables
 	fmt.Scan(&a, &b) // on recupere la saisie
 	sum := a + b // calcul avec les valeurs saisie
 	fmt.Println(sum) // affichage du resultat
-	
+
 	// traitement des valeurs retourne
-	var x int 
-	count, err := fmt.Scan(&x) // on recupere les valeurs retourner 
-	
+	var x int
+	count, err := fmt.Scan(&x) // on recupere les valeurs retourner
+
 	fmt.Println("count:", count) // par exemple : count: 1
 	fmt.Println("err:", err)     // en cas de succes : err: <nil>
 	fmt.Println("x:", x)         // si vous avez saisi 42, alors : x: 42
-	
+
 	// gestion d'erreur => la seconde valeur n'est pas saisie
-	var a, b int 
+	var a, b int
 	count, err := fmt.Scan(&a, &b)
-	
+
 	fmt.Println("count:", count) // probablement : count: 1
 	fmt.Println("err:", err)     // ne sera pas <nil>, il y aura une description de l'erreur
 	fmt.Println("a:", a)         // a: 10
 	fmt.Println("b:", b)         // b: 0 (restera a sa valeur zero)
 }
 
-// mini calculatrice 
+// mini calculatrice
 func main() {
 	// read
 	var price int
@@ -108,7 +70,7 @@ La méthode `Fscan` prends en premier argument, la source d'entree qui sera recu
 `os.Stdin` représente l'entrée standard.
 
 ```go
-package main 
+package main
 
 import (
 	"fmt"
@@ -118,12 +80,12 @@ import (
 func main(){
 	var a, b int
 	fmt.Fscan(os.Stdin, &a, &b) // on passe explicitement la stdin
-	
+
 	fmt.Println(a * b)
 }
 ```
 
-### Conversion de saisie 
+### Conversion de saisie
 
 Généralement, on récupère une chaine depuis la méthode `Scan`. Il sera nécessaire de la convertir pour utiliser les nombre et réaliser des calculs par exemple.
 
@@ -154,11 +116,12 @@ func main() {
 ```
 
 ---
+
 ## VARIABLES
 
 ### Déclaration
 
-```go 
+```go
 package main
 
 import "fmt"
@@ -168,104 +131,25 @@ func main() {
 	x -= 3  // x = 12
 	x *= 2  // x = 24
 	x /= 4  // x = 6
-	
+
 	// affectation avec concatenation
 	s := "Hello"
 	s += " World" // "Hello World"
 }
 ```
 
-### Shadowing 
 
-Le shadowing, ou le masquage de variable est lorsque dans un bloc, on créer une nouvelle variable avec le même nom qu'une variable d'une bloc externe. Dans le bloc, la nouvelle variable, prends cette valeur, et celle du bloc externe ne change pas.
 
-### Variable globale
 
-Il est possible de déclarer des variables au niveau du package. Ces variables se déclarent en dehors des fonctions
 
-On ne peut pas utiliser `:=`, il faut utiliser `var` ou `const`. 
-
-Les variables globales sont visibles dans toutes les fonctions de ce package.
-
-```go 
-package main
-
-import "fmt"
-
-var appName = "Range Normalizer" // variable globale (package-level)
-
-func normalize(from, to int) (int, int) {
-	if from > to {
-		from, to = to, from
-	}
-	return from, to
-}
-
-func main() {
-	from, to := 10, 3
-	from, to = normalize(from, to)
-	fmt.Println(appName, from, to) // Range Normalizer 3 10
-}
-```
-
-### Affectation 
-
-L'affectation c'est lorsque l'on passe une nouvelle valeur à une variable. La variable doit être déclaré au préalable dans la portée courante.
-
-```go 
-func main() {
-	var total int // déclaration 
-	total = 100 // affectation 
-	total = total - 30
-	fmt.Println(total) // 70
-}
-```
-### Assignation multiple 
-
-Il est possible d'assigner plusieurs valeurs à plusieurs variables en une seule fois : 
-
-```go 
-a, b = 10, 20
-```
-
-- `a` prend la valeur 10 
-- `b` prend la valeur 20 
-
-Le côté droit est évalué entièrement, puis les résultats sont répartis dans les variables de gauche.
-
-```go 
-func main() {
-	x := 1
-	y := 2
-
-	x, y = y, x+y
-	fmt.Println(x, y) // 2 3
-}
-```
-
-Cela peut être utile pour permuter les valeurs sans utiliser de variables temporaire 
-
-```go 
-func main() {
-	from := 0
-	to := 0
-
-	fmt.Scan(&from, &to)
-
-	if from > to {
-		from, to = to, from // permutation
-	}
-
-	fmt.Printf("range: %d..%d\n", from, to) // par exemple : range: 3..10
-}
-```
 
 ---
-## STRING 
+
+## STRING
 
 En Go, une chaîne est une tableau d'octet. Elle est immuable. On ne peut pas modifier un des éléments interne, on peut seulement créer une nouvelle chaîne à partir de l'ancienne.
 
-### Concatenation 
+### Concatenation
 
 Les chaines peuvent être concaténer avec `+`. Il n'est pas possible de realiser des concatenation de type different, il sera nécessaire de faire une conversion avant de pouvoir l'utiliser.
 
@@ -287,11 +171,11 @@ func main() {
 	x := 333
 	s = "Amigo" + strconv.Itoa(x) // s contiendra Amigo333
 	fmt.Println(s)
-	
+
 	// concatenation abrege
 	s := "Hello"
 	s += " World" // "Hello World"
-	
+
 	// affichage mixte sans concatenation
 	name := "Ann"
     age := 20
@@ -299,24 +183,25 @@ func main() {
 }
 ```
 
-### Caractere speciaux 
+### Caractere speciaux
 
-- `\n` : saut de ligne 
-- `\t` : tabulation 
+- `\n` : saut de ligne
+- `\t` : tabulation
 - `\"` : guillemot double échapper
 - `\\` : antislash
-### len() 
 
-Retourne la taille en octet de la chaîne en type `int`. 
+### len()
+
+Retourne la taille en octet de la chaîne en type `int`.
 On ne peut pas compter le nombre de caractère via cette méthode.
 
-```go 
+```go
 func main() {
     s := "golang"
     fmt.Println(len(s)) // 6
     fmt.Println(len("Hello"))  // 12 (probablement)
-    
-    // mini app 
+
+    // mini app
 	firstName := "John"
     lastName := "Doe"
     role := "Junior Gopher"
@@ -336,16 +221,17 @@ Representation reel
 */
 ```
 
-### strconv 
+### strconv
 
 Package qui permet de faire des conversion de string.
-#### strconv.Atoi - string => int 
+
+#### strconv.Atoi - string => int
 
 Cette methode prendre une chaine et tente de la convertir en `int`. Elle retourne deux valeur : `num` et `err`.
 
 L'utilisation d'une chaine vide un d'un entier plus grand que ce que peux contenir un `int` provoque une erreur.
 
-```go 
+```go
 package main
 
 import (
@@ -354,14 +240,14 @@ import (
 )
 
 func main() {
-	// utilisation basique 
+	// utilisation basique
 	s := "42" // chaine qui contient un nombre
-	n, err := strconv.Atoi(s) // on tente la conversion 
+	n, err := strconv.Atoi(s) // on tente la conversion
 
 	fmt.Println("n =", n)     // n = 42
 	fmt.Println("err =", err) // err = <nil>
-	
-	// conversion echouer 
+
+	// conversion echouer
 	s := "42x" // contient un x donc echec de la conversion
 	n, err := strconv.Atoi(s)
 
@@ -388,35 +274,36 @@ func main() {
 	fmt.Println(msg) // next id = 101
 }
 ```
-### Indexation de chaine 
+
+### Indexation de chaine
 
 Lorsque l'on vient sélectionner un élément de la string, on ne retourne pas un caractère, mais un octet de cette séquence.
 Le type est `uint8` ou `byte`.
 
-```go 
+```go
 func main() {
 	s := "Go"
 
 	fmt.Println(s[0], s[1])  // 71 111
 	fmt.Printf("%T\n", s[0]) // uint8
-	
+
 	fmt.Printf("%c\n", s[0]) // G
 	fmt.Printf("%c\n", s[1]) // o
 }
 ```
 
-### Modifier une chaîne 
+### Modifier une chaîne
 
 Pour changer une string, on vient en créer une nouvelle.
 
-```go 
+```go
 func main() {
 	s := "go"
 
 	// on prend "G" et on ajoute la fin de la chaine a partir de l'octet 1
 	s = "G" + s[1:]
 	fmt.Println(s) // Go
-	
+
 	s = "golang"
 	fmt.Println(s[:2])  // go
 	fmt.Println(s[2:])  // lang
@@ -424,11 +311,11 @@ func main() {
 }
 ```
 
-### strings 
+### strings
 
 Package de la librairie standard qui fournit des méthodes pour travailler sur des string.
 
-#### strings.TrimSpace 
+#### strings.TrimSpace
 
 Permet de nettoyer le début et la fin de la chaine des espaces.
 
@@ -442,11 +329,11 @@ func main() {
 }
 ```
 
-#### strings.Split 
+#### strings.Split
 
-Permet de découper une string selon un séparateur. Retourne un slice 
+Permet de découper une string selon un séparateur. Retourne un slice
 
-```go 
+```go
 func main() {
 	s := "go,strings,utf-8"
 	parts := strings.Split(s, ",") //
@@ -455,11 +342,11 @@ func main() {
 }
 ```
 
-#### strings.Join 
+#### strings.Join
 
 Permet de fusionner les éléments d'un slice . On ajoute un séparateur en deuxième argument.
 
-```go 
+```go
 func main() {
 	parts := []string{"go", "strings", "utf-8"}
 	out := strings.Join(parts, ", ")
@@ -468,23 +355,19 @@ func main() {
 }
 ```
 
+#### Caractères spéciaux
 
-
-
-
-#### Caractères spéciaux 
-
-- `\n` : saut de ligne 
-- `\t` : tabulation 
+- `\n` : saut de ligne
+- `\t` : tabulation
 - `\"` : échappement guillemet
 - `\`: échappement anti slash
 
-#### Concaténation 
+#### Concaténation
 
 Le signe `+` permet de faire des concaténation.
 
 ```go
-package main 
+package main
 
 import (
 	"fmt"
@@ -492,11 +375,11 @@ import (
 )
 
 func main(){
-	// concaténation 
+	// concaténation
 	s := "Amigo" + " the best"
 	fmt.Println(s)
-	
-	// conversion int => str 
+
+	// conversion int => str
 	x := 333
 	s = "Amigo" + strconv.Itoa(x)
 	fmt.Println(s)
@@ -506,7 +389,8 @@ func main(){
 Il n'est pas possible de mélanger une chaîne et des numbers pour réaliser des concaténation.
 
 ---
-## BOOLEAN 
+
+## BOOLEAN
 
 Le type `bool` peut prendre une valeur `true` ou `false`. Il permet de réaliser des comparaison
 
@@ -537,9 +421,9 @@ func main() {
 }
 ```
 
-Pour garder le code propre, on viens utiliser des nom de variable pour les boolean qui reflète leur but 
+Pour garder le code propre, on viens utiliser des nom de variable pour les boolean qui reflète leur but
 
-```go 
+```go
 package main
 
 import "fmt"
@@ -558,14 +442,15 @@ func main() {
 ```
 
 ---
-## CONDITION 
+
+## CONDITION
 
 ### If, else, else if
 
-```go 
+```go
 func main(){
-	age := 12 
-	
+	age := 12
+
 	if age < 7 {
 		fmt.Println("Entrée gratuite")
 	} else if age < 18 {
@@ -578,13 +463,13 @@ func main(){
 
 En Go, on ne peut pas faire une vérif directement sur une variable non nul `if age { }`, il faut utiliser une condition explicite.
 
-```go 
+```go
 if age != 0 {
 	...
 }
 ```
 
-### if avec initialiseur 
+### if avec initialiseur
 
 Go permet d'écrire un `if` avec une valeur initialiseur. La variable est disponible que pour cette condition.
 
@@ -596,10 +481,10 @@ if init; cond {
 }
 ```
 
-Par exemple, pour gérer les erreurs de conversion de type 
+Par exemple, pour gérer les erreurs de conversion de type
 
-```go 
-package main 
+```go
+package main
 
 import (
 	"fmt"
@@ -608,7 +493,7 @@ import (
 
 func main(){
 	ageStr := "21"
-	
+
 	// age et err n'existe que dans le if/else
 	if age, err := strconv.Atoi(ageStr); err == nil {
 		fmt.Println("Age : ", age)
@@ -617,6 +502,7 @@ func main(){
 	}
 }
 ```
+
 ### early return
 
 On peut utiliser l'operateur `return` pour terminer directement dans une condition l'exécution du script courant.
@@ -625,14 +511,15 @@ Cela permet d'éviter des `if` imbriquer.
 ```go
 if isBanned {
 	fmt.Println("denied: banned")
-	return 
+	return
 }
 
 if isVIP || (isAdult && hasTicket) {
 	fmt.Println("welcome")
 }
 ```
-### Switch 
+
+### Switch
 
 ```go
 package main
@@ -643,7 +530,7 @@ func main() {
 	op := "*" // variale checker dans le switch
 
 	switch op {
-	// check plusieurs valeurs 
+	// check plusieurs valeurs
 	case "+", "add":
 		fmt.Println("addition")
 	case "-":
@@ -653,8 +540,8 @@ func main() {
 	default:
 		fmt.Println("operation inconnue")
 	}
-	
-	// plusieurs execution pour un cas 
+
+	// plusieurs execution pour un cas
 	day := 7
 
 	switch day {
@@ -663,7 +550,7 @@ func main() {
 		default:
 			fmt.Println("jour ouvrable")
 	}
-	
+
 	// switch sans expression
 	// entre dans le premier case qui retourne true
 	score := 82
@@ -676,7 +563,7 @@ func main() {
 		default:
 			fmt.Println("C")
 	}
-	
+
 	// switch avec conditon
 	n := -4
 
@@ -695,9 +582,9 @@ func main() {
 
 Par défaut, chaque case est `break` automatiquement.. `fallthrough` permet d'empêcher ce comportement.
 
-#### Menu CLI 
+#### Menu CLI
 
-Le switch permet d'évaluer des actions utilisateurs, et exécuter du code selon la saisis. Par exemple, une mini calculatrice, ou on réalise le calcul selon le choix de l'utilisateur 
+Le switch permet d'évaluer des actions utilisateurs, et exécuter du code selon la saisis. Par exemple, une mini calculatrice, ou on réalise le calcul selon le choix de l'utilisateur
 
 ```go
 package main
@@ -717,7 +604,7 @@ func main() {
 	case "mul", "*":
 		fmt.Println(a * b)
 	case "div", "/":
-		// on check le diviseur 
+		// on check le diviseur
 		if b == 0 {
 			fmt.Println("division by zero")
 			return // terminer l'execution de la fonction main()
@@ -730,28 +617,34 @@ func main() {
 ```
 
 ---
-## FONCTIONNEMENT 
-### Compilateur 
+
+## FONCTIONNEMENT
+
+### Compilateur
 
 Programme qui vient traduire le code Go en code machine. Il prends le code Go, le décompose, le vérifie pour détecter les erreurs et le transforme en code machine
-### Lecture d'erreur 
+
+### Lecture d'erreur
 
 `main.go:7:6: undefined: something`
 
 - `main.go` : fichier qui provoque l'erreur
-- `7` : ligne 
+- `7` : ligne
 - `6` : colonne
 - `undefined: something` : message d'erreur
 
 Il existe plusieurs type d'erreurs :
+
 - `undefined` : nom introuvable
 - `cannot use ... as ...` : type ne correspondent pas
 - `declared and not used`: une variable n'est pas utilise
 - `imported and not used`: importer mais non utiliser
 - `syntax error` : erreur de syntaxe
 
-### Go SQK 
+### Go SQK
+
 L'ensemble des outils de l'IDE pour transformer le code source en un fichier exécutable. C'est un répertoire sur l'ordinateur qui content :
+
 - les utilitaire pour la compilation et la construction : `go build`, `go run`
 - les outils de formatage et de test : `gofmt`, `go test`
 - la bibliothèque standard
@@ -759,18 +652,19 @@ L'ensemble des outils de l'IDE pour transformer le code source en un fichier ex�
 Le dossier racine dans lequel Go SDK est installer s'appelle `GOROOT`. L'IDE utilise celui ci comme source de vérité.
 
 ---
-## STRUCTURE 
+
+## STRUCTURE
 
 ### Architecture de projet
 
 Dans les projets Go, il n'y a pas de hiérarchie stricte de dossier. Il n'existe pas de dossier `src` obligatoire pour les sources.
 Pour les petits utilitaires et micro services, les fichiers sources se trouvent directement à la racine du projet, à côté du fichier `go.mod`.
-A mesure que le projet grandit, le code est organiser en dossier, chacun devenant un package distinct. 
+A mesure que le projet grandit, le code est organiser en dossier, chacun devenant un package distinct.
 
 Un package étant un dossier physique dans le système de fichier.
 
 ```tree
-// juste un package main 
+// juste un package main
 tasker/
 ├── .idea/           # fichiers de service de GoLand, ne pas toucher
 ├── go.mod           # fichier du module (dependances et version de Go)
@@ -790,27 +684,29 @@ Le compilateur fusionne les fichiers d'un même package au moment de la compilat
 Les import fonctionne dans un fichier donné, et non pour tout le package.
 
 ---
+
 ## CONSTANTE
 
-Une constante désigne une valeur qui est définie une fois et qui ne change jamais. Elle doit également être **connue au moment de la compilation**. 
+Une constante désigne une valeur qui est définie une fois et qui ne change jamais. Elle doit également être **connue au moment de la compilation**.
 On utilise généralement les constantes pour des limites strictes, ou des réglages qui ne devraient pas changer.
 
-```go 
-const minAge = 18 // déclaration de la constante 
+```go
+const minAge = 18 // déclaration de la constante
 
 // déclaration groupée
 const (
 	minAge = 18
-	maxUsers = 100 
+	maxUsers = 100
 	appName = "DoorGuard"
 )
 ```
-###  untyped 
+
+### untyped
 
 C'est une constante sans type fixé. La constante contient une valeur, mais celle ci n'est pas encore typer.
 Le type sera appliquer au moment de l'utilisation.
 
-```go 
+```go
 func main() {
 	const n = 5 // untyped
 
@@ -821,11 +717,12 @@ func main() {
 	fmt.Printf("b=%v (%T)\n", b, b) // b=5 (int64)
 }
 ```
+
 ### typed
 
 Constante qui possède un type explicite.
 
-```go 
+```go
 func main() {
 	const n = 5     // untyped
 	const m int = 5 // typed
@@ -836,6 +733,7 @@ func main() {
 	fmt.Println(a, b) // 5 5
 }
 ```
+
 ### iota - numérotation de constante
 
 Les iota permettent de numéroter les valeurs de façon uniforme pour que le code garde un sens et reste maintenable.
@@ -844,7 +742,7 @@ Un `ioat` n'existe que dans un groupe de `const`, commence à `0` sur la premiè
 
 Il repart à `0` dans chaque nouveau bloc
 
-```go 
+```go
 func main() {
 	const (
 		StatusNew = iota			// 0
@@ -856,14 +754,14 @@ func main() {
 }
 ```
 
-#### Enum - valeur unique 
+#### Enum - valeur unique
 
 En Go, pour créer une énumération, on créer un type numérique ( par exemple `type Status int`) et un ensemble de constante de ce type. On obtient un nombre, mais le code se lit comme un nom parlant.
 
 Le compilateur n'autorise pas de mélanger plusieurs types.
 
-```go 
-type TaskStatus int // création du type 
+```go
+type TaskStatus int // création du type
 
 // enum
 const (
@@ -874,7 +772,7 @@ const (
 
 func main() {
 	var s TaskStatus = StatusInProgress
-	
+
 	switch s {
 	// les case corresponde à l'enum
 	case StatusNew:
@@ -911,7 +809,7 @@ const (
 
 func main() {
 	var flagsCode uint
-	
+
 	fmt.Scan(&flagsCode)
 
 	flags := TaskFlag(flagsCode)
@@ -928,7 +826,7 @@ func main() {
 }
 ```
 
-#### Saut et démarrage non nul 
+#### Saut et démarrage non nul
 
 Parfois, on souhaite que la valeur `0` signifie "inconnu", et que les vraies valeurs commence à `1`. C'est généralement ce qu'on réalise sur des valeurs venant de l'extérieur.
 
@@ -948,7 +846,7 @@ func main() {
 	fmt.Println(LevelUnknown, LevelLow, LevelHigh) // 0 1 2
 }
 
-// AVEC SAUT DE LIGNE 
+// AVEC SAUT DE LIGNE
 const (
 	_ = iota // nous avons saute 0
 	One      // 1
@@ -961,44 +859,49 @@ func main() {
 ```
 
 ---
-## TYPE 
+
+## TYPE
 
 ### int
 
 Prends des nombre entier positif et négatif. C'est le type par défaut pour les entiers.
-La taille de `int` dépend de la plateforme (32 ou 64). 
-```go 
+La taille de `int` dépend de la plateforme (32 ou 64).
+
+```go
 func main() {
 	fmt.Println("int size:", strconv.IntSize, "bits") // par exemple: int size: 64 bits
 }
 ```
 
-### int64 
+### int64
 
 Utiliser lorsque l'on souhaite travailler avec une taille fixe, et une grand plage. C'est utiliser lorsque l'on stocke des nombres potentiellement grand, ou lorsque le format doit être identiques sur différentes machines.
 
 - argent en unité minimales, par exemple en centimes. Généralement, pour le stockage de valeur numéraire, on préfère stocker en centimes pour éviter les erreur de précision.
-- compteur et accumulations 
+- compteur et accumulations
 - les nombres venant de l'extérieur (numéro de transactions, Id user)
 
-### uint 
+### uint
 
-Peut prendre que des nombre positif. 
-- travail avec les masques de bits et des aspects de bas niveau 
-- lorsque l'api exige ce type spécifique 
-- lorsque l'on travail avec des identifiant 
+Peut prendre que des nombre positif.
 
-```go 
+- travail avec les masques de bits et des aspects de bas niveau
+- lorsque l'api exige ce type spécifique
+- lorsque l'on travail avec des identifiant
+
+```go
 func main(){
 	u := uint(17)
 }
 ```
 
-### float64 
+### float64
+
 Prends les nombre a virgule postifi et negatif.
 
 Attention à la précision avec les float.
-```go 
+
+```go
 func main() {
 	x := 0.1
 	var y float32 = 0.1
@@ -1014,16 +917,16 @@ La comparaison entre nombre flottant peut engendrer des résultats inattendu à 
 
 ---
 
-### Valeurs par défaut 
+### Valeurs par défaut
 
 A la déclaration d'une variable, elle prends automatiquement une valeur par défaut.
 
 - `int` : 0
 - `float64` : 0.0
-- `boolean`: false 
+- `boolean`: false
 - `string` : ""
 
-### Type personnalisé sur les nombres 
+### Type personnalisé sur les nombres
 
 Ce sont des types crée en interne, stocké comme un nombre mais ayant un sens distinct et des règles de compatibilité distinct.
 
@@ -1031,9 +934,9 @@ Il aura la même représentation interne qu'un `int`, mais pour le compilateur, 
 
 Pour déclarer un nouveau type :
 
-```go 
+```go
 func main() {
-	type Status int // on déclare le nouveau type 
+	type Status int // on déclare le nouveau type
 
 	var s Status = 1
 	fmt.Printf("%T %v\n", s, s) // main.Status 1
@@ -1042,7 +945,7 @@ func main() {
 
 Si on tente de lui affecter ensuite une valeur différentes de son type, le compilateur empêche la compilation.
 
-```go 
+```go
 func main() {
 	type Status int
 
@@ -1053,9 +956,9 @@ func main() {
 }
 ```
 
-Pour réaliser une conversion explicite et pouvoir affecter une valeur au nouveau type : 
+Pour réaliser une conversion explicite et pouvoir affecter une valeur au nouveau type :
 
-```go 
+```go
 func main() {
 	type Status int
 
@@ -1066,7 +969,7 @@ func main() {
 	fmt.Printf("s=%d (%T)\n", s, s)          // s=2 (main.Status)
 }
 
-// conversion inverse 
+// conversion inverse
 func main() {
 	type Status int
 
@@ -1079,9 +982,9 @@ func main() {
 
 Pour garder un sens au code, il utilise alors des constante pour connaitre la signification de chaque valeur.
 
-```go 
+```go
 func main() {
-	// déclartion du nouveau type 
+	// déclartion du nouveau type
 	type Status int
 	// déclaration des constante pour stocker la signification
 	const (
@@ -1089,39 +992,37 @@ func main() {
 		StatusInProgress Status = 1
 		StatusDone       Status = 2
 	)
-	
+
 	var s Status = StatusDone // on affecte la valeur de la const
 	fmt.Println(s) // 2
 }
 ```
 
-
-
 ---
 
 ## CONVERSION
 
-### Conversion explicite 
+### Conversion explicite
 
 Go utilise une syntaxe de conversion `T(x)` ou `T` est le type cycle, et `x` la valeur à convertir.
 
-```go 
+```go
 func main() {
 	var n int64 = 42
-	m := int(n) // conversion du int64 en int 
+	m := int(n) // conversion du int64 en int
 
 	fmt.Printf("n=%v (%T)\n", n, n) // n=42 (int64)
 	fmt.Printf("m=%v (%T)\n", m, m) // m=42 (int)
 }
 ```
 
-### Débordement à la conversion d'entier 
+### Débordement à la conversion d'entier
 
 La conversions d'un type large vers un type plus étroit comme `int64` vers `int32` peut provoquer des problème.
 
 Il peut y avoir des perte de donnée (débordement de plage), et le programme ne plante pas forcément.
 
-```go 
+```go
 func main() {
 	var big int64 = 130
 	var small int8 = int8(big)
@@ -1131,9 +1032,9 @@ func main() {
 }
 ```
 
-### Conversion signed to unsigned 
+### Conversion signed to unsigned
 
-```go 
+```go
 func main() {
 	i := -1
 	u := uint(i)
@@ -1143,13 +1044,13 @@ func main() {
 }
 ```
 
-### float -> int 
+### float -> int
 
 Une conversion d'un flottant vers un entier entraine une troncature de la valeur. La partie décimal n'est pas conservé.
 
 La conversion peut également entrainer une perte de précision sur les grands nombres.
 
-```go 
+```go
 func main() {
 	x := 3.99
 	n := int(x)
@@ -1160,7 +1061,7 @@ func main() {
 
 Pour obtenir un résultat de division décimal, il faut convertir les opérandes en `flat64` avant la division, sinon la partie décimal ne sera pas conservée.
 
-```go 
+```go
 func main() {
 	a := 7
 	b := 2
@@ -1171,38 +1072,36 @@ func main() {
 }
 ```
 
-
-
 ---
 
 ## OPERATEURS
 
-### Opérateur de comparaison 
+### Opérateur de comparaison
 
 On ne peut faire des comparaison que sur des types compatibles.
 
-- `==` : vérifie une égalité 
-- `!=` : vérifie une différence 
-- `<` : inférieur à 
-- `<=` : inférieur ou égale à 
-- `>` : supérieur à 
-- `>=` : supérieur ou égale à 
+- `==` : vérifie une égalité
+- `!=` : vérifie une différence
+- `<` : inférieur à
+- `<=` : inférieur ou égale à
+- `>` : supérieur à
+- `>=` : supérieur ou égale à
 
-```go 
-package main 
+```go
+package main
 
 import "fmt"
 
 func main(){
-	x := 5 
-	
+	x := 5
+
 	isFive := x == 5
-	isNotFive := x != 5 
-	
-	fmt.Println(isFive) // true 
-	fmt.Println(isNotFive) // false 
-	
-	// comparaison de chaine 
+	isNotFive := x != 5
+
+	fmt.Println(isFive) // true
+	fmt.Println(isNotFive) // false
+
+	// comparaison de chaine
 	role := "admin"
 
 	isAdmin := role == "admin"
@@ -1210,8 +1109,8 @@ func main(){
 
 	fmt.Println(isAdmin) // true
 	fmt.Println(isGuest) // false
-	
-	// comparaison taille de chaine 
+
+	// comparaison taille de chaine
 	login := "gopher"
 
 	isEmpty := len(login) == 0
@@ -1219,30 +1118,31 @@ func main(){
 
 	fmt.Println(isEmpty) // false
 	fmt.Println(isLong)  // false
-	
+
 	// ============================
-	
-	score := 82 
-	
+
+	score := 82
+
 	isHight := score >= 90
-	isMedium := score >= 75 
-	
-	fmt.Println(isHight) // false 
-	fmt.Println(isMedium) // true 
+	isMedium := score >= 75
+
+	fmt.Println(isHight) // false
+	fmt.Println(isMedium) // true
 }
 ```
+
 ### Opérateur logique
 
 - `&&` : les deux condition doivent être `true` 2
 - `||` : une des conditions doit être `true` 3
 - `!` : inversion - 1
 
-```go 
-// && exemple 
+```go
+// && exemple
 func main(){
 	age := 20
-	hasTicket := true 
-	
+	hasTicket := true
+
 	if age >= 18 && hasTicket {
 		fmt.Println("welcome")
 	} else {
@@ -1250,63 +1150,66 @@ func main(){
 	}
 }
 
-// || exemple 
+// || exemple
 func main(){
 	role := "editor"
-	
+
 	isAdmin := role == "admin"
 	isEditor := role == "editor"
-	
+
 	canEdit := isAdmin || isEditor
 	fmt.Println(canEdit)
 }
 
-// ! exemple 
+// ! exemple
 func main(){
 	name := "user"
-	
+
 	ifEmpty := name == ""
-	fmt.Println(isEmpty) // false 
+	fmt.Println(isEmpty) // false
 	fmt.Println(!isEmpty) // true
 }
 ```
 
-#### Short circuit 
+#### Short circuit
 
-Les opérateurs `&&` et `||` ont un comportement spécifique : 
+Les opérateurs `&&` et `||` ont un comportement spécifique :
+
 - `A && B` : la partie B n'est pas évalué si A est `false`
 - `A || B` : la partie B n'est pas évalué si A est `true`
+
 ##### Protection division par zero
 
-```go 
+```go
 func main(){
-	a := 10 
+	a := 10
 	denom := 0
-	
+
 	// partie droit non exécuté sur denom == 0
 	ok := denom != 0 && (a/denom > 1)
 	flt.Println(ok) // false
 }
 ```
 
-Si la valeur est `0`, on passe directement à `false`. Sinon, le calcul est effectué 
+Si la valeur est `0`, on passe directement à `false`. Sinon, le calcul est effectué
 
-##### Check role 
+##### Check role
 
-```go 
+```go
 func main(){
 	role := "admin"
-	hasPaid := false 
-	
+	hasPaid := false
+
 	canUseFeature := role == "admin" || hasPaid
-	fmt.Println(canUseFeature) // true 
+	fmt.Println(canUseFeature) // true
 }
 ```
 
 Si l'user est admin, la condition sera vraie.
-### Opérateur arithmétique 
 
-```go 
+### Opérateur arithmétique
+
+```go
 x := 10
 
 x += 5  // x = 15
@@ -1314,7 +1217,7 @@ x -= 3  // x = 12
 x *= 2  // x = 24
 x /= 4  // x = 6
 
-// concaténation 
+// concaténation
 s := "Hello"
 s += " World" // "Hello World"
 ```
@@ -1330,8 +1233,8 @@ func main() {
 	fmt.Println(7 / 2) // 3
 	fmt.Println(9 / 3) // 3
 	fmt.Println(1 / 2) // 0
-	
-	// calcul de pourcentage decimal 
+
+	// calcul de pourcentage decimal
 	planned := 10
 	done := 3
 
@@ -1340,17 +1243,17 @@ func main() {
 }
 ```
 
-
-#### Division des nombres négatifs 
+#### Division des nombres négatifs
 
 La division entière se fait vers zéro.
 
-```go 
+```go
 func main() {
 	fmt.Println(-7 / 2) // -3
 	fmt.Println(-1 / 2) // 0
 }
 ```
+
 #### Modulo
 
 L'opérateur `%` permet de calculer le reste d'une division. Fonctionne que sur des `int`
@@ -1364,7 +1267,7 @@ func main() {
 }
 
 // ====
-// calculer de temps 
+// calculer de temps
 package main
 
 import "fmt"
@@ -1378,8 +1281,8 @@ func main() {
 	fmt.Println(hours, minutes) // 2 15
 }
 
-// monétaire 
-// on passe en centime pour éviter les problème de précision 
+// monétaire
+// on passe en centime pour éviter les problème de précision
 func main() {
 	totalCents := 12345
 
@@ -1392,9 +1295,9 @@ func main() {
 
 - `%2d` : format d'affichage. On affiche deux nombres après la virgule
 
-#### Calcul de pourcentage 
+#### Calcul de pourcentage
 
-```go 
+```go
 func main() {
 	var priceK int64
 	var qty int64
@@ -1411,22 +1314,23 @@ func main() {
 }
 ```
 
-### Opération binaire 
+### Opération binaire
 
 Un nombre peut être perçu comme un ensemble de bits. Cette approche est utile lorsqu'il faut stocker plusieurs attributs indépendants dans un seul nombre, et vérifier rapidement ce qui est actif.
 
 Généralement, on utilise les flags (ensemble d'options, d'autorisation ou de mode), et pour cela on garde tout dans un seul nombre et on manipule les bits.
 
-#### Ecriture binaire 
+#### Ecriture binaire
 
 La représentation binaire permet d'écrire des masque directement dans le code pour les lire.
 
-Pour cela, on utilise des préfixe : 
-- `ob...` - écriture binaire 
-- `0x...` : hexa
-- `0o` : octal 
+Pour cela, on utilise des préfixe :
 
-```go 
+- `ob...` - écriture binaire
+- `0x...` : hexa
+- `0o` : octal
+
+```go
 const (
 	a = 12       // decimal
 	b = 0b1100   // binaire
@@ -1437,9 +1341,9 @@ const (
 
 L'écriture binaire est adapté pour les drapeaux, car on peut directement voir quel bits sont actif.
 
-Pour simplifier les masques longs, on peut utiliser `_` pour regrouper les bits 
+Pour simplifier les masques longs, on peut utiliser `_` pour regrouper les bits
 
-```go 
+```go
 const mask = 0b1111_0000_0011_0101
 ```
 
@@ -1449,30 +1353,30 @@ Un masque est un nombre dans lequels certains bits nous interessent. Souvent un 
 
 `%b` permet d'afficher un nombre binaire avec le `fmt.Printf`
 
-#### Décalage à gauche - << 
+#### Décalage à gauche - <<
 
-Permet de déplacer les bits d'un nombre vers la gauche.  La valeur à droite indique de combien de colonne on décale vers la gauche
+Permet de déplacer les bits d'un nombre vers la gauche. La valeur à droite indique de combien de colonne on décale vers la gauche
 
-```go 
-1 << 0 => 0000 0001 | 1 
+```go
+1 << 0 => 0000 0001 | 1
 1 << 1 => 0000 0010 | 2
-1 << 3 => 0000 1000 | 8 
+1 << 3 => 0000 1000 | 8
 ```
 
 On peut changer rapidement la valeur binaire.
 
-```go 
+```go
 func main() {
 	var mask uint = 1 << 3
 	fmt.Printf("mask=%b (%d)\n", mask, mask) // mask=1000 (8)
 }
 ```
 
-#### OR binaire - |  - Activer
+#### OR binaire - | - Activer
 
-Lorsque l'on stocke un ensemble de drapeau dans un seul nombre, l'opération "activer un drapeau" se fait avec `|` 
+Lorsque l'on stocke un ensemble de drapeau dans un seul nombre, l'opération "activer un drapeau" se fait avec `|`
 
-```go 
+```go
 func main() {
 	var a uint = 1 << 0 // 0001
 	var b uint = 1 << 2 // 0100
@@ -1483,9 +1387,9 @@ func main() {
 }
 ```
 
-#### AND binaire - &  - Vérification 
+#### AND binaire - & - Vérification
 
-Permet de faire une vérification d'octets actif. 
+Permet de faire une vérification d'octets actif.
 
 ```go
 func main() {
@@ -1496,18 +1400,18 @@ func main() {
 
 	var perms uint = read // lecture seule
 
-	// check si le deuxieme octet est actif 
+	// check si le deuxieme octet est actif
 	fmt.Println(perms&write != 0) // false
-	// 
+	//
 	fmt.Println(perms&read != 0)  // true
 }
 ```
 
-#### AND NOT binaire - &^ - Désactiver 
+#### AND NOT binaire - &^ - Désactiver
 
-Permet de désactiver 
+Permet de désactiver
 
-```go 
+```go
 func main() {
 	const (
 		read  uint = 1 << 0 // 001
@@ -1522,14 +1426,14 @@ func main() {
 }
 ```
 
-#### ^ - bascule et inversion 
+#### ^ - bascule et inversion
 
-- `a ^ b`: XOR ou exlusif 
-- `^a` : inversion 
+- `a ^ b`: XOR ou exlusif
+- `^a` : inversion
 
-On utilise `XOR` lors que l'on souhaite tout toggle. 
+On utilise `XOR` lors que l'on souhaite tout toggle.
 
-```go 
+```go
 func main() {
 	var x uint = 0b1010
 	var y uint = 0b1100
@@ -1548,9 +1452,9 @@ func main() {
 }
 ```
 
-#### Décalage à droite >> - extraction 
+#### Décalage à droite >> - extraction
 
-```go 
+```go
 func main() {
 	var flags uint = 0b10100 // le bit 2 est active, le bit 4 est active
 
@@ -1561,19 +1465,17 @@ func main() {
 }
 ```
 
-
-
 ---
 
-## ARRONDIS ET FORMATAGE 
+## ARRONDIS ET FORMATAGE
 
 Le formatage ne modifie pas la valeur, mais l'arrondis viens modifier la valeur.
 
-### Formatage 
+### Formatage
 
-Le formatage permet par exemple d'afficher de manière lisible une valeur par exemple 
+Le formatage permet par exemple d'afficher de manière lisible une valeur par exemple
 
-```go 
+```go
 func main() {
 	x := 2.0 / 3.0
 
@@ -1583,15 +1485,15 @@ func main() {
 }
 ```
 
-### Formatage des float 
+### Formatage des float
 
 Lorsque l'on affiche un `float`, Go essaie d'affiche un nombre raisonable. Il est possible de forcer l'affichage pour définir le nombre de chiffres après la virgule à afficher.
 
-- `%f` : affiche un float 
-- `%.2f` : affichage 2 chiffres après la virgule avec un arrondis pour l'affichage 
-- `%.0f` : affichage sans la partie décimal 
+- `%f` : affiche un float
+- `%.2f` : affichage 2 chiffres après la virgule avec un arrondis pour l'affichage
+- `%.0f` : affichage sans la partie décimal
 
-```go 
+```go
 func main() {
 	x := 1.0 / 3.0
 
@@ -1601,20 +1503,21 @@ func main() {
 }
 ```
 
-### Arrondis 
+### Arrondis
 
-On vient faire un arrondis lorsque l'on souhaite : 
-- calculer une somme, puis utiliser la valeur arrondie 
-- appliquer un arrondis 
-- tronquer la partie décimale 
+On vient faire un arrondis lorsque l'on souhaite :
+
+- calculer une somme, puis utiliser la valeur arrondie
+- appliquer un arrondis
+- tronquer la partie décimale
 
 Pour cela, on utilise le package `math`. Ces méthode retourne une nouvelle valeur
 
-- `math.Round(x)` : arrondi à l'entier le plus proche 
-- `math.Floor(x)` : arrondi vers le bas 
-- `math.Ceil(x)` : arrondi vers le haut 
+- `math.Round(x)` : arrondi à l'entier le plus proche
+- `math.Floor(x)` : arrondi vers le bas
+- `math.Ceil(x)` : arrondi vers le haut
 
-```go 
+```go
 func main() {
 	fmt.Println(math.Round(2.5)) // 3
 	fmt.Println(math.Floor(2.9)) // 2
@@ -1622,7 +1525,7 @@ func main() {
 }
 ```
 
-### Arrondis a deux chiffres 
+### Arrondis a deux chiffres
 
 Pour obtenir une valeur à deux chiffres :
 
@@ -1630,8 +1533,8 @@ Pour obtenir une valeur à deux chiffres :
 func main() {
 	x := 12.3456
 	// on multiple par 100
-	// on arrondi l'entier 
-	// on divise de nouveau 
+	// on arrondi l'entier
+	// on divise de nouveau
 	y := math.Round(x*100) / 100
 
 	fmt.Printf("x = %.10f\n", x) // x = 12.3456000000
@@ -1639,9 +1542,9 @@ func main() {
 }
 ```
 
-### Gestion des float 
+### Gestion des float
 
-```go 
+```go
 func main() {
 	x := 0.1 + 0.2
 
@@ -1651,19 +1554,21 @@ func main() {
 ```
 
 ---
-## ERREUR 
+
+## ERREUR
 
 ### Vérification des erreurs
 
 En go, de nombreuses fonctions retourne `error`, et cette valeur est soit `nil` soit non `nil`.
-Lorsque la fonction s'est bien exécuté, la valeur de `error` sera `nil`. 
+Lorsque la fonction s'est bien exécuté, la valeur de `error` sera `nil`.
 
 Si une fonction peut retourner une erreur, alors on la traite directement. De cette manière, on traite directement les cas d'erreur, et on ne garde pas des valeurs potentiellement mauvaise.
 
 En Go, on utilise ce pattern : `appel -> check -> use` :
-1. Appelle de la fonction 
+
+1. Appelle de la fonction
 2. Vérifier `err`
-3. Utiliser le résultat de la fonction 
+3. Utiliser le résultat de la fonction
 
 ```go
 package main
@@ -1705,7 +1610,7 @@ func main() {
 
 #### Mini app : calculatrice
 
-```go 
+```go
 package main
 
 import (
@@ -1746,19 +1651,23 @@ func main() {
 }
 ```
 
---- 
+---
 
-## BOUCLE 
+## BOUCLE
+
 En Go, il n'existe qu'**une seule forme de boucle**. On utilise `for` mais avec plus ou mois d'arguments.
+
 ### for
+
 Elle prends trois arguments dans sa forme de base :
+
 - `init`: initialisation de la valeur et réaliser en début de boucle
 - `cond` : condition d'arrêt vérifier a chaque itération
 - `post` : incrémentation, applique a chaque itération de la boucle
 
 Par convention, on utilise `i` pour les variable compteur.
 
-```go 
+```go
 
 func main(){
 	// syntaxe
@@ -1771,8 +1680,8 @@ func main(){
 		// executer a chaque itereation
 		fmt.Println("Itération :", i)
 	}
-	
-	// repetition et affichage 
+
+	// repetition et affichage
 	var n int
 	fmt.Scan(&n) // recupere la nombre d'iteration
 
@@ -1781,7 +1690,7 @@ func main(){
 		fmt.Scan(&title) // recupere la saisie utilisateur
 		fmt.Println(i, "-", title) // exemple : 1 - buy_milk
 	}
-	
+
 	// boucle de calcul des carre
 	var n int
 	fmt.Scan(&n)
@@ -1791,19 +1700,20 @@ func main(){
 	}
 }
 ```
-### for while 
+
+### for while
 
 On peut mettre en place des boucle `while` en Go. La boucle viens s'exécuter tant que la condition est évaluer a `true`.
 
-```go 
+```go
 
 
 func main() {
 	// syntaxe
 	for cond {
-		// code de la boucle 
+		// code de la boucle
 	}
-	
+
 	// double un nombre tant qu'il est < 100
 	x := 1
 	for x < 100 {
@@ -1819,50 +1729,50 @@ Il est parfois nécessaire de faire tourner une boucle de manière infinie. Pour
 
 Il faut obligatoirement ajouter un point de sortie lorsqu'une condition est atteinte.
 
-```go 
+```go
 func main(){
 	// exemple
 	for {
 	    // on fait quelque chose
 	    // si il faut terminer — break
 	}
-	
+
 	// exemple : lire jusqu'a zero
-	balance := 0 
-	
+	balance := 0
+
 	// on lance une boucle infinie
-	for { 
-		var x int 
+	for {
+		var x int
 		-, err := fmt.Scan(&x) // récupère la saisis
 
 		// si err on sort de la boucle
 		if err != nil {
 			break
 		}
-		
+
 		// si on atteind zero on sort de la boucle
 		if x == 0 {
 			break
 		}
-		
-		// si valeur trop grande on skip 
+
+		// si valeur trop grande on skip
 		// on utilise une syntaxe plus lisible pour ecrire le nombre
-		if x > 1_000_000 || x < -1_000_000 {	
+		if x > 1_000_000 || x < -1_000_000 {
 			fmt.Println("montant trop grand, j'ignore")
 			continue
 		}
-		
+
 		balance = balance + x
 	}
 	fmt.Println(balance)
 }
 ```
 
-### break 
+### break
 
-L'instruction `break` permet de sortir de la boucle. 
+L'instruction `break` permet de sortir de la boucle.
 
-### continue 
+### continue
 
 L'instruction `continue` permet de passer à l'itération suivante. Attention au placement de l'instruction.
 
@@ -1887,19 +1797,20 @@ func main() {
 ### range - parcourir une séquence
 
 Permet de parcourir une séquence. Elle retourne deux valeurs :
-- `index` : la position de l'élément dans la séquence 
-- `value` : la valeur en cours d'itération 
+
+- `index` : la position de l'élément dans la séquence
+- `value` : la valeur en cours d'itération
 
 La valeur correspond a la valeur numérique du caractère lorsque l'on parcourt une chaine.
 
-```go 
+```go
 func main(){
-	// syntaxe 
+	// syntaxe
 	for index, value := range s {
-		// code de la boucle 
+		// code de la boucle
 	}
-	
-	// parcourir une chaine 
+
+	// parcourir une chaine
 	s := "Go"
 
 	for i, v := range s {
@@ -1907,7 +1818,7 @@ func main(){
 	}
 	// 0 71		  71 - code du caractère 'G'
 	// 1 111	 111 - code du caractère 'o
-	
+
 	// compter le nombre de caracteres
 	s := "gopher"
 
@@ -1919,8 +1830,8 @@ func main(){
 	}
 
 	fmt.Println(count) // 1
-	
-	// detection de caractere interdit 
+
+	// detection de caractere interdit
 	s := "go#lang"
 
 	hasHash := false
@@ -1935,9 +1846,9 @@ func main(){
 }
 ```
 
-#### Remplacement de caractères 
+#### Remplacement de caractères
 
-```go 
+```go
 package main
 
 import "fmt"
@@ -1947,12 +1858,12 @@ func main() {
 	fmt.Scan(&levelRow)
 
 	var fixedRow string // contient la chaîne corriger
-	var replacedCount int // cumul des caractères remplacer 
+	var replacedCount int // cumul des caractères remplacer
 
 	for _, v := range levelRow {
 		if v == '#' {
-			fixedRow += "*" // on ajoute dans la string corriger 
-			replacedCount++ // on incrémente le compteur 
+			fixedRow += "*" // on ajoute dans la string corriger
+			replacedCount++ // on incrémente le compteur
 		} else {
 			fixedRow += string(v) // on ajoute le caractère de la string original
 		}
@@ -1962,36 +1873,39 @@ func main() {
 	fmt.Println(replacedCount)
 }
 ```
+
 ### Pattern
 
-#### Accumulateur 
+#### Accumulateur
 
 1. Initialisation d'une variable a zéro.
 2. Cumul des valeurs dans la variable initial
 3. Affiche le résultat final après les itération qui représente le cumul de valeur
 
-```go 
+```go
 func main(){
-	// definit le nombre d'iteration a faire 
-	var n int 
+	// definit le nombre d'iteration a faire
+	var n int
 	fmt.Scan(&n)
-	
+
 	sum := 0 // initialisation de la variable accumulateur
 	for i := 0; i < n; i++ {
 		// on demande une saisie utilisateur a chaque iteration
-		var x int 
-		fmt.Scan(&x) // recupere la valeur saisis 
-		sum = sum + x // incrementation dans la variable accu 
+		var x int
+		fmt.Scan(&x) // recupere la valeur saisis
+		sum = sum + x // incrementation dans la variable accu
 	}
-	
+
 	fmt.Println(sum) // affichage somme total
 }
 ```
 
-#### Somme sous condition 
+#### Somme sous condition
+
 On souhaite additionner les nombres seulement sous certaines condition, par exemple les nombres paires.
 
 On garde le même pattern que pour l'accumulateur, mais on ajoute un `if` permettant de d'incrémenter seulement avec les nombres qui vérifie la condition.
+
 ```go
 package main
 
@@ -2015,8 +1929,10 @@ func main() {
 }
 ```
 
-#### Compter les caractères dans une chaine 
+#### Compter les caractères dans une chaine
+
 Ici, on cherche a savoir combien de fois un caractère est présent dans une chaine.
+
 ```go
 package main
 
@@ -2036,10 +1952,13 @@ func main() {
 	fmt.Println(countA) // 3
 }
 ```
+
 #### Valeur maximale
+
 La recherche du maximum (et minimum) peut être problématique lorsque l'on rencontre des valeurs négative et que la valeur max est initialiser a zéro.
 
 Pour que la recherche soit fiable, on peut venir utiliser la premier valeur, et se baser dessus en itérant sur les valeurs suivantes :
+
 ```go
 package main
 
@@ -2069,8 +1988,10 @@ func main() {
 	fmt.Println(max) // par exemple : 42
 }
 ```
-#### Valeur maximal et position 
-On as parfois besoin de connaitre la valeur maximal et sa position. 
+
+#### Valeur maximal et position
+
+On as parfois besoin de connaitre la valeur maximal et sa position.
 
 ```go
 package main
@@ -2104,20 +2025,23 @@ func main() {
 ```
 
 #### Recherche
+
 La recherche c'est lorsque l'on souhaite savoir si quelque chose apparaît dans les données. On utilise un flag, et si lever, on `break`.
+
 1. On initialise un flag a `false`
 2. on itère, si un match arrive, on passe le flag a `true` et on stop la boucle
-```go 
+
+```go
 // recherche parmis des nombres
 func main() {
 	var n, target int
 	fmt.Scan(&n, &target) // on recupere la valeur rechercher
 
-	found := false // drapeau init a false 
+	found := false // drapeau init a false
 	for i := 0; i < n; i++ {
 		var x int
 		fmt.Scan(&x) // on recupere la saisie
-		// si on trouve la donnée, on leve le drapeau et on stop la boucle 
+		// si on trouve la donnée, on leve le drapeau et on stop la boucle
 		if x == target {
 			found = true
 			break
@@ -2127,7 +2051,7 @@ func main() {
 	fmt.Println(found) // true ou false
 }
 
-// Recherche du premier qui match 
+// Recherche du premier qui match
 func main() {
 	var n int
 	fmt.Scan(&n)
@@ -2155,12 +2079,11 @@ func main() {
 
 ---
 
-## PACKAGE 
+## PACKAGE
 
 Un package est un dossier contenant le code source sur le disque. Il n'existe pas d'espaces de noms abstraits détachés du système de fichiers.
 
-
-### Package et espace de nom 
+### Package et espace de nom
 
 Les package Go permettent de grouper le code par sens, et donner des règles sur qui peut voir quoi et l'utiliser.
 
@@ -2170,25 +2093,26 @@ Un fichier n'est pas a lui seul un "module du programme". Le module c'est le pac
 
 ```go
 // définition du package du fichier
-package main  
+package main
 ```
 
 Cette ligne indique que le fichier appartient au package `main`. Tous les fichiers appartenant au même package dans un même dossier partage le même espace de visibilité.
 
 La frontière est le `package` est pas le fichier.
 
-### package main 
+### package main
 
 Le package `main` est spécial. C'est le point d'entrée d'une application. Le programme démarre à partir de celui ci.
 
-Dans ce package, on retrouve la fonction `main()`, qui est le point d'entrée par lequel  le programme se lance. C'est dans cette fonction que l'on viens connecter les différents composant de l'application.
+Dans ce package, on retrouve la fonction `main()`, qui est le point d'entrée par lequel le programme se lance. C'est dans cette fonction que l'on viens connecter les différents composant de l'application.
 
-On retrouve ce package dans le cas d'une application exécutable. 
+On retrouve ce package dans le cas d'une application exécutable.
 
-### Règle d'exportation 
+### Règle d'exportation
 
-En Go, pour définir si un élément (constante, type, variable, fonction )est exporté ou non c'est la première lettre qui définit ce comportement : 
--  majuscule : il est exporté et accessible depuis d'autre package 
+En Go, pour définir si un élément (constante, type, variable, fonction )est exporté ou non c'est la première lettre qui définit ce comportement :
+
+- majuscule : il est exporté et accessible depuis d'autre package
 - minuscule : il est non exporté, accessible uniquement à l'intérieur de son package.
 
 L'export d'élément n'as aucune incidence sur la sécurité. Il s'agit uniquement d'un contrat et d'une promesse.
@@ -2196,11 +2120,11 @@ On indique juste que cet élément est disponible en dehors du package.
 
 On exporte uniquement les éléments intéressant pour en dehors du package. La logique interne au package reste privée, il n'y a aucun intérêt à rendre cela public.
 
-### Import path 
+### Import path
 
 L'import path permet au compilateur et aux outils d'aller chercher le code nécessaire. Il doit pointer sur un package unique.
 
-```go 
+```go
 package main
 
 import (
@@ -2216,12 +2140,12 @@ func main() {
 
 Pour utiliser ensuite les fonction du package, on fait référence au package, puis la fonction que l'on souhaite utiliser.
 
-Généralement, le `package name` correspond au dernier segment du chemin. 
+Généralement, le `package name` correspond au dernier segment du chemin.
 
-#### Package avec le même nom 
+#### Package avec le même nom
 
-```go 
-package main 
+```go
+package main
 
 import (
 	"crypto/rand"
@@ -2233,13 +2157,13 @@ func main(){}
 
 Ce code ne compileras pas car dans un fichier, il ne peut pas avoir deux package avec le même nom d'import
 
-### Imports 
+### Imports
 
 `import` permet d'ajouter une dépendance dans le fichier, et ainsi d'utiliser des fonctions d'un package.
 L'instruction indique au compilateur quels packages est nécessaire à ce **fichier précis**
 
-```go 
-// import seul 
+```go
+// import seul
 import "fmt"
 
 // import groupé
@@ -2249,31 +2173,31 @@ import (
 )
 ```
 
-#### Alias d'import 
+#### Alias d'import
 
-Dans le cas ou l'on souhaite importer plusieurs package ayant le même nom, ou si le nom de package n'est pas idéale, on peut venir créer un alias. 
+Dans le cas ou l'on souhaite importer plusieurs package ayant le même nom, ou si le nom de package n'est pas idéale, on peut venir créer un alias.
 Cela permet de renommer un package dans un fichier.
 
 ```go
-// améioration de la lisibilité 
-package main 
+// améioration de la lisibilité
+package main
 
-import ( 
+import (
 	"fmt"
-	s "strings" // création d'un alias 
+	s "strings" // création d'un alias
 )
 
 func main(){
-	var title string 
+	var title string
 	fmt.Scan(&title)
-	
-	title := s.TrimSpace(title) // on fait référence à l'alias du package 
+
+	title := s.TrimSpace(title) // on fait référence à l'alias du package
 	fmt.Println("task:", title)
 }
 
 // =================================
-// conflit de nom 
-package main 
+// conflit de nom
+package main
 
 import (
 	crand "crypto/rand"
@@ -2287,14 +2211,14 @@ func main(){
 }
 ```
 
-#### Blank import 
+#### Blank import
 
-Le blank import est un lorsque l'on importe un package sans introduire son nom dans le code. 
+Le blank import est un lorsque l'on importe un package sans introduire son nom dans le code.
 On l'utilise dans le cas où le package doit être chargé et exécuter sans utiliser ces fonctions ou type.
 
 En go, des package peut avoir du code d'initialisation, qui s'exécute automatiquement au démarrage du programme. Par exemple, pour les pilotes de base de donnée. On les appelles pas directement, mais il sont enregistrée à l'intérieur de `database/sql`.
 
-```go 
+```go
 package main
 
 import (
@@ -2315,8 +2239,8 @@ La fonction ne prends aucun paramètres et ne retourne aucune valeur de retour.
 
 Si plusieurs fonctions `init()` sont déclarée, ils s'exécutent tous avant.
 
-```go 
-package main 
+```go
+package main
 
 import "fmt"
 
@@ -2331,14 +2255,14 @@ func main(){
 
 Ce système provoque des effet secondaire et doit être utiliser avec précaution.
 
-#### init explicite 
+#### init explicite
 
 Lorsqu'une fonction `init()` commence à grossir, on peu venir créer une initialisation explicite, pour rendre le code plus explicite.
 
 On créer une fonction, par exemple `initApp()`, que l'on appelle ensuite dans le `main()`
 
-```go 
-package main 
+```go
+package main
 
 import (
 	"fmt"
@@ -2364,16 +2288,16 @@ func main(){
 }
 ```
 
-### Anti-patterns de package 
+### Anti-patterns de package
 
 En Go, un package est une **frontière de responsabilité**, et un **contrat pour les autres parties du code**.
 
-#### Etat global et config global 
+#### Etat global et config global
 
 Lorsque l'on déclare une variable dans la portée globale, elle vit plus longtemps que ce que l'on pense, et elle est modifiable depuis de nombreux endroits, le comportement peut devenir floue (changement de valeur innatendu, ...)
 
-```go 
-package main 
+```go
+package main
 
 var lastResult int // état global => n'importe qui peut modifier
 
@@ -2382,7 +2306,7 @@ func addToLast(x int){
 }
 ```
 
-Pour conserver un état "global", on préfère la déclarer près de `main()`, et la transmettre explicitement. 
+Pour conserver un état "global", on préfère la déclarer près de `main()`, et la transmettre explicitement.
 
 ```go
 package main
@@ -2398,14 +2322,14 @@ func main() {
 }
 ```
 
-Attention, cela reste une mauvaise pratique. L'import de ce paquet dépend de l'historique des appels, et pas seulement des paramètres d'entrée des fonctions. 
+Attention, cela reste une mauvaise pratique. L'import de ce paquet dépend de l'historique des appels, et pas seulement des paramètres d'entrée des fonctions.
 
 Pour garder une bonne pratique, le mieux est d'utiliser une constante pour une variable qui ne doit pas changer de valeur, et si la valeur doit changer, la définir près de la logique
 
 L'état mutable doit être le plus local et explicite.
 
-```go 
-package main 
+```go
+package main
 
 const appName = "CalcCLI"
 
@@ -2415,7 +2339,7 @@ func main(){
 
 func formatResult(n int, debug bool) string {
 	if debug {
-		return "DEBUG: result=" 
+		return "DEBUG: result="
 	}
 	return "result="
 
@@ -2423,53 +2347,53 @@ func formatResult(n int, debug bool) string {
 
 ```
 
-#### Dépendances inutiles et imports qui s'étendent 
+#### Dépendances inutiles et imports qui s'étendent
 
 Les imports peuvent être "utile", mais conceptuellement inutiles. Par exemple `fmt` dans la logique pour un `Print()` de débug.
 
 ```go
-// anti-pattern 
-package main 
+// anti-pattern
+package main
 
 import "fmt"
 
 func add(a, b int) int {
-	fmt.Println("adding ...") // debug temporaire qui devient un comportement de la fonction 
+	fmt.Println("adding ...") // debug temporaire qui devient un comportement de la fonction
 	return a + b
 }
 ```
 
-En plus du "bruit", la fonction `add` fait maintenant deux choses : calcule et imprime. 
+En plus du "bruit", la fonction `add` fait maintenant deux choses : calcule et imprime.
 
-Pour améliorer, on peut utiliser ce pattern 
+Pour améliorer, on peut utiliser ce pattern
 
-```go 
-package main 
+```go
+package main
 
 import "fmt"
 
-// responsable uniquement de la logique 
+// responsable uniquement de la logique
 func add(a, b int) int {
 	return a + b
 }
 
 func main(){
-	fmt.Println(add(2, 3)) // ici on fait le log 
+	fmt.Println(add(2, 3)) // ici on fait le log
 }
 ```
 
-#### Fuite des détails d'implémentation via l'API 
+#### Fuite des détails d'implémentation via l'API
 
 Si le package renvoie ou accepte dans ses fonctions publiques des types qui sont des détails d'implémentation, on lie le code externe à ces détails.
 Pour faire évoluer le code, cela peut devenir compliquer.
 
 Les fonction publiques d'un paquet doivent communiquer avec le monde exterieur via des types simples et attendus (`string`, `int`, `bool`) et des résultats clairs.
 
-#### Package utils 
+#### Package utils
 
-On peut retrouver dans les projet Go, des package `uils`, `helpers` ou `common` et y mettre tout et n'importe quoi. 
+On peut retrouver dans les projet Go, des package `uils`, `helpers` ou `common` et y mettre tout et n'importe quoi.
 
-Pour corrige cela, on vient nommer correctement en se basant sur le sens. 
+Pour corrige cela, on vient nommer correctement en se basant sur le sens.
 
 | Nom frequent | Pourquoi c'est peu lisible           | Alternative plus previsible                                |
 | ------------ | ------------------------------------ | ---------------------------------------------------------- |
@@ -2477,7 +2401,8 @@ Pour corrige cela, on vient nommer correctement en se basant sur le sens.
 | `common`     | commun a quoi ?                      | config, constants (si c'est vraiment de cela qu'il s'agit) |
 | `helpers`    | aider qui ?                          | nom selon le domaine : tasks, users                        |
 | `data`       | les donnees, c'est trop large        | storage, input, output (selon l'objectif)                  |
-#### Architecture propre simple 
+
+#### Architecture propre simple
 
 Pour garder un projet maintenable, on peut utiliser ce type d'architecture.
 
@@ -2488,11 +2413,11 @@ calccli/
 └── ops.go      // arithmetique (fonctions pures)
 ```
 
-Chaque fichier possède sa responsabilité. 
+Chaque fichier possède sa responsabilité.
 
-Par exemple, le fichier `ops.go` est charger d'implémentation les fonctions responsables des calculs 
+Par exemple, le fichier `ops.go` est charger d'implémentation les fonctions responsables des calculs
 
-```go 
+```go
 package main
 
 func apply(op string, a, b int) int {
@@ -2503,9 +2428,9 @@ func apply(op string, a, b int) int {
 }
 ```
 
-Dans le fichier `main.go`, on viens orchestrer l'ensemble 
+Dans le fichier `main.go`, on viens orchestrer l'ensemble
 
-```go 
+```go
 package main
 
 import "fmt"
@@ -2520,28 +2445,28 @@ func main() {
 
 ---
 
-## FONCTION 
+## FONCTION
 
 Un fonction doit être déclaré, puis appeler. A l'appel, le code dans la fonction est exécuté.
 
 ```go
-// syntaxe 
+// syntaxe
 func <name>(<param> <type>, <param2> <type>) <type_retour> {
-	// code exécuter à l'appel de la fonction 
+	// code exécuter à l'appel de la fonction
 }
 ```
 
 - Les paramètre passés à la fonction doivent être typés
 - Le retour de la fonction doit être typé
 
-```go 
-package main 
+```go
+package main
 
 import "fmt"
 
 func printIfPositive(x int){
 	if x <= 0 {
-		return 
+		return
 	}
 	fmt.Println("positive:", x)
 }
@@ -2550,28 +2475,28 @@ func add(a int, b int) int {
 	return a + b
 }
 
-// si plusieurs paramètres ont le même type 
+// si plusieurs paramètres ont le même type
 func reactArea(width, height int) int {
 	return width * height
 }
 
 func main(){
-	// appel de la fonction 
+	// appel de la fonction
 	printIfPositive(3)
-	
+
 	fmt.Println(add(2, 3)) // 5
-	
+
 	fmt.Println(rectArea(3, 4)) // 12
 }
 ```
 
-### Contrat de fonction 
+### Contrat de fonction
 
 Chaque fonction doit avoir un contrat clair : qu'attends la fonction, qu'est ce qui est retourné
 
 Les nom des paramètres doit également être clair, de cette manière, cela améliore la lisibilité du code.
 
-### Retour de fonction multiple 
+### Retour de fonction multiple
 
 En Go, une fonction peut retourner plusieurs valeurs. Dans la signature, ces résultats s'écrivent entre parenthèses.
 
@@ -2580,28 +2505,28 @@ Une fonction renvoie un résultat utile, soit indique que quelque chose n'a pas 
 `error` est une interface avec la méthode `Error() string`, qui signifie que toute erreur doit pouvoir s'expliquer en texte.
 
 ```go
-package main 
+package main
 
 import "fmt"
 
-// la fonction retourne deux string 
+// la fonction retourne deux string
 func swap(a, b strin) (string, string){
 	return b, a
 }
 
 func main() {
-	// on prépare deux variables pour récupérer les valeurs de la func 
+	// on prépare deux variables pour récupérer les valeurs de la func
 	left, right := swap("L", "R")
 	fmt.Println(left, right) // R L
 }
 ```
 
-### Ignorer une valeur retourner 
+### Ignorer une valeur retourner
 
 Toutes les valeurs retourner par une fonction ne sont pas forcément utiliser. Dans ce cas, on utilise `_` pour l'ignorer.
 
-```go 
-package main 
+```go
+package main
 
 import "fmt"
 
@@ -2616,20 +2541,21 @@ func main() {
 }
 ```
 
-### Gestion d'erreur 
+### Gestion d'erreur
 
-Les fonctions qui peuvent échouer, retourne une `err`. 
+Les fonctions qui peuvent échouer, retourne une `err`.
 
 Pour créer une erreur, on utilise `errors.New("message")`. On lance cette erreur, et on viens la traiter à l'endroit où la fonction est appelée.
 
-Dans le cas ou une erreur arrive dans la fonction, la valeur retourné devras être celle par défaut : 
+Dans le cas ou une erreur arrive dans la fonction, la valeur retourné devras être celle par défaut :
+
 - `0` pour un `int`
 - `""` pour une `string`
 - `0.0` pour un `float`
 - `false` pour un `bool`
 
-```go 
-package main 
+```go
+package main
 
 import (
 	"errors"
@@ -2638,24 +2564,24 @@ import (
 
 func safeDiv(a, b int) (int, error) {
 	if b == 0 {
-		// on lance une erreur 
-		// on retourne 0 pour la valeur 
-		// la nouvelle erreur 
+		// on lance une erreur
+		// on retourne 0 pour la valeur
+		// la nouvelle erreur
 		return 0, errors.New("division by zero")
 	}
-	// on retourne la valeur 
-	// et nil pour indiquer l'absence d'erreur 
-	return a / b, nil 
+	// on retourne la valeur
+	// et nil pour indiquer l'absence d'erreur
+	return a / b, nil
 }
 
 func main(){
 	q, err := safeDiv(10, 0)
-	// check résultat de la fonction 
+	// check résultat de la fonction
 	if err != nil {
-		fmt.Println("error:", err) // on affiche l'erreur 
-		return // termine l'exécution 
+		fmt.Println("error:", err) // on affiche l'erreur
+		return // termine l'exécution
 	}
-	
+
 	fmt.Println("q =", q)
 }
 ```
@@ -2664,10 +2590,10 @@ func main(){
 
 On peut directement nommer les retour de la fonction depuis la signature. Ces variables seront directement disponible dans le corps de la fonction. Elles sont directement initialiser avec leur `zero value`.
 
-Un `return` sans valeur est autorise uniquement sur les résultats sont nomme. 
+Un `return` sans valeur est autorise uniquement sur les résultats sont nomme.
 
-```go 
-package main 
+```go
+package main
 
 import (
 	"fmt"
@@ -2681,7 +2607,7 @@ func minMax(a, b int) (min int, max int) {
 		// les variable min et max sont automatiquement retourner
 		return
 	}
-	
+
 	min = b
 	max = a
 	return
@@ -2695,35 +2621,35 @@ func parseExpr(aS, opS, bS string) (a int, op string, b int, err error){
 	if opS != "+" && opS != "-" && opS != "*" && opS != "/" {
 		return 0, "", ), errors.New("unknow operator")
 	}
-	
+
 	return
 }
 ```
 
-### Fonction variadiques 
+### Fonction variadiques
 
 Fonctions qui prends un nombre indéterminé de paramètres. Le paramètre variadiques est toujours le dernier dans la liste des paramètres.
 
 Pour déclarer une paramètre variadiques, on utilise `<name> ...T`. Lorsque l'on appelle la fonction, on pourras passer autant d'arguments que souhaité dans la fonction.
 
-```go 
+```go
 func sum(nums ...int) int {
-	total := 0 
-	// on parcours les argument reçus 
+	total := 0
+	// on parcours les argument reçus
 	for _, v := range nums {
 		total += v
 	}
-	return total 
+	return total
 }
 
 func main(){
-	fmt.Println(sum(1, 2, 3)) 
+	fmt.Println(sum(1, 2, 3))
 }
 ```
 
 Pour passer des arguments multiples dans une fonctions variadiques, on utilise `...args` :
 
-```go 
+```go
 func sum(nums ...int) int {
 	var sum int
 	for _, num := range nums {
@@ -2732,19 +2658,17 @@ func sum(nums ...int) int {
 	return sum
 }
 
-func printSum(prefix string, nums ...int) {  
-	// on passe les différents valeurs à la fonction variadiques 
-    fmt.Printf("%s %d\n", prefix, sum(nums...))  
+func printSum(prefix string, nums ...int) {
+	// on passe les différents valeurs à la fonction variadiques
+    fmt.Printf("%s %d\n", prefix, sum(nums...))
 }
 ```
 
-
-
-### Fonction anonymes 
+### Fonction anonymes
 
 Une fonction anonyme est une fonction sans nom. Elle permet de transmettre un comportement.
 
-```go 
+```go
 func (x int) int {
 	return x * 2
 }
@@ -2756,16 +2680,16 @@ Parfois, il peut être intéressant d'exécuter un bloc de code directement (IIF
 
 Les parenthèses à la fin permette de déclencher l'appel de la fonction anonyme.
 
-```go 
+```go
 func (){
 	fmt.Println("=== MiniCalc ===")
 	fmt.Println("Entrez: a op b rule")
 }()
 ```
 
-On peut également passer un paramètre et un résultat à la fonction anonyme 
+On peut également passer un paramètre et un résultat à la fonction anonyme
 
-```go 
+```go
 res := func(x int) int {
 	return x * x
 }(5) // on appel la fonction anonyme et on lui passe 5
@@ -2773,33 +2697,33 @@ res := func(x int) int {
 fmt.Println(res) // 25
 ```
 
-#### Calculer puis assigner 
+#### Calculer puis assigner
 
 Parfois, le calcul exige un `if` mais on ne souhaite pas encombrer `main` avec des variables temporaire.
 
-```go 
+```go
 x := -10
 
 sign := func(n int) string {
 	if n < 0 {
 		return "negative"
 	}
-	
+
 	if n == 0 {
 		return "zero"
 	}
-	
+
 	return "postive"
 }(x)
 
 fmt.Println(sign) // negative
 ```
 
-#### Fonction comme valeur 
+#### Fonction comme valeur
 
 On peut venir stocker une fonction dans une variable.
 
-```go 
+```go
 f := func(x int) int {
 	return x + 1
 }
@@ -2807,24 +2731,24 @@ f := func(x int) int {
 fmt.Println(f(10)) // 11
 ```
 
-#### Type de fonction 
+#### Type de fonction
 
-On peut venir définir un type pour les fonction. 
+On peut venir définir un type pour les fonction.
 
-```go 
-type Rule func(int) int 
+```go
+type Rule func(int) int
 ```
 
-#### Fonction d'ordre supérieur 
+#### Fonction d'ordre supérieur
 
-Fonction qui accepte une autre fonction et l'utilise à l'intérieur. 
+Fonction qui accepte une autre fonction et l'utilise à l'intérieur.
 
-```go 
-// type de fonction 
+```go
+// type de fonction
 type Rule func(int) int
 
 func apply(x int, r Rule) int {
-	return r(x) 
+	return r(x)
 }
 
 // utilisation avec une fonction nommée
@@ -2832,15 +2756,15 @@ func double(x int) int { return x * 2}
 
 fmt.Println(apply(10, double)) // 20
 
-// utilisation avec une fonction anonyme 
-fmt.Println(apply(10, func(x int) int { return x * x})) // 100 
+// utilisation avec une fonction anonyme
+fmt.Println(apply(10, func(x int) int { return x * x})) // 100
 ```
 
 Le deuxième paramètre de la fonction `apply` est une fonction. Elle retourne le résultat de la fonction passé en paramètre.
 
-Un autre exemple avec une fonction qui prends un nombre de répétition et une action 
+Un autre exemple avec une fonction qui prends un nombre de répétition et une action
 
-```go 
+```go
 func repeat(n int, action func()) {
 	for i := 0; i < n; i++ {
 		// chaque itération on appelle la fonction passé
@@ -2848,17 +2772,17 @@ func repeat(n int, action func()) {
 	}
 }
 
-// utilisation 
+// utilisation
 repeat(3, func(){
 	fmt.Println("hi")
 })
 ```
 
-### Closure 
+### Closure
 
-Une closure est une fonction qui utilise des variables de la portée externe. 
+Une closure est une fonction qui utilise des variables de la portée externe.
 
-Par exemple, pour implémenter un compteur. La fonction `makeCounter` retourne une fonction qui incrémente un nombre interne à chaque appel 
+Par exemple, pour implémenter un compteur. La fonction `makeCounter` retourne une fonction qui incrémente un nombre interne à chaque appel
 
 ```go
 func makeCounter() func () int {
@@ -2876,41 +2800,43 @@ fmt.Println(c()) // 3
 ```
 
 ---
-## TABLEAU  
+
+## TABLEAU
 
 Le tableau permet de contenir un ensemble de valeur de taille fixe connu à l'avance. Les données sont stockées côte à côte, et on y accède via un indice.
 Le premier élément est placé à l'index `0`
-### Création d'un tableau 
+
+### Création d'un tableau
 
 Pour déclarer une tableau, on utilise `[N]T` ou `N` est le nombre d'éléments du tableau, et `T` le type des éléments de ce tableau.
 
-```go 
+```go
 func main(){
 	week := [3]int{10, 20, 30} // création et initialisation d'un tableau
 	week[1] = 99 // on modifie l'élément à l'index 1 => le deuxième.
 }
 ```
 
-### Copie de tableau 
+### Copie de tableau
 
 Lorsque l'on réalise une affectation, tous les éléments du tableau sont **copiés**. Chaque copie possède sa propre référence.
 
-```go 
+```go
 func main(){
 	a := [3]int{1, 2, 3}
 	b := a // on copie le tableau dans la variable => les deux sont indépendnants
 	b[0] = 00
-	
-	
+
+
 	fmt.Println("a:", a) // a: [1 2 3]
 	fmt.Println("b:", b) // b: [99 2 3]
 }
 ```
 
-### Passage de tableau à une fonction 
+### Passage de tableau à une fonction
 
 ```go
-// ma fonction attends un tableau de 7 entier 
+// ma fonction attends un tableau de 7 entier
 func sumWeek(week [7]int) int {
 	total := 0
 	for _, v := range week {
@@ -2921,16 +2847,16 @@ func sumWeek(week [7]int) int {
 
 func main() {
 	week := [7]int{100, 0, 50, 20, 10, 0, 70}
-	// on passe le tableau de 7 entier 
+	// on passe le tableau de 7 entier
 	fmt.Println(sumWeek(week)) // 250
 }
 ```
 
-### Comparaison de tableau 
+### Comparaison de tableau
 
-On peut utiliser `==` pour comparer deux tableau, étant donné que c'est une copie d'éléments 
+On peut utiliser `==` pour comparer deux tableau, étant donné que c'est une copie d'éléments
 
-```go 
+```go
 func main() {
 	a := [2]int{1, 2}
 	b := [2]int{1, 2}
@@ -2939,44 +2865,45 @@ func main() {
 ```
 
 ---
-## SLICE 
+
+## SLICE
 
 Un slice est une "fenêtre" qui pointe sur un tableau. Il se comporte comme un tableau. Le slice est une vue partielle d'un tableau, et différents slice peuvent regarder les même données.
 
-### Création de slice 
+### Création de slice
 
 Pour créer un slice, on ne définit pas le nombre d'éléments.
 
-```go 
+```go
 func main(){
 	s := []int{1, 2, 3}
 	s[0] = 99
-	
+
 	fmt.Println(s) // [99 2 3]
 }
 ```
 
-### Affectation de slice 
+### Affectation de slice
 
-Lorsque l'on fait une affectation de slice, on ne copie pas les éléments, mais on copie la description du slice. Les éléments eux même restent partagés. 
+Lorsque l'on fait une affectation de slice, on ne copie pas les éléments, mais on copie la description du slice. Les éléments eux même restent partagés.
 
 La modification d'un slice qui partage le même tableau, entraine la modification pour tous les slices partageant le même tableau.
 
-```go 
+```go
 func main(){
 	s := []int{1, 2, 3}
-	t := s // copie de la référence 
-	t[0] = 99 // modif pour les deux slices 
-	
+	t := s // copie de la référence
+	t[0] = 99 // modif pour les deux slices
+
 	fmt.Println("s:", s) // s: [99 2 3]
 	fmt.Println("t:", t) // t: [99 2 3]
 }
 ```
 
-### Passage de slice au fonction 
+### Passage de slice au fonction
 
-```go 
-// la fonction attends un slice de int 
+```go
+// la fonction attends un slice de int
 func sumDays(days []int) int {
 	total := 0
 	for _, v := range days {
@@ -2987,16 +2914,16 @@ func sumDays(days []int) int {
 
 func main() {
 	days := []int{100, 0, 50, 20}
-	// on passe le slice à la fonction 
+	// on passe le slice à la fonction
 	fmt.Println(sumDays(days)) // 170
 }
 ```
 
-### Comparaison de slice 
+### Comparaison de slice
 
-On ne peut pas utiliser de `==` pour comparer deux slice 
+On ne peut pas utiliser de `==` pour comparer deux slice
 
-```go 
+```go
 func main() {
 	s := []int{1, 2}
 	_ = s
@@ -3004,12 +2931,12 @@ func main() {
 }
 ```
 
-### Slice Header 
+### Slice Header
 
 Un **slice header** est une petite structure descriptive indiquant ou se trouvent les éléments et combien sont disponible.
 La valeur d'un slice n'est pas le "conteneur avec des éléments", mais une description d'une fenêtre permettant de voir un ensemble d'éléments.
 
-#### len - nombre d'élément du slice 
+#### len - nombre d'élément du slice
 
 `len(s)` permet de connaitre combien d'éléments sont accessibles à travers le slice. Il indique combien d'éléments peuvent être lire et écrit.
 
@@ -3017,25 +2944,25 @@ La valeur d'un slice n'est pas le "conteneur avec des éléments", mais une desc
 - dernier indice : `len(s) - 1`
 - `len(s)` : hors limite, et provoque une panique lors de l'accès
 
-```go 
+```go
 func main() {
 	s := []int{10, 20, 30}
-	fmt.Println(len(s)) // 3 - le nombre d'élément dans le slice 
+	fmt.Println(len(s)) // 3 - le nombre d'élément dans le slice
 
-	fmt.Println(s[0]) // 10 - élément à l'indice 1 
+	fmt.Println(s[0]) // 10 - élément à l'indice 1
 	fmt.Println(s[2]) // 30 - élément à l'indice 3
 	fmt.Println(s[3]) // panic: index out of range
 }
 ```
 
-#### cap - réserve du slice 
+#### cap - réserve du slice
 
 La capacité `cap` définit combien d'éléments peuvent être stocker dans ce segment mémoire, à partir du début actuel du slice, sans déplacement ailleurs.
 C'est la réserve qui permet d'agrandir le slice.
 
 Il ne donne pas droit d'accéder par indice, l'indexation dépend de `len`
 
-```go 
+```go
 func main() {
 	s := make([]int, 2, 5) // len=2, cap=5
 	fmt.Println(len(s), cap(s)) // 2 5
@@ -3043,14 +2970,14 @@ func main() {
 }
 ```
 
-- `len = 2` : deux éléments sont disponible dans le slice. Initialiser à zéro 
+- `len = 2` : deux éléments sont disponible dans le slice. Initialiser à zéro
 - `cap = 5` : jusqu'à 5 éléments peuvent tenir dans ce bloc mémoire.
 
-#### pointer 
+#### pointer
 
 Dans un slice, se trouve une information indiquant où se trouve le premier élément (l'adresse du début des données). Deux valeurs de type slice différentes peuvent référence un même ensemble d'éléments.
 
-```go 
+```go
 func main() {
 	s := []int{1, 2, 3}
 	t := s       // we copy the header, not the elements
@@ -3063,15 +2990,16 @@ func main() {
 
 - `t := s` : copie uniquement le header du slice ( pointer / len / cap)
 - le `pointer` de `t` et celui de `s` pointe vers le même tableau sous jacent (backing array)
-- la modification de `t[0]` modifie aussi les données pour `s` car c'est le backing array qui est modifié. 
-### nil-slice 
+- la modification de `t[0]` modifie aussi les données pour `s` car c'est le backing array qui est modifié.
+
+### nil-slice
 
 Pour un slice `[]T`, la valeur zéro est `nil`, il n'y a pas de slice, il ne pointe vers aucun élément.
 
-```go 
+```go
 func main() {
-	// initialisation du slice 
-	var nums []int // valeur nil => il ne pointe sur rien 
+	// initialisation du slice
+	var nums []int // valeur nil => il ne pointe sur rien
 
 	fmt.Println(nums == nil)          // true
 	fmt.Println(len(nums), cap(nums)) // 0 0
@@ -3079,12 +3007,12 @@ func main() {
 }
 ```
 
-### make - création de conteneur 
+### make - création de conteneur
 
-`make` permet de créer des conteneur (slices, maps, canaux). 
+`make` permet de créer des conteneur (slices, maps, canaux).
 Avec le make, on peut définir de manière explicite le nombre d'éléments souhaité, et la capacité du slice.
 
-```go 
+```go
 tasks := make([]string, 0)
 ```
 
@@ -3097,11 +3025,11 @@ make([]T, n) // longueur x: les éléments existe et sont remplis par la zero va
 make([]T, n, cap) // longueur n et cap >= n
 ```
 
-Par exemple, pour créer un slice de 3 élément nul 
+Par exemple, pour créer un slice de 3 élément nul
 
-```go 
+```go
 func main(){
-	// création d'un slice de 3 int nul 
+	// création d'un slice de 3 int nul
 	a := make([]int, 3)
 	fmt.Println(a, len(a), cap(a)) // [0 0 0] 3 3
 }
@@ -3113,13 +3041,13 @@ func main() {
 }
 ```
 
-### Slice vide 
+### Slice vide
 
 Un slice vide est un slice pour lequel `len == 0` mais qui n'est pas égale à `nil`. C'est un slice de zéro élément.
 
-Il existe deux manière d'obtenir un slice vide 
+Il existe deux manière d'obtenir un slice vide
 
-#### littéral 
+#### littéral
 
 Cette manière indique clairement que c'est un slice vide mais qui existe.
 
@@ -3133,11 +3061,11 @@ func main() {
 }
 ```
 
-#### make 
+#### make
 
-Avec cette manière on définis explicitement la taille du slice 
+Avec cette manière on définis explicitement la taille du slice
 
-```go 
+```go
 func main() {
 	tasks := make([]string, 0)
 
@@ -3146,11 +3074,11 @@ func main() {
 }
 ```
 
-### Tester les slices 
+### Tester les slices
 
-#### Tester si le slice est vide 
+#### Tester si le slice est vide
 
-```go 
+```go
 if len(tasks) == 0 {
 	fmt.Println("Il n'y a pas encore de taches") // Il n'y a pas encore de taches
 }
@@ -3158,7 +3086,7 @@ if len(tasks) == 0 {
 
 #### Tester si le slice est initialisé
 
-```go 
+```go
 func main() {
 	var a []int  // nil
 	b := []int{} // empty
@@ -3168,7 +3096,7 @@ func main() {
 }
 ```
 
-### Append - ajouter un élément 
+### Append - ajouter un élément
 
 La fonction `append` permet d'ajouter à la fin, et si la place manque, agrandir le stockage.
 Elle retourne le slice mis à jour.
@@ -3188,9 +3116,9 @@ func main() {
 }
 ```
 
-Avec des fonctions, il faut bien faire attention à retourner correctement le nouveau slice 
+Avec des fonctions, il faut bien faire attention à retourner correctement le nouveau slice
 
-```go 
+```go
 func addOne(s []int) []int {
 	s = append(s, 999)
 	return s
@@ -3204,11 +3132,11 @@ func main() {
 }
 ```
 
-#### append et slice nil 
+#### append et slice nil
 
 On peut venir ajouter des éléments avec `append` dans un slice qui est `nil`. C'est très utiliser pour accumuler des données.
 
-```go 
+```go
 func main() {
 	var s []int // nil
 
@@ -3219,11 +3147,11 @@ func main() {
 }
 ```
 
-#### exemple 
+#### exemple
 
-On réaliser une application. Une fonction permet d'ajouter des tâches 
+On réaliser une application. Une fonction permet d'ajouter des tâches
 
-```go 
+```go
 package main
 
 import "fmt"
@@ -3235,7 +3163,7 @@ func addTask(tasks []string, title string) []string {
 }
 
 func main() {
-	// création du slice 
+	// création du slice
 	var tasks []string
 
 	// on viens ajouter les tâches
@@ -3246,13 +3174,13 @@ func main() {
 }
 ```
 
-### Préallocation de la capacité d'un slice 
+### Préallocation de la capacité d'un slice
 
 La préalloction c'est lorsque l'on créer un slice de longueur nulle, mais avec une capacité définie à l'avance en utilisant un `make([]T, 0, <taille_attendu>)`.
 
 Cela permet d'optimiser le slice lorsque l'on ajoute plusieurs éléments dans le slice avec une boucle.
 
-```go 
+```go
 package main
 
 import (
@@ -3267,7 +3195,7 @@ func main() {
 	var n int
 	fmt.Fscan(in, &n)
 
-	// préalocation du slice 
+	// préalocation du slice
 	tasks := make([]string, 0, n) // len=0, cap=n
 	for i := 0; i < n; i++ {
 		var t string
@@ -3279,9 +3207,9 @@ func main() {
 }
 ```
 
-### Découpage de slice 
+### Découpage de slice
 
-```go 
+```go
 part := s[a:b]
 
 func main() {
@@ -3291,14 +3219,14 @@ func main() {
 }
 ```
 
-- `a` : borne de départ 
+- `a` : borne de départ
 - `b`: borne de fin non inclut.
 
 Cela signifie de récupérer tous les éléments entre l'indice `a` et `b` non inclut.
 
-Si la borne de fin est supérieur à la limite, cela provoque une `panic`. La borne supérieur est comparée à `cap`, cette borne doit être inférieur à la valeur du `cap`. 
+Si la borne de fin est supérieur à la limite, cela provoque une `panic`. La borne supérieur est comparée à `cap`, cette borne doit être inférieur à la valeur du `cap`.
 
-#### Reslice 
+#### Reslice
 
 ```go
 func main() {
@@ -3311,15 +3239,15 @@ func main() {
 }
 ```
 
-#### Prédire le len et cap du résultat 
+#### Prédire le len et cap du résultat
 
 Le slice `s[a:b]` retourne un nouveau slice ayant sont propre `len` et `cap`.
 
 - `len(s[a:b]) == b - a`
 - `cap(s[a:b]) == cap(s) - a` : généralement ainsi parce que le début de la fenêtre se déplace vers la droite.
-`cap` diminu de `a` car la capacité c'est "combien d'espace il reste à droite du début de la fenêtre jusqu'a la fin du backing array". Si on décale le début de la fenêtre, il y a moins de place à droite.
+  `cap` diminu de `a` car la capacité c'est "combien d'espace il reste à droite du début de la fenêtre jusqu'a la fin du backing array". Si on décale le début de la fenêtre, il y a moins de place à droite.
 
-```go 
+```go
 func main() {
 	s := make([]int, 5, 10) // len=5 cap=10
 	part := s[2:5]          // on prend 3 elements
@@ -3328,7 +3256,7 @@ func main() {
 }
 ```
 
-#### Omission de bornes 
+#### Omission de bornes
 
 Il existe des syntaxe simplifier pour les découpage de slice.
 
@@ -3341,7 +3269,6 @@ Il existe des syntaxe simplifier pour les découpage de slice.
 | Inclure l'indice `i` dans le jusqu'a i           | `s[:i+1]`      |
 | Prendre exactement `n` positions à partir de `i` | `s[i:i+n]`     |
 
-
 ```go
 func main() {
 	s := []int{10, 20, 30, 40, 50}
@@ -3352,9 +3279,9 @@ func main() {
 }
 ```
 
-#### Protection du découpage 
+#### Protection du découpage
 
-```go 
+```go
 func main() {
 	tasks := []string{"learn Go", "write code", "drink water", "sleep"}
 
@@ -3373,17 +3300,17 @@ func main() {
 }
 ```
 
-### Expression complète de slice 
+### Expression complète de slice
 
 Le slice possède trois indices : `s[a:b:c]`. On définit la `len`, mais aussi la limite de `cap` du résultat.
 
-- `a` : len 
-- `b` : cap 
-- `c` : end of cap 
+- `a` : len
+- `b` : cap
+- `c` : end of cap
 
 Pour interdire la croissance vers la droite, et empêcher des conneries sur les backing array, on peut venir forcer la taille du `cap` pour que les `append` ne vienne pas casser.
 
-```go 
+```go
 func main() {
 	tasks := []string{"a", "b", "c", "d", "e"}
 
@@ -3413,11 +3340,12 @@ func main() {
 ```
 
 Dans ce code, `dst` à une longueur de 2, il y aura donc 2 éléments de copiés.
-#### copie indépendante 
 
-Pour créer des slice totalement indépendant, on utilise ce pattern 
+#### copie indépendante
 
-```go 
+Pour créer des slice totalement indépendant, on utilise ce pattern
+
+```go
 // la fonction permet de créer un clone du slice indépendant
 func cloneInts(src []int) []int {
 	dst := make([]int, len(src))
@@ -3427,7 +3355,7 @@ func cloneInts(src []int) []int {
 
 func main() {
 	a := []int{1, 2, 3}
-	b := cloneInts(a) // on récupère une copie indépendante du premier slice 
+	b := cloneInts(a) // on récupère une copie indépendante du premier slice
 
 	b[0] = 99
 	fmt.Println(a) // [1 2 3]
@@ -3435,31 +3363,31 @@ func main() {
 }
 ```
 
-#### copie de sous slice 
+#### copie de sous slice
 
-```go 
+```go
 func clonePart(src []int, a, b int) []int {
-	part := src[a:b] // on récupère une partie du slice 
-	dst := make([]int, len(part)) // on prépare la destination 
-	copy(dst, part) // on copie 
+	part := src[a:b] // on récupère une partie du slice
+	dst := make([]int, len(part)) // on prépare la destination
+	copy(dst, part) // on copie
 	return dst
 }
 
 func main() {
 	s := []int{10, 20, 30, 40}
-	x := clonePart(s, 1, 3) // [20 30] copie indépendante 
+	x := clonePart(s, 1, 3) // [20 30] copie indépendante
 
-	x[0] = 999 
+	x[0] = 999
 	fmt.Println(s) // [10 20 30 40]
 	fmt.Println(x) // [999 30]
 }
 ```
 
-### clear 
+### clear
 
 Fonction qui permet de reset les valeurs d'un slice. Il permet également de supprimer la référence vers les données.
 
-```go 
+```go
 func main() {
 	s := []int{10, 20, 30}
 	clear(s)
@@ -3469,7 +3397,7 @@ func main() {
 }
 ```
 
-#### Déplacement des éléments 
+#### Déplacement des éléments
 
 `copy` permet également de réaliser des déplacement au sein d'un slice.
 
@@ -3481,7 +3409,7 @@ copy(s[i:], s[i+1])
 func main(){
 	s := []int{1, 2, 3, 4}
 	copy(s[1:], s[2:])
-	
+
 	fmt.Println(s) // [1 3 4 4]
 }
 ```
@@ -3491,47 +3419,47 @@ Le trous entre 2 et 3 est fermé, mais un doublon apparait à la fin.
 On peut également faire des déplacement vers la droite. Par exemple, pour insérer un élément au mileu. On ne peut pas déplacer vers la droite si il n'y a pas de place en longueur.
 La première étape est d'augmenter `len`.
 
-```go 
+```go
 func main(){
 	s := []int{10, 20, 30}
-	
+
 	i := 1
-	s = append(s, 0) // len+1 
-	copy(s[i+1], s[i:]) // déplacement vers la droite de 1 
+	s = append(s, 0) // len+1
+	copy(s[i+1], s[i:]) // déplacement vers la droite de 1
 	s[i] = 99
-	
+
 	fmt.Println(s) // [10 99 20 30]
 }
 ```
 
-Exemple d'un gestionnaire de tâche 
+Exemple d'un gestionnaire de tâche
 
-```go 
-package main 
+```go
+package main
 
 import "fmt"
 
-// cloneStrings crée une copie indépendante du slice 
+// cloneStrings crée une copie indépendante du slice
 func cloneStrings(src []string) []string {
 	dst := make([]string, len(src))
 	copy(dst, src)
-	return dst 
+	return dst
 }
 
 // déplacement vers la gauche
 func shiftLeftByOne(s []string, i int){
 	if i < 0 || i >= len(s)-1 {
-		return 
+		return
 	}
 	copy(s[i:], s[i+1:])
 }
 
 func main() {
 	tasks := []string{"buy milk", "read book", "write code"}
-	
+
 	view := cloneStrings(tasks)
 	view[0] = "buy coffee"
-	
+
 	fmt.Println("tasks:", tasks) // tasks: [buy milk read book write code]
 	fmt.Println("view: ", view)  // view:  [buy coffee read book write code]
 
@@ -3540,26 +3468,25 @@ func main() {
 }
 ```
 
-
 Cette méthode permet de créer une copie d'un slice. `copy(dst, src)` copie les éléments de `src` vers `dst` et retourne le nombre d'éléments copiées.
 
-```go 
+```go
 func main(){
 	src := []int{10, 20, 30}
 	dst := make([]int, 2) // len 2 => création d'une fenêtre de 2 éléments
-	
+
 	n := copy(dst, src)
-	fmt.Println(n) // 2 
+	fmt.Println(n) // 2
 	fmt.Println(dst) // [10 20]
 }
 ```
 
-#### Création d'un backing array 
+#### Création d'un backing array
 
 On alloue un nouveau buffer, on y copie les éléments, on travail ensuite avec. `a` et `b` sont indépendants, ils ont des backing array différents.
 
 ```go
-// clone un slice en entier 
+// clone un slice en entier
 package main
 
 import "fmt"
@@ -3567,25 +3494,25 @@ import "fmt"
 func cloneInts(src []int) []int {
 	dst := make([]int, len(src))
 	copy(dst, src)
-	return dst 
-} 
+	return dst
+}
 
 func main(){
 	a := []int{1, 2, 3}
 	b := cloneInts(a)
-	
+
 	b[0] = 99
 	fmt.Println(a) // [1 2 3]
 	fmt.Println(b) // [99 2 3]
 }
 ```
 
-### Copier une partie de slice 
+### Copier une partie de slice
 
 On choisit un intervalle, ensuite on lui crée son propre buffer.
 
-```go 
-package main 
+```go
+package main
 
 import "fmt"
 
@@ -3599,14 +3526,14 @@ func clonePart(src []int, a, b int) []int{
 func main(){
 	s := []int{10, 20, 30, 40}
 	x := cloneParts(s, 1, 3) // [20 30]
-	
+
 	x[0] = 999
 	fmt.Println(s) // [10 20 30 40]
 	fmt.Println(x) // [999 30]
 }
 ```
 
-### clear 
+### clear
 
 Fonction qui permet de réecrire la zero value pour les éléments de la plage.
 
@@ -3621,4 +3548,3 @@ func main() {
 ```
 
 ---
-
