@@ -27,7 +27,7 @@ Les droits d'acces sont representer de cette maniere :
 
 Un utilisateur n'est pas forcement un humain, cela peut etre un service ou un programme (serveur web, bdd, serveur SSH, etc).
 
-## chmod
+### chmod
 
 Permet de modifier les permissions des fichiers et repertoire.
 
@@ -48,7 +48,7 @@ chmod o-r document.txt
 - **Action**: `+` ajoute un droit, `-` retire un droit, `=` definis exactement les droits
 - **Droits** : `r` lecture, `w` ecriture, `x` execution
 
-### Format octal
+#### Format octal
 
 Le format octal est une maniere plus compact pour definir les droits. Chaque combinaison de droits est representee par un chiffre.
 
@@ -74,7 +74,7 @@ chmod [chiffre][chiffre][chiffre] [file_name]
 chmod 754 file.sh
 ```
 
-## chown
+### chown
 
 Permet de changer le proprietaire d'un fichier ou dossier.
 
@@ -93,7 +93,7 @@ chown user1:group1 myfile.txt
 chowm :group2 myfile.txt
 ```
 
-## umask
+### umask
 
 Lorsqu'un fichier ou un dossier est creer, Linux part d'un ensemble de permission par defaut :
 
@@ -121,7 +121,7 @@ umask 0022
 
 - `022` : ou chaque chiffre correspond a un groupe
 
-## sudo
+### sudo
 
 Commande qui permet a un utilisateur d'executer des commandes en tant que root. Il fournit un acces temporaire aux capacite d'admin sans avoir besoin de travailler sous le compte `root`.
 
@@ -154,7 +154,7 @@ sudo visudo
 
 Sur Linux, il existe souvent plusieurs utilisateurs sur le meme serveurs. Le systeme leur attribue des droits specifique pour proteger les donnes, et eviter le chaos.
 
-## adduser
+### adduser
 
 Permet de creer rapidement de nouveau utilisateurs. Lorqu'un nouvel utilisateur est creer :
 
@@ -173,7 +173,7 @@ sudo adduser dev_user
 cat /etc/passwd | grep dev_user
 ```
 
-## usermod
+### usermod
 
 Permet de modifier les parametres d'un utilisateur deja creer.
 
@@ -201,7 +201,7 @@ sudo usermod -d /home/new developer -m developer
 ls -l /home/
 ```
 
-## passwd
+### passwd
 
 Permet de configurer le mot de passe
 
