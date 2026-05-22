@@ -12,8 +12,10 @@ nav:
       - New: go/index.md
       - Commentaire: go/commentaire.md
       - Affichage: go/affichage.md
+      - Saisie: go/saisie.md
       - Variable: go/variable.md
       - Types: go/types.md
+      - Condition: go/condition.md
       - Arithmetique: go/arithmetique.md
       - Old: go/old_index.md
       - Old2: go/old2.md
