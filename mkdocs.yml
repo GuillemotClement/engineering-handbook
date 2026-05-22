@@ -3,6 +3,8 @@ nav:
   - Linux:
       - Commandes: linux/commande.md
       - Gestion des droits: linux/droitAcces.md
+      - Pipe: linux/pipe.md
+      - Grep: linux/grep.md
       - WSL: linux/wsl.md
       - Curl: linux/curl.md
       - Old: linux/old.md
