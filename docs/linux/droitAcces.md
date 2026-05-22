@@ -183,13 +183,13 @@ who | grep [username]# check si user est connecter
 sudo usermod -l [new_username] [old_username]
 
 # example
-who | gred developer # check avant moodif
+who | grep developer # check avant moodif
 sudo usermod -l developer dev_user # chanment du nom
 
 # changement du shell par defaut
 sudo usermode --shell [shell_defaut] [username]
 sudo usermod --shell /bin/zsh developer
-cat /etc/passwd | gred developer # check modif
+cat /etc/passwd | grep developer # check modif
 
 # modifier repertoire personel
 sudo usermod -d [new_path] [username]
