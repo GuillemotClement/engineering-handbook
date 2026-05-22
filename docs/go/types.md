@@ -248,3 +248,90 @@ func main(){
   fmt.Println(canEnter) // true 
 }
 ```
+
+---
+
+## Conversion 
+
+### Conversion de nombre  
+
+Go interdit de melanger differents types numerique dans une meme expression sans conversion explicite.Par exemple, il n'est pas possible de faire une operation avec un type `int` et `int64`.
+
+```go
+func main(){
+  a := 10 
+  var b int64 = 20 
+
+  fmt.Println(a + b) // impossible: type differents
+  fmt.Println(int64(a) + b) // on vient convertir le int
+}
+```
+
+### Conversion explicite 
+
+Go utilise la syntaxe `T(x)` pour convertir de maniere explicite une valeur dans un type compatible.
+
+- `int64(a)` : convertis `a` en `int64`
+- `float64(qty)` : convertis `qty` en `float64`
+- `int(x)` : contis `x` en `int` 
+
+```go
+func main(){
+  var n int64 = 42 
+  m := int(n) // conversion en int 
+}
+```
+
+### Overflow 
+
+Le debordement peut arriver lorsque l'on convertis un type vers un type plus restrictif. Il est possible d'avoir une perte de donnee dans ce cas et le programme peut continuer a fonctionner avec un mauvais nombre.
+
+Si on essaie d'affecter une constante / un litteral qui ne tient pas dans le type, le compilateur se plaindra. L'erreur est detecter a la compilation.
+
+Dans le cas d'une variable, le compilateur autorise la conversion.
+
+```go 
+func main(){
+  var big int64 = 130 
+  var small int8 = int8(big) // on convertis dans un type trop restrictif 
+
+  fmt.Println(big) // 130 
+  fmt.Println(small) // -126 = overflow
+}
+```
+
+Le debordement peut egalement arriver lors d'operation arithmetique. Lorsque l'on doit realiser des calcul, bien faire attention au type utiliser.
+
+### Conversion signed et unsigned
+
+Ce type de conversion peut provoquer des erreurs. Les nombres negatifs deviennent de grand positifs car le motif binaire est conserver.
+
+```go 
+func main(){
+  i := -1 
+  u := uint(i) // conversion en non signer 
+
+  fmt.Println(i) // 1
+  fmt.Println(u) // un grand nombre qui depend de la taille de uint 
+}
+```
+
+Mis a part sur les operation bas niveau, l'utilisation du `uint` est a eviter.
+
+### Conversion int et float 
+
+La conversion `int(float64)` provoque une troncature, la partie decimal n'est pas conserver.
+
+```go 
+func main(){
+  x := 3.99
+  n := int(x)
+
+  fmt.Println(n) // 3
+}
+```
+
+`float64` ne permet pas de conserver les grand entiers, on peut perdre la valeur exact.
+
+
+

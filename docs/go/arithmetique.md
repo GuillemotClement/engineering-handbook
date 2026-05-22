@@ -16,6 +16,20 @@ func main(){
 }
 ```
 
+#### Division decimal 
+
+Pour obtenir un resultat d'une division decimalm il est necessaire d'utiliser des `float` avant de realiser la division.
+
+```go
+func main(){
+  a := 7 
+  b := 2 
+
+  fmt.Println(a / b) // 3
+  fmt.Prinln(float64(a) / float64(b)) // 3.5
+}
+```
+
 ### Division des nombres negatifs
 
 La division entiere se fait vers zero.
@@ -72,6 +86,24 @@ func main(){
 ```
 
 - `%02d` permet de formater l'affichage. Ici on force l'affichage des centimes en `05` par exemple.
+
+#### Calcul du cout d'une commande 
+
+On souhaite calculer des sommes monetaire, il faut donc passer les valeurs en entier pour eviter les erreurs de precision des `float`.
+
+L'utilisateur saisit un prix en euro et une quantite. On viens stocker le total en centime en `int64` pour conserver de la marge.
+
+```go
+func main(){
+  var priceEuro int 
+  var qty int 
+
+  fmt.Scan(&priceEuro, &qty)
+
+  totalCent := int64(priceEuro) * 100 * int64(qty) // *100 pour passer en centimes 
+  fmt.Println(totalCent) // par exemple 19900
+}
+```
 
 ---
 
