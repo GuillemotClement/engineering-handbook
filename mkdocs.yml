@@ -14,6 +14,7 @@ nav:
       - Affichage: go/affichage.md
       - Variable: go/variable.md
       - Types: go/types.md
+      - Arithmetique: go/arithmetique.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:

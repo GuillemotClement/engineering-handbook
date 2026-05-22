@@ -1,20 +1,8 @@
 # Types 
 
-## Nombre 
+## Nombre Entier
 
 Les operation entre `float64` et `int` sont interdite. 
-
-### int 
-
-`int` est le type pour les nombres entier. Il prends en charge les operations et les comparaison. Pour l'operation `/`, la partie decimal est supprime
-
-La `zero value` est `0`. 
-
-### float64 
-
-`float64` est le type par defaut pour les nombres decimaux.
-
-La `zero value` est `0.0`
 
 ### Protection valeur max 
 
@@ -42,6 +30,146 @@ func main(){
   fmt.Println(max) // correct meme avec des valeurs negative.
 }
 ```
+
+### int 
+
+`int` est le type pour les nombres entier. Il prends en charge les operations et les comparaison. Pour l'operation `/`, la partie decimal est supprime.
+Il prend des postifs et negatif.
+
+La `zero value` est `0`. 
+
+#### strconv.IntSize
+
+Permet de connaitre le nombre de bit utiliser pour le type `int` 
+
+```go 
+package main 
+
+import (
+  "fmt"
+  "strconv"
+)
+
+func main(){
+  fmt.Println("int size: ", strconv.IntSize, "bits") // int size: 64 bits
+}
+```
+
+### int64
+
+`int64` permet d'utiliser de stocker des nombres plus grandsm ou lorsque le format des donnes doit etre identique sur differentes machines.
+Ce type est adapter dans ce type de cas : 
+
+- argent en unite minimal, par exemple en centimes. L'argent est generalement stocker sous forme d'entier pour eviter les probleme de precision des `float`.
+- grand compteur et accumulation 
+- nombres provenant de l'exterieur comme les id utilisateur, numero de transactions
+
+```go 
+package main
+
+import "fmt"
+
+func main(){
+  // on traite des valeurs monetaire stokcer en centimes
+  var incomeCents int64
+  var expenseCents int64 
+
+  fmt.Scan(&incomeCents, &expenceCents)
+
+  balanceCents := incomeCents - expenseCents 
+  fmt.Println(balanceCents) // 10501
+}
+```
+
+#### Conversion - int64()
+
+```go
+package main 
+
+func main(){
+  i := 17
+	i64 := int64(i) // convertion int => int64
+}
+```
+
+### uint
+
+Le type `uint` permet de stocker des nombre positif. Sa taille en bit depant de la plateforme de la machine. Il peut etre utile dans ce type de cas : 
+
+- travail avec des masque de bits et des aspects de bas niveau 
+- lorsque l'API exige ce type 
+- lorsque l'on modelise explicitement un identifiant non negatif et qu'on est sur de n'avoir aucune valeur negative dans le calculs
+
+```go
+package main 
+
+import "fmt"
+
+func main(){
+  u := uint(17)
+  fmt.Printf("%v (%T)\n", u, u) // 17 (uint)
+}
+```
+
+#### Conversion - uint()
+
+```go
+package main 
+
+func main(){
+  i := 17
+	u := uint(i) // convertion int => uint
+}
+```
+
+--- 
+
+## Nombre Reel
+
+Les nombres reel dans l'ordinateur ne sont pas precis. Il ne faut pas effectuer de calcul en utilisant des type `float`. Ils sont stockes sous forme binaire, et certaines fractions decimale ne peuvent pas etre representer.
+
+### float32 & float64
+
+`float32` occupe 32 bits et `float64` occupe 64 bits. Plus il y a de bits et plus la precision est grande. Par defaut, c'est le `float64` qui est utiliser.
+
+La `zero value` est `0.0`
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+  x := 0.1 
+  var y float32 = 0.1
+
+  fmt.Printf("x=%v, type=%T\n", x, x) // x=0.1 type=float64
+  fmt.Printf("y=%v type=%T\n", y, y) // y=0.1 type=float32
+}
+```
+
+### Comparaison de float 
+
+Les fractions du type `0.1` dans le systeme binaire sont infinies (`1/3` par exemple : 0.33333 ...). Le nombre est stocke de maniere aproximative.
+
+Pour faire des compairaison de `float`, on integre une tolerance pour que l'evaluation de la condition soit fiable.
+
+### Debugage de float 
+
+```go 
+package main 
+
+import "fmt"
+
+func main(){
+  x := 0.1 + 0.2 
+  fmt.Printf("x=%v\n", x) // x=0.3000000000004
+  fmt.Printf("x=%.17f\n", x) // x=3.00000000004
+  fmt.Printf("x=%T\n", x) // type=float64
+}
+```
+
+---
 
 ## String 
 
@@ -92,6 +220,8 @@ func main(){
   fmt.Println(title == "") // true 
 }
 ```
+
+---
 
 ## Boolean 
 
