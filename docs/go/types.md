@@ -1,6 +1,6 @@
 # Types 
 
-## Nombre Entier
+## Nombre
 
 Les operation entre `float64` et `int` sont interdite. 
 
@@ -123,8 +123,6 @@ func main(){
 ```
 
 --- 
-
-## Nombre Reel
 
 Les nombres reel dans l'ordinateur ne sont pas precis. Il ne faut pas effectuer de calcul en utilisant des type `float`. Ils sont stockes sous forme binaire, et certaines fractions decimale ne peuvent pas etre representer.
 
@@ -333,5 +331,82 @@ func main(){
 
 `float64` ne permet pas de conserver les grand entiers, on peut perdre la valeur exact.
 
+---
 
+## Formatage des nombres 
+
+Le formatage ne modife pas le nombre, il permet d'ameliorer l'affichage.
+
+### Formatage des float 
+
+Par defaut, Go essaie de produit un nombre raisonable. Avec `Printf`, il est possible de definir combien de chiffre apres la virgule afficher, quel format choisirm etc 
+
+- `%f` : affiche un nombre a virgule flottante en notation decimal 
+- `%.2f` : affiche deux nombre apres la virgule en arronissant l'affichage 
+- `%.0f` : affiche sans partie decimal en arrondissant pour l'affichage
+- `%.3f` : trois chiffres apres la virgule
+- `%g` : forme normal ou exposant 
+- `%.3g` : chiffre significatif
+
+```go 
+func main(){
+  x := 1.0 / 3.0
+
+  fmt.Printf("%f\n", x) // 0.33333
+  fmt.Printf("%.2f", x) // 0.33 
+  fmt.Printf("%.0f", x) // 0 
+
+  a := 12345.6789
+  b := 0.000012345
+
+  fmt.Printf("%g", a) // 12345.6789
+  fmt.Prinf("%g", b) // 1.2345e-05
+  fmt.Prinf("%.3g", a) //1.23e+04
+}
+```
+
+---
+
+## Arrondis 
+
+Pour faire des arrondis, on utilise le package `math` qui fournis des fonctions utile pour faire differents types d'arrondis.
+
+L'arrondis viens modifier la valeur.
+
+```go
+import (
+  "fmt"
+  "math"
+)
+
+func main(){
+  // arrondis a l'entier proche 
+  fmt.Println(math.Round(2.5)) // 3
+  
+  // arrondis vers le bas 
+  fmt.Println(math.Floor(2.9)) // 2
+
+  // arrondis vers le haut 
+  fmt.Println(math.Ceil(2.1)) // 3
+}
+```
+
+### Arrondis a deux chiffres comment valeur 
+
+Le formatage avec `%.2f` ne modifie par la valeur elle meme. Pour obtenir reellement une valeur a deux chiffres, on utilice ce code 
+
+```go 
+import (
+  "fmt"
+  "math"
+)
+
+func main(){
+  x := 12.3456
+  y := math.Round(x * 100) / 100
+
+  fmt.Printf("%.10f", x) // 12.345600000
+  fmt.Printf("%.10f", y) // 12.350000000 => la valeur est modifier avec l'arrondis
+}
+```
 
