@@ -17,8 +17,10 @@ nav:
       - Constante: go/constante.md
       - Types: go/types.md
       - Condition: go/condition.md
+      - Boucle: go/boucle.md
       - Arithmetique: go/arithmetique.md
       - Binaire: go/binaire.md
+      - Fonction: go/fonction.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:
