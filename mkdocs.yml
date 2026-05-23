@@ -14,9 +14,11 @@ nav:
       - Affichage: go/affichage.md
       - Saisie: go/saisie.md
       - Variable: go/variable.md
+      - Constante: go/constante.md
       - Types: go/types.md
       - Condition: go/condition.md
       - Arithmetique: go/arithmetique.md
+      - Binaire: go/binaire.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:

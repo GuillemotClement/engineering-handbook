@@ -81,17 +81,6 @@ func main(){
 }
 ```
 
-#### Conversion - int64()
-
-```go
-package main
-
-func main(){
-  i := 17
-	i64 := int64(i) // convertion int => int64
-}
-```
-
 ### uint
 
 Le type `uint` permet de stocker des nombre positif. Sa taille en bit depant de la plateforme de la machine. Il peut etre utile dans ce type de cas :
@@ -108,17 +97,6 @@ import "fmt"
 func main(){
   u := uint(17)
   fmt.Printf("%v (%T)\n", u, u) // 17 (uint)
-}
-```
-
-#### Conversion - uint()
-
-```go
-package main
-
-func main(){
-  i := 17
-	u := uint(i) // convertion int => uint
 }
 ```
 
@@ -164,6 +142,85 @@ func main(){
   fmt.Printf("x=%v\n", x) // x=0.3000000000004
   fmt.Printf("x=%.17f\n", x) // x=3.00000000004
   fmt.Printf("x=%T\n", x) // type=float64
+}
+```
+
+---
+
+## Formatage des nombres
+
+Le formatage ne modife pas le nombre, il permet d'ameliorer l'affichage.
+
+### Formatage des float
+
+Par defaut, Go essaie de produit un nombre raisonable. Avec `Printf`, il est possible de definir combien de chiffre apres la virgule afficher, quel format choisirm etc
+
+- `%f` : affiche un nombre a virgule flottante en notation decimal
+- `%.2f` : affiche deux nombre apres la virgule en arronissant l'affichage
+- `%.0f` : affiche sans partie decimal en arrondissant pour l'affichage
+- `%.3f` : trois chiffres apres la virgule
+- `%g` : forme normal ou exposant
+- `%.3g` : chiffre significatif
+
+```go
+func main(){
+  x := 1.0 / 3.0
+
+  fmt.Printf("%f\n", x) // 0.33333
+  fmt.Printf("%.2f", x) // 0.33
+  fmt.Printf("%.0f", x) // 0
+
+  a := 12345.6789
+  b := 0.000012345
+
+  fmt.Printf("%g", a) // 12345.6789
+  fmt.Prinf("%g", b) // 1.2345e-05
+  fmt.Prinf("%.3g", a) //1.23e+04
+}
+```
+
+---
+
+## Arrondis
+
+Pour faire des arrondis, on utilise le package `math` qui fournis des fonctions utile pour faire differents types d'arrondis.
+
+L'arrondis viens modifier la valeur.
+
+```go
+import (
+  "fmt"
+  "math"
+)
+
+func main(){
+  // arrondis a l'entier proche
+  fmt.Println(math.Round(2.5)) // 3
+
+  // arrondis vers le bas
+  fmt.Println(math.Floor(2.9)) // 2
+
+  // arrondis vers le haut
+  fmt.Println(math.Ceil(2.1)) // 3
+}
+```
+
+### Arrondis a deux chiffres comment valeur
+
+Le formatage avec `%.2f` ne modifie par la valeur elle meme. Pour obtenir reellement une valeur a deux chiffres, on utilice ce code
+
+```go
+import (
+  "fmt"
+  "math"
+)
+
+func main(){
+  x := 12.3456
+  y := math.Round(x * 100) / 100
+
+  fmt.Printf("%.10f", x) // 12.345600000
+  fmt.Printf("%.10f", y) // 12.350000000 => la valeur est modifier avec l'arrondis
 }
 ```
 
@@ -444,79 +501,46 @@ func main(){
 
 ---
 
-## Formatage des nombres
+## Type personnalise de nombre 
 
-Le formatage ne modife pas le nombre, il permet d'ameliorer l'affichage.
+On peut venir creer un nouveau type, qui en interne est stocke comme un nombre mais qui a un sens distinct et des regles de compatibilite disctinct.
 
-### Formatage des float
+Par exemple, un nouveau type `Status` qui sera stocker comme un `int`. Ce n'est pas une variable, ni une constante, c'est un nouveau type.
+Il aura la meme representation interne que `int` mais pour le compilateur, c'est un type specifique, et il cessera de malanger ce nouveau type avec un `int` classique.
 
-Par defaut, Go essaie de produit un nombre raisonable. Avec `Printf`, il est possible de definir combien de chiffre apres la virgule afficher, quel format choisirm etc
-
-- `%f` : affiche un nombre a virgule flottante en notation decimal
-- `%.2f` : affiche deux nombre apres la virgule en arronissant l'affichage
-- `%.0f` : affiche sans partie decimal en arrondissant pour l'affichage
-- `%.3f` : trois chiffres apres la virgule
-- `%g` : forme normal ou exposant
-- `%.3g` : chiffre significatif
-
-```go
+```go 
 func main(){
-  x := 1.0 / 3.0
+  type Status int // declaration du nouveau type 
 
-  fmt.Printf("%f\n", x) // 0.33333
-  fmt.Printf("%.2f", x) // 0.33
-  fmt.Printf("%.0f", x) // 0
+  var s Status = 1 // declaration d'une variable avec le type Status 
+  fmt.Printf("%T %v\n", s, s) // main.Status 1 
 
-  a := 12345.6789
-  b := 0.000012345
+  // exemple failed
+  var code int = 2 
+  var s Status = code // impossible, le type ne correspond pas
 
-  fmt.Printf("%g", a) // 12345.6789
-  fmt.Prinf("%g", b) // 1.2345e-05
-  fmt.Prinf("%.3g", a) //1.23e+04
+  var s Status = 2 
+  var code int = s // impossible le type ne correspond pas
 }
 ```
 
----
+Le type s'affiche comme `main.Status` et non comme `int`. 
 
-## Arrondis
+### Conversion explicite des type personnaliser de nombre 
 
-Pour faire des arrondis, on utilise le package `math` qui fournis des fonctions utile pour faire differents types d'arrondis.
-
-L'arrondis viens modifier la valeur.
+La conversion explicite fonctionne de la meme maniere que pour les type de base.
 
 ```go
-import (
-  "fmt"
-  "math"
-)
-
 func main(){
-  // arrondis a l'entier proche
-  fmt.Println(math.Round(2.5)) // 3
+  type Status int 
 
-  // arrondis vers le bas
-  fmt.Println(math.Floor(2.9)) // 2
+  // int -> status
+  var code int = 2 
+  var s Status = Status(code) // conversion explicite 
 
-  // arrondis vers le haut
-  fmt.Println(math.Ceil(2.1)) // 3
+  // Status -> int 
+  var s Status = 2 
+  code := int(s) // conversion explicite 
 }
 ```
 
-### Arrondis a deux chiffres comment valeur
-
-Le formatage avec `%.2f` ne modifie par la valeur elle meme. Pour obtenir reellement une valeur a deux chiffres, on utilice ce code
-
-```go
-import (
-  "fmt"
-  "math"
-)
-
-func main(){
-  x := 12.3456
-  y := math.Round(x * 100) / 100
-
-  fmt.Printf("%.10f", x) // 12.345600000
-  fmt.Printf("%.10f", y) // 12.350000000 => la valeur est modifier avec l'arrondis
-}
-```

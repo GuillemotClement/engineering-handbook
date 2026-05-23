@@ -58,3 +58,4 @@ func main(){
 - `%d` : entier 
 - `%s` : string 
 - `%%` : affiche le symbole `%`
+- `%b` : binaire 
