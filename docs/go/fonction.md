@@ -197,16 +197,44 @@ func parseExpr(aS, opS, bS string) (a int, op string, b int, err error){
 }
 ```
 
-### Fonction variadiques
+---
 
-Fonctions qui prends un nombre indéterminé de paramètres. Le paramètre variadiques est toujours le dernier dans la liste des paramètres.
+## Fonction variadiques
 
-Pour déclarer une paramètre variadiques, on utilise `<name> ...T`. Lorsque l'on appelle la fonction, on pourras passer autant d'arguments que souhaité dans la fonction.
+Fonctions qui prends un nombre indéterminé de paramètres de meme type. Le paramètre variadiques est toujours le dernier dans la liste des paramètres.
+Pour déclarer une paramètre variadiques, on utilise `<name> ...T`. 
+Lorsque l'on appelle la fonction, on pourras passer autant d'arguments que souhaité dans la fonction.
 
-```go
+Dans une fonction variadique, les parametres optionnelles arrive en dernier. 
+
+Pour propager les arguments variadique, on utilise la syntaxe `args...` qui permet de passer l'ensemble des arguments lors de l'appel de la fonctions.
+
+```go 
+package main 
+
+import (
+	"fmt"
+	"errors"
+)
+
+func printReport(name string, scores ...int) error {
+	if len(scores) == 0 {
+		return errors.New("no scores for report")
+	}
+	avg, _ := average(scores) // on skip l'erreur car deja gerer avec le check precedent
+	fmt.Println("%s: count%d avg=5.2f\n", name, len(scores), avg)
+	return nil
+}
+
+func average(nums ...int) (float64, error){
+	if len(nums) == 0 {
+		return 0, errors.New("no number to average")
+	}
+	return float64(sum(nums...)) / float64(len(nums)), nil // on transmet l'ensemble des arguments variadique
+}
+
 func sum(nums ...int) int {
-	total := 0
-	// on parcours les argument reçus
+	total := 0 
 	for _, v := range nums {
 		total += v
 	}
@@ -214,51 +242,37 @@ func sum(nums ...int) int {
 }
 
 func main(){
-	fmt.Println(sum(1, 2, 3))
+	_ = printReport("Anna", 10, 20, 30) // Anna: count=3 avg=20,00
 }
 ```
+---
 
-Pour passer des arguments multiples dans une fonctions variadiques, on utilise `...args` :
+## Fonction anonymes
 
-```go
-func sum(nums ...int) int {
-	var sum int
-	for _, num := range nums {
-		sum += num
-	}
-	return sum
-}
+On souhaite parfois passer a une fonction des donnes mais egalement des infstruction. Par exemple on donne une pomme (la donnee), et on indique ce que l'on souhaite (lave, coupe, manger) le comportement.
+Au lieu d'utiliser un ensemble de `if/else`, on peut passer une fonction anonyme qui s'occupe de transmettre les instructions.
 
-func printSum(prefix string, nums ...int) {
-	// on passe les différents valeurs à la fonction variadiques
-    fmt.Printf("%s %d\n", prefix, sum(nums...))
-}
-```
-
-### Fonction anonymes
-
-Une fonction anonyme est une fonction sans nom. Elle permet de transmettre un comportement.
-
-```go
-func (x int) int {
+```go 
+// declaration fonction anonyme => sans nom
+func(x int) int {
 	return x * 2
 }
 ```
 
-#### Appel immédiat (IIFE)
+Des que l'on ecrit `fun(...){ ... }`, on creer une valeur. Ce n'est pas encore l'execution.
 
-Parfois, il peut être intéressant d'exécuter un bloc de code directement (IIFE).
 
-Les parenthèses à la fin permette de déclencher l'appel de la fonction anonyme.
+Parfois, il peut être intéressant d'exécuter un bloc de code directement (IIFE). Les parenthèses à la fin permette de déclencher l'appel de la fonction anonyme.
 
 ```go
+// fonction anonyme qui print les deux lignes
 func (){
 	fmt.Println("=== MiniCalc ===")
 	fmt.Println("Entrez: a op b rule")
-}()
+}() // les parentheses a la fin signifie un appel 
 ```
 
-On peut également passer un paramètre et un résultat à la fonction anonyme
+On peut également passer un paramètre et un résultat à la fonction anonyme et l'executer directement pour que la variable recoive la valeur retourner par celle ci.
 
 ```go
 res := func(x int) int {
@@ -268,70 +282,83 @@ res := func(x int) int {
 fmt.Println(res) // 25
 ```
 
-#### Calculer puis assigner
+Parfois le calcul exisge des `if` mais on ne souhaite pas encombrer le code avec des variables temporaire 
 
-Parfois, le calcul exige un `if` mais on ne souhaite pas encombrer `main` avec des variables temporaire.
+```go 
+x := -10 
 
-```go
-x := -10
-
+// recupere la valeur de la fonction anonyme
 sign := func(n int) string {
 	if n < 0 {
-		return "negative"
+		return "negatif"
 	}
-
-	if n == 0 {
+	if n ==  0 {
 		return "zero"
 	}
-
-	return "postive"
+	return "positive"
 }(x)
 
-fmt.Println(sign) // negative
+fmt.Prinln(sign) // negative
 ```
 
-#### Fonction comme valeur
+### Fonction comme valeur
 
-On peut venir stocker une fonction dans une variable.
+Une variable peut stocker une fonction. 
 
-```go
+```go 
 f := func(x int) int {
 	return x + 1
 }
 
 fmt.Println(f(10)) // 11
 ```
+Dans ce code, on declare une variable qui stocke une fonction anonyme. On appelle ensuite cette fonction en utilisant le nom de variable `f`.
 
-#### Type de fonction
+---
 
-On peut venir définir un type pour les fonction.
 
-```go
+### Fonction nil 
+
+Une fonction decarer via `var` vaut `nil` par defaut 
+
+```go 
+var rule func(int) int // nil
+```
+
+---
+
+### Nommer un type de fonction 
+
+Il est possible de declarer des types pour une fonction. Cela permet d'ameliorer la lisibilite 
+
+```go 
 type Rule func(int) int
 ```
 
-#### Fonction d'ordre supérieur
+### Fonction d'ordre supérieur
 
-Fonction qui accepte une autre fonction et l'utilise à l'intérieur.
+Une fonction d'ordre superieur est une fonction qui accepte une autre fonction et l'utilise a l'interieur. Elle peut parfois retourner egalement une fonction.
 
 ```go
 // type de fonction
 type Rule func(int) int
 
+// `r` est la fonction qui est passer en parametre a une autre fonction.
 func apply(x int, r Rule) int {
 	return r(x)
 }
 
 // utilisation avec une fonction nommée
-func double(x int) int { return x * 2}
-
+func double(x int) int { 
+	return x * 2 // retourne le parametre doubler
+} 
 fmt.Println(apply(10, double)) // 20
 
 // utilisation avec une fonction anonyme
 fmt.Println(apply(10, func(x int) int { return x * x})) // 100
 ```
 
-Le deuxième paramètre de la fonction `apply` est une fonction. Elle retourne le résultat de la fonction passé en paramètre.
+`apply` ne sait rien doubler. Elle sait seulement qu'on lui donne `x` et la regle `r`. De cette maniere, on envoie une valeur et un comportement a la fonction.
 
 Un autre exemple avec une fonction qui prends un nombre de répétition et une action
 
@@ -357,9 +384,9 @@ Par exemple, pour implémenter un compteur. La fonction `makeCounter` retourne u
 
 ```go
 func makeCounter() func () int {
-	n := 0
+	n := 0 // visible dans la fonction anonyme
 	return func() int {
-		n++
+		n++ // retourne la variable dans la portee superieur 
 		return n
 	}
 }

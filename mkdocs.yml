@@ -10,6 +10,8 @@ nav:
       - Old: linux/old.md
   - Go:
       - New: go/index.md
+      - Core: go/core.md
+      - Package: go/package.md
       - Commentaire: go/commentaire.md
       - Affichage: go/affichage.md
       - Saisie: go/saisie.md
