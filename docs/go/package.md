@@ -129,30 +129,35 @@ func main(){
 }
 ```
 
-
 ---
 
+## Import path
 
+`Import path` c'est ce qui figure entre guillemets dans `import`. Il permet au compilateur d'aller recuperer le package pour utiliser les methodes et il doit pointer vers une adresse unique. On retrouve par exemple :
 
+- `fmt`
+- `strconv`
+` math/rand`
 
+--- 
 
+## Package name 
 
+C'est le nom donner au package. C'est celui ci qui sera pointer ensuite par `import` pour permettre au compilateur de recuperer le code necessaire.
 
+Il ne correspond pas forcement a l'import, generalement, c'est le dernier segment du chemin.
 
-
-
-
-
-### Import path
-
-L'import path permet au compilateur et aux outils d'aller chercher le code nécessaire. Il doit pointer sur un package unique.
+- import path : `math/rand`
+- package name : `rand`
 
 ```go
+// package name 
 package main
 
+// import path 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand" // on fait reference au dernier segment pour appeler les methode du package
 )
 
 func main() {
@@ -161,29 +166,71 @@ func main() {
 }
 ```
 
-Pour utiliser ensuite les fonction du package, on fait référence au package, puis la fonction que l'on souhaite utiliser.
+---
 
-Généralement, le `package name` correspond au dernier segment du chemin.
+### Package interne 
 
-#### Package avec le même nom
+Dans la lib standard, les import path sont court et fixe : `fmt`, `strings`. Dans les projets, on retrouve des import du type `github.com/someone/projet/pkg/...`. Cela permet de rendre l'import path unique dans le monde.
+
+Pour ces propres package, l'import path doit commencer par le prefixe du projet.
+
+### StudyBuddy - exemple 
+
+Le programme est un petit assistant qui demande un nom et le nomnre de tache resolu. Il affiche ensuite un petit rapport et une phrase de motivation.
 
 ```go
-package main
+// main.go 
+package main 
 
 import (
-	"crypto/rand"
-	"math/rang"
+  "fmt"
+  "math/rand"
+  "time"
 )
 
-func main(){}
+func main(){
+  rand.Seed(time.Now().UnixNano())
+
+  var name String 
+  var solved int 
+
+  fmt.Print("Name and solved :")
+  fmt.Scan(&name, &solved)
+
+  fmt.Printf("%s solved %d tasks. %s\n", name, solved, pickPhrase())
+}
+
+// 
+package main 
+
+import (
+  "math/rand"
+)
+
+func pickPhrase() string {
+  phrases := []string{"Tenez bon !", "Vous assurez !", "Encore un petit effort !"}
+  return phrases[rand.Intn(len(phrases))] // retourne une phrase aleatoire
+}
+
+// 
+package main 
+
+import (
+  "math/rand"
+  "time"
+)
+
+func initRandom(){
+  rand.Seed(time.Now().UnixNano())
+}
 ```
 
-Ce code ne compileras pas car dans un fichier, il ne peut pas avoir deux package avec le même nom d'import
+---
 
-### Imports
+## Imports
 
-`import` permet d'ajouter une dépendance dans le fichier, et ainsi d'utiliser des fonctions d'un package.
-L'instruction indique au compilateur quels packages est nécessaire à ce **fichier précis**
+Pour utiliser du code exterieur au package, on utilis `import`. L'import est valide uniquement pour le fichier. 
+Il existe deux formes d'import : grouper ou seule :
 
 ```go
 // import seul
@@ -196,13 +243,13 @@ import (
 )
 ```
 
-#### Alias d'import
+### Alias d'import
 
 Dans le cas ou l'on souhaite importer plusieurs package ayant le même nom, ou si le nom de package n'est pas idéale, on peut venir créer un alias.
 Cela permet de renommer un package dans un fichier.
 
 ```go
-// améioration de la lisibilité
+// amélioration de la lisibilité
 package main
 
 import (
@@ -234,12 +281,10 @@ func main(){
 }
 ```
 
-#### Blank import
+### Blank import _
 
-Le blank import est un lorsque l'on importe un package sans introduire son nom dans le code.
-On l'utilise dans le cas où le package doit être chargé et exécuter sans utiliser ces fonctions ou type.
-
-En go, des package peut avoir du code d'initialisation, qui s'exécute automatiquement au démarrage du programme. Par exemple, pour les pilotes de base de donnée. On les appelles pas directement, mais il sont enregistrée à l'intérieur de `database/sql`.
+Le blank import est un lorsque l'on importe un package sans introduire son nom dans le code. On l'utilise dans le cas où le package doit être chargé et exécuter sans utiliser ces fonctions ou type.
+En go, des package peuvent avoir du code d'initialisation, qui s'exécute automatiquement au démarrage du programme. Par exemple, pour les pilotes de base de donnée. On les appelles pas directement, mais il sont enregistrée à l'intérieur de `database/sql`.
 
 ```go
 package main
@@ -254,13 +299,25 @@ func main() {
 }
 ```
 
-### init()
+---
 
-Fonction spécial qui est appelée automatiquement, et s'exécute avant `main()`. Le runtime Go exécute l'initialisation du paquet (mise en place des variables globales, et les appels à `init()`), puis ensuite passe à `main()`.
 
-La fonction ne prends aucun paramètres et ne retourne aucune valeur de retour.
+## init()
 
-Si plusieurs fonctions `init()` sont déclarée, ils s'exécutent tous avant.
+Fonction spécial qui est appelée automatiquement, et s'exécute avant `main()`. Elle ne prend aucun paramètres et ne retourne aucune valeur de retour.
+Elle fait partie du processus d'initialisation des paquets : le runtime Go execute l'initialisation du paquet (mise en place des variables globales, et appel a `init()`) puis il passe a l'execution de `main()`
+
+```go
+func init(){
+  // initialisation automatique
+}
+```
+
+L'ordre d'execution est le suivant :
+
+1. les paquets importe sont initialiser (variables et leur `init()`)
+2. le paquet courant est initialiser
+3. `main()` est lancer depuis `package main`
 
 ```go
 package main
@@ -276,50 +333,84 @@ func main(){
 }
 ```
 
-Ce système provoque des effet secondaire et doit être utiliser avec précaution.
+Si plusieurs `init()` sont present, il s'execute tous avant le `main()`. Mais attention, cela peut provoquer des comportements innatendu.
 
-#### init explicite
 
-Lorsqu'une fonction `init()` commence à grossir, on peu venir créer une initialisation explicite, pour rendre le code plus explicite.
+### Utilisation acceptable 
 
-On créer une fonction, par exemple `initApp()`, que l'on appelle ensuite dans le `main()`
+Il existe certain cas ou l'utilisable `init()` est utile : 
 
-```go
-package main
+- ne peut pas planter avec une erreur normal 
+- ne depend pas de l'entree utilisateur, fichiers ou reseau 
+- ne cache pas la logique metier du demarrage de l'application 
+
+Par exemple, la preparation d'un generateur de nombre pseudo-aleatoire pour des besoins interne. 
+
+```go 
+package main 
 
 import (
-	"fmt"
-	"time"
+  "fmt"
+  "math/rand"
+  "time"
 )
 
-func initApp() (string, time.Time){
-	prefix := "stats: "
-	if prefix == ""{
-		return "", errors.New("empty prefix")
-	}
-	return prefix, nil
+var runID int // prepare la variable en globale
+
+func int(){
+  // lancer automatiquement et set la variable avec la valeur aleatoire
+  runID = rand.New(rand.NewSource(time.Now().UnixNano())).Intn(10000)
 }
 
 func main(){
-	// appel de la fonction d'initialisation
-	prefix, err := initApp()
-	if err != nil {
-		fmt.Println("init error:", err)
-		return
-	}
-	fmt.Println(prefix + "ready")
+  fmt.Println("run id: ", runID ) // run id: 123 (exemple)
 }
 ```
 
-### Anti-patterns de package
+### init explicite
 
-En Go, un package est une **frontière de responsabilité**, et un **contrat pour les autres parties du code**.
+Il est preferable de creer une fonction d'initalisation explicite, ou on l'appelle depuis `main()`. Par exemple, dans une app, on souhaite obtenir des prefixe pour les affichages.
 
-#### Etat global et config global
+```go 
+package main 
 
-Lorsque l'on déclare une variable dans la portée globale, elle vit plus longtemps que ce que l'on pense, et elle est modifiable depuis de nombreux endroits, le comportement peut devenir floue (changement de valeur innatendu, ...)
+import (
+  "fmt"
+)
+
+func initApp() (string, error) {
+  prefix := "stats: " // definition du prefix
+  if prefix := "" {
+    return "", errors.New("empty prefix")
+  }
+  return prefix, nil
+}
+
+func main(){
+  prefix, err:= initApp() // initialisation explicite
+  if err != nil {
+    fmt.Println("init error:" err)
+    return
+  }
+  fmt.Println(prefix, "ready")
+}
+```
+
+---
+
+## Anti-patterns de package
+
+En Go, un package est une **frontière de responsabilité**, et un **contrat pour les autres parties du code**. Tout ce qui est exporter depuis un package devient une partie de la "promesse" vers les autres. Si on modifie cette promesse, on casse les client. L'API publique d'un lib standard ne peut pas etre simplement deplacer, sinon les programmes externe qui en dependent casse.
+
+### Etat global
+
+Lorsque l'on déclare une variable dans la portée globale, elle vit plus longtemps que ce que l'on pense, et elle est modifiable depuis de nombreux endroits, le comportement peut devenir floue (changement de valeur innatendu, ...). **L'etat mutable doit etre le plus local et le plus explicite possible**.
+
+Lorsqu'une variable globale se trouve dans un paquet, on ajoute une "memoire cacher" au package.
+
 
 ```go
+// anti pattern
 package main
 
 var lastResult int // état global => n'importe qui peut modifier
@@ -329,7 +420,7 @@ func addToLast(x int){
 }
 ```
 
-Pour conserver un état "global", on préfère la déclarer près de `main()`, et la transmettre explicitement.
+L'ideal est de declarer l'etat au plus pres des besoin dans le `main()` et de la transmettre de maniere explicite.
 
 ```go
 package main
@@ -345,34 +436,39 @@ func main() {
 }
 ```
 
-Attention, cela reste une mauvaise pratique. L'import de ce paquet dépend de l'historique des appels, et pas seulement des paramètres d'entrée des fonctions.
+### Config global 
 
-Pour garder une bonne pratique, le mieux est d'utiliser une constante pour une variable qui ne doit pas changer de valeur, et si la valeur doit changer, la définir près de la logique
-
-L'état mutable doit être le plus local et explicite.
+Pour definir des variable de config global, l'ideal est d'utiliser des `const`, soit comme une valeur que l'on transmet de maniere explicite la ou elle est necessaire.
 
 ```go
-package main
+// declaration avec une const 
+package pain 
 
 const appName = "CalcCLI"
 
 func main(){
-	_ := appName
+  _ = appName // securisee : on ne peut pas modifier une constante 
 }
-
-func formatResult(n int, debug bool) string {
-	if debug {
-		return "DEBUG: result="
-	}
-	return "result="
-
-}
-
 ```
 
-#### Dépendances inutiles et imports qui s'étendent
+Si la valeur doit changer, on la transmet 
 
-Les imports peuvent être "utile", mais conceptuellement inutiles. Par exemple `fmt` dans la logique pour un `Print()` de débug.
+```go 
+package main 
+
+func formatResult(n int, debug bool) string {
+  if debug {
+    return "DEBUG: result=" // puis ajout du nombre
+  }
+  return "result="
+}
+```
+
+### Dépendances inutiles et imports qui s'étendent
+
+Les imports doivent etre limiter le plus possible. Plus il y a d'import de declarer dans un fichier, et plus il est difficile de comprendre ce que fais le fichier.
+
+Les imports peuvent être "utile", mais conceptuellement inutiles. Par exemple `fmt` dans la logique pour un `Print()` de débug, puis cet import est garder alors qu'il n'est plus necessaire.
 
 ```go
 // anti-pattern
@@ -387,7 +483,6 @@ func add(a, b int) int {
 ```
 
 En plus du "bruit", la fonction `add` fait maintenant deux choses : calcule et imprime.
-
 Pour améliorer, on peut utiliser ce pattern
 
 ```go
@@ -405,7 +500,7 @@ func main(){
 }
 ```
 
-#### Fuite des détails d'implémentation via l'API
+### Fuite des détails d'implémentation via l'API
 
 Si le package renvoie ou accepte dans ses fonctions publiques des types qui sont des détails d'implémentation, on lie le code externe à ces détails.
 Pour faire évoluer le code, cela peut devenir compliquer.
@@ -416,7 +511,7 @@ Les fonction publiques d'un paquet doivent communiquer avec le monde exterieur v
 
 On peut retrouver dans les projet Go, des package `uils`, `helpers` ou `common` et y mettre tout et n'importe quoi.
 
-Pour corrige cela, on vient nommer correctement en se basant sur le sens.
+Pour corrige cela, on vient nommer de maniere explicite les packages en se basant sur le sens.
 
 | Nom frequent | Pourquoi c'est peu lisible           | Alternative plus previsible                                |
 | ------------ | ------------------------------------ | ---------------------------------------------------------- |
@@ -427,7 +522,7 @@ Pour corrige cela, on vient nommer correctement en se basant sur le sens.
 
 #### Architecture propre simple
 
-Pour garder un projet maintenable, on peut utiliser ce type d'architecture.
+Pour garder un projet maintenable, on peut utiliser ce type d'architecture. L'idee est de separer le code par sens, au moins par fichier et de garder les dependance locale.
 
 ```tree
 calccli/
@@ -437,7 +532,6 @@ calccli/
 ```
 
 Chaque fichier possède sa responsabilité.
-
 Par exemple, le fichier `ops.go` est charger d'implémentation les fonctions responsables des calculs
 
 ```go
