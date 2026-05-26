@@ -23,6 +23,7 @@ nav:
       - Arithmetique: go/arithmetique.md
       - Binaire: go/binaire.md
       - Fonction: go/fonction.md
+      - Tableau et slice: go/slice.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:
