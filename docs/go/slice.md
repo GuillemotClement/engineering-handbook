@@ -39,98 +39,63 @@ func main(){
 
 ## Slice
 
-Un slice est une structure descriptive qui fait reference a un `backing array`. Cette structure est appeler `slice header`.
-Elle est compose de trois elements : `pointer`,  `len`, et `cap`. 
-Le slice est une vue sur un array.
+Un slice est une `view` sur un `bakcing array`. Il contient un structure description le `slice header`
+Celui ci se compose de trois elements qui decrive la structure :
 
-## Creation de slice
+- `pointer` : reference l'emplacement memoire du premier element du slice. Deux slice peuvent referencer le meme emplacement memoire
+- `len` : nombre d'elements du slice accessible. `len()` retourne le nombre d'element du slice
+- `cap` : definis la capacite memoire pour le slice. Cette reserve permet d'agrandir un slice sans realocation
 
-Un slice est creer avec `[]T{...}`, ou `T` est le type des elements du slice.
+### Creation de slice
+
+Un slice peut etre vide mais pour deux raison : elle n'est pas encore initialiser ou elle existe mais contient `0` elements.
+Ces deux etats ont une grosse influences sur le resultat des tests, des comparaison et la facon de lire le code.
+
+| Etat du slice              | Implementation            | s == nil | len(s) | cap(s) | Affichage |
+| -------------------------- | ------------------------- | -------- | ------ | ------ | --------- |
+| slice `nil`                | `var s []int`             | `true`   | 0      | 0      | []        |
+| empty slice                | `s := []int{}`            | `false`  | 0      | 0      | []        |
+| empty avec reserve de capa | `s := make([]int, 0, 10)` | `false`  | 0      | 10     | []        |
+
+- `slice nil` : le slice n'existe pas encore, et ne pointe vers aucun emplacement memoire.
 
 ```go
 func main(){
+  // slice avec valeur ==============================
   s := []int{1, 2, 3} // creation du slice
   s[0] = 99 // affectation
 
+  len(s) // 3
+  cap(s) // 3
   fmt.Println("s: ", s) // s: [99, 2, 3]
+
+  // slice nil ======================================
+  var nums []int // declaration du slice nil
+
+  fmt.Prinln(nums == nil) // true
+  fmt.Println(len(nums), cap(nums)) // 0 0
+  fmt.Println(nums) // [] afficher mais valeur est nil
+
+  // slice empty litteral
+  tasks := []string{} // creation litteral du slice vide
+
+  fmt.Println(tasks == nil) // false
+  fmt.Println(len(tasks), cap(tasks)) // 0 0
+  fmt.Println(tasks) // []
+
+  // slice empty avec make
+  tasks := make([]string, 0)
+
+  fmt.Println(tasks == nil) // false
+  fmt.Println(len(tasks), cap(tasks)) // 0 0
 }
 ```
 
-### Slice Header
-
-Un slice ne contient pas les elements eux meme, mais une structure descriptive qui indique ou se trouve les elements, et combien sont disponible. Ce modele est le `slice header`. Cette description comporte trois parties `pointer`, `len`, `cap`
-
-### pointer - reference du slice
-
-`pointer` permet de referencer l'emplacement memoire du premier element du slice, c'est a dire l'adresse du debut des donnees. Ainsi, deux valeurs slice differentes peuvent referencer un meme ensemble d'elements.
-
-```go
-func main(){
-  s := []int{1, 2, 3}
-  t := s // copie du slice header
-  t[0] = 99 // modifie la valeurs dans les deux slices
-
-  fmt.Println(s) // [99, 2, 3]
-  fmt.Println(t) // [99, 2, 3]
-}
-```
-
-Lorsque l'on fait une copie de slice `t := s`, on copie le slice header (`pointer / len / cap`). Le pointer de `t` et celui de `s` pointe sur le meme tableau sous jacent (`backing array`). La modification de l'un affecte egalement l'autre.
-
-### len - longueur visible et limites d'indexation
-
-`len(s)` permet de connaitre combien d'element du slice sont actuellement accessible a travers cete fenetre (le slice). Ce nombre definis combien on peut lire/ecrire en toute securite par indice.
-Un depacement de limite de slice en Go provoque une panic.
-
-```go
-func main(){
-  s := []int{10, 20, 30}
-  fmt.Println(len(s)) // 3
-
-  fmt.Println(s[0]) // 10
-  fmt.Prinln(s[2]) // 30
-  fmt.Println(s[3]) // panic: index out of range
-}
-```
-
-Dans un scenario ou l'on connait a l'avance le nombre d'elements que le slice viens stocker, on peut fixer la `len` a la creation du slice.
-
-```go
-func main(){
-  var n int
-  fmt.Scan(%n)
-
-  nums := make([]int, n) // on fixe la longueur du slice
-  for i := 0; i < len(nums); i++ {
-    fmt.Scan(&nums[i]) // on ecris la valeur dans le slice
-  }
-
-  fmt.Println(nums) // [5 10 15]
-}
-```
-
-### cap - capacite et reserve
-
-`cap(s)` definis combien d'elements peuvent tenir dans ce segment memoire, a partir du debut du slice, sans deplacement ailleurs.
-C'est une "reserve" qui permet d'agrandir un slice. Le `cap` ne permet pas d'acceder au indice, il gere uniquement le mecanisme interne et les performances.
-
-```go
-func main(){
-  // make permet de creer un slice et de definir le slice header
-  s := make([]int, 2, 5) // len=2 cap=5
-  fmt.Println(s) // [0, 0]
-}
-```
-
-Dans ce code :
-
-- `len = 2` signifie que deux elements sont disponibles, tous deux valent pour l'instant `0`
-- `cap=5` : signifie que jusqu'a 5 elements peuvent tenir dans ce bloc memoire
-
+---
 
 ### Copie de slice
 
-Lorsque l'on vient copier un slice, on vient faire la copie de la desription du slice et les elements restent inchange. On copie le slice header.
+Lorsque l'on vient copier un slice, on vient faire la copie `slice header` et les elements restent inchange.
 
 ```go
 func main(){
@@ -143,16 +108,11 @@ func main(){
 }
 ```
 
-Lorque l'on fait une copie de slice, on fait juste une copie de ce slice header, ce qui est beaucoup moins lourds que de faire une copie de tableau, ou dans ce cas, on copie les elements du tableau.
-
 ---
 
-## Passage a une fonction
+### Utilisation avec des fonctions
 
-En go tout est transmis par valeur. Cela signfie qu'au moment de l'appel, Go copie la valeur de l'argument dans le parametre.
-
-Pour un tableau, la valeur ce sont tous les elements.
-Pour un slice, la valeur est une structure de description qui reference les elements stocker ailleurs.
+Lorsque l'on transmet un slice a une fonction, c'est le `slice header` qui est transmis. Le slice sera modifier par la fonction
 
 ```go
 // la fonction prends un tableau comment argument
@@ -180,120 +140,9 @@ func main(){
 Avec le tableau, `setFirstArray()` recoit une copie du tableau, et modifie la copie. L'original n'est pas copier.
 Avec le slice, `setFirstSlice()`, c'est une copie de la description du slice qui est recu, et cette description pointe vers les elements du slice. La fonction modifie le slice.
 
-### Exemple - analyseur de depense
-
-Une mini application qui analyse les depenses. On souhaite stocker les depenses par jours et calculer la somme. Il y a deux scenario :
-
-- premier scenario: on calcule les depenses pour 7 jours. On utilise un tableau `[7]int` : la taille est fixe, les depenses sont toujours complete
-- deuxieme scenario : on calcule les depenses pour un nombre arbritaire de jours. On utilise alors un slice.
-
-```go
-package main
-
-import "fmt"
-
-// scenario 1 - utilisation avec tableau
-func sumWeek(week [7]int) int {
-  total := 0
-  // on parcourt le tableau
-  for _, v := range week {
-    total += v // on calcul la somme pour tous les jours de la semaine
-  }
-  return total
-}
-
-// scenario 2 - utilisation avec slice
-func sumDays(days []int) int {
-  total := 0
-  for _, v := range days {
-    total += v
-  }
-  return total
-}
-
-func main(){
-  // le tableau stocke les depenses par jours (7) pour une semaine
-  week := [7]int{100, 0, 50, 20, 10, 0, 70}
-  fmt.Println(sumWeek(week)) // 250
-
-  // le slice contient les depenses par jours pour un nombre variable de jours
-  days := []int{100, 0, 50, 20}
-  fmt.Println(sumDays(days)) // 170
-}
-```
-
 ---
 
-## Comparaison
-
-- les tableaux peuvent etre comparer avec `==` si tous les elemnts sont comparable
-- les slice ne peuvent pas etre comparer avec `==` sauf pour une valeur `nil`
-
-```go
-func main(){
-  // comparaison de tableau
-  a := [2]int{1, 2}
-  b := [2]int{1, 2}
-  fmt.Println(a == b) // true
-
-  // comparaison de slice
-  s := []int{1, 2}
-  _ = s
-  fmt.Println(s == s) // erreur de compilation
-}
-```
-
----
-
-## Slice header
-
-
-### Affichage de l'etat du slice
-
-Il est possible d'afficher les valeurs de slice header pour du debugage.
-
-```go
-func printSliceState(name string, s []int){
-  fmt.Println("%s: len=%d cap=%d data=%v\n", name, len(s), cap(s), s)
-}
-
-func main(){
-  a := make([]int, 2, 5)
-  printSliceState("a", a) // a: len=2 cap=5 data=[0 0]
-}
-```
-
----
-
-## Slice nil et empty slice
-
-Une liste peut etre vide mais pour deux raison : elle n'est pas encore initialiser ou elle existe mais contient `0` elements.
-Ces deux etats ont une grosse influences sur le resultat des tests, des comparaison et la facon de lire le code.
-
-| Etat du slice              | Implementation            | s == nil | len(s) | cap(s) | Affichage |
-| -------------------------- | ------------------------- | -------- | ------ | ------ | --------- |
-| slice `nil`                | `var s []int`             | `true`   | 0      | 0      | []        |
-| empty slice                | `s := []int{}`            | `false`  | 0      | 0      | []        |
-| empty avec reserve de capa | `s := make([]int, 0, 10)` | `false`  | 0      | 10     | []        |
-
-## Slice nil
-
-Pour un slice, la zero value est `nil`. Elle signfie que le slice n'existe pas encore, il ne pointe vers aucune adresse memoire.
-On retrouve cette forme lors d'une declaration ordinaire :
-
-```go
-func main(){
-  var nums []int // declaration du slice
-
-  fmt.Prinln(nums == nil) // true
-  fmt.Println(len(nums), cap(nums)) // 0 0
-  fmt.Println(nums) // [] afficher mais valeur est nil
-}
-```
-
----
-
-## Make
+### Make
 
 `make` permet de creer des conteneurs pret a l'emplois : slices, maps, canaux.
 L'utilise du `make` permet de specifier la forme du slice en fournissant la longueur et la capa
@@ -319,37 +168,6 @@ func main(){
   fmt.Println(b, len(b), cap(b)) // [] len=0 cap=3
 }
 ```
-
----
-
-## Slice vide
-
-Un slice vide est un slice ou `len` == 0 mais qui n'est pas egale a `nil`. Le slice existe et contient zero element. Il existe deux maniere d'obtenir un slice vide
-
-### litteral []T{}
-
-```go
-func main(){
-  tasks := []string{} // creation litteral du slice vide
-
-  fmt.Println(tasks == nil) // false
-  fmt.Println(len(tasks), cap(tasks)) // 0 0
-  fmt.Println(tasks) // []
-}
-```
-
-### make([]T, 0)
-
-```go
-func main(){
-  tasks := make([]string, 0)
-
-  fmt.Println(tasks == nil) // false
-  fmt.Println(len(tasks), cap(tasks)) // 0 0
-}
-```
-
----
 
 ## Tests
 
@@ -635,10 +453,10 @@ func main(){
 
 ---
 
-## Decoupage de slice
+## Borne de slice
 
 Il est possible de decouper une slice en indiquant l'index de depart, et l'index de fin. Le premier index indiquer est le depart, et le second c'est l'index de fin non inclut.
-
+En cas de depassement de borne, on obtient une panic.
 Pour que le decoupage soit valide : `0 <= a <= b <= cap(s)`. La borne superieur est comparer a `cap`. Le decoupage est une modification de la fenetre, et une fenetre peut en principe s'etendre jusqu'a la capaciter memoire allouer.
 
 - `[:n]` : du debut jusqu'a la borne sup non inclut
@@ -931,3 +749,5 @@ func main(){
   fmt.Println(s) // [A B D]
 }
 ```
+
+revoir niveau 12 - 13 et retrvailler cette notes

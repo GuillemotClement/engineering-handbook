@@ -59,3 +59,5 @@ func main(){
 - `%s` : string 
 - `%%` : affiche le symbole `%`
 - `%b` : binaire 
+- `%q` : affiche une string avec des " "
+- `%c` : affiche les caractere pour les type `rune`
