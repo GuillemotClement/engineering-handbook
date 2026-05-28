@@ -751,3 +751,95 @@ func main(){
 ```
 
 revoir niveau 12 - 13 et retrvailler cette notes
+
+
+---
+## sort.Slice
+
+`sort.Slice` permet de trier n'importe quel slice on lui fournissant une regle de comparaison sous forme de fonction.
+
+Dans l'exemple, on passe en premier argument le slice, puis la function anonyme. On trie ensuite en utilisant l'index issue des slice
+
+```go 
+package main 
+
+import (
+  "fmt"
+  "sort"
+)
+
+func main(){
+  words := []string{"go", "gopher", "map", "slices"}
+
+  sort.Slice(words, func(i, j int) bool {
+    if len(words[i]) != len(words[j]) {
+      return len(words[i]) < len(words[j])
+    }
+    return words[i] < words[j] // regle pour les cas egaux
+  })
+
+  fmt.Prinln(words) // [go map gopher slices]
+}
+```
+
+---
+
+## Package slices 
+
+Le package contient des fonction pratique sur les slices comme le tri.
+
+### slices.Sort 
+
+Permet de trier des chaine et des nombres directement et ne retourne rien. Le slice est directement modifier.
+
+```go 
+import (
+  "fmt"
+  "slices"
+)
+
+func main(){
+  nums := []int{5, 2, 10, 2}
+  slices.Sort(nums) // triage 
+
+  fmt.Println(nums) // [2 2 5 10]
+}
+```
+
+---
+
+### slices.SortFunc 
+
+Tri avec comparateur. `slices.SortFunc()` demande une fonction de comparaison d'element `cmp(a, b T) int`.
+
+- si `a` doit venir avant `b` on retourne un nombre negatif 
+- si apres retourne un positif
+- si les elements sont egaux du point de vue du trie, retourne 0
+
+```go 
+package main 
+
+import (
+  "fmt"
+  "slices"
+)
+
+func main(){
+  words := []string{"go", "gopher", "map", "slices"}
+
+  slices.SortFunc(words, func(a, b string) int {
+    if len(a) != len(b) {
+      return len(a) - len(b)
+    }
+    if a < b {
+      return -1
+    }
+    if a > b {
+      return 1
+    }
+    return 0
+  })
+
+  fmt.Println(words) // [go map gopher slices]
+}
+```
