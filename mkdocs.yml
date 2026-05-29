@@ -25,6 +25,7 @@ nav:
       - Fonction: go/fonction.md
       - Tableau et slice: go/slice.md
       - Map: go/map.md
+      - Error: go/error.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:

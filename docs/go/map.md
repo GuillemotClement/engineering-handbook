@@ -44,14 +44,22 @@ func main(){
 
 Lorsqu'une cle n'existe pas dans un map, on obtient la zero value du type. Elle ne provoque pas d'erreur.
 
+Le fait de cherhcer une valeur dans un map retourne la valeur et un bool. 
+
 ```go
 func main(){
   phones := make(map[string]string)
 
   phones["alice"] = "111"
   phones["alice"] = "222" // reecriture
+
+  if _, ok := phones["alice"]; !ok {
+    return fmt.errors("not found")
+  }
 }
 ```
+
+
 
 ---
 
