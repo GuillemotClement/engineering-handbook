@@ -685,7 +685,7 @@ func main() {
 - `errors.Is` : dans la plupart des cas, on a pas besoin des details d'un type d'erreur precis. 
 - `errors.As` : lorsque l'on a besoin de construire un comportement ou un message pour un type precis d'erreur 
 
-### errors.Is - verifier la cause d'une erreur 
+### `errors.Is` - verifier la cause d'une erreur 
 
 `errors.Is(err, target)` permet de verifier si une "`err` ou une des cause dans la chaine est-elle la meme erreur que `target`.
 La fonction parcourt elle meme la chaine des cause.
@@ -701,7 +701,7 @@ func main() {
 }
 ```
 
-### errors.As - extraire une erreur du type voulu 
+### `errors.As` - extraire une erreur du type voulu 
 
 `errors.As` viens parcourir le wrapping d'erreur et essaie de trouver l'erreur du type souhaite. Si trouver, elle l'ecrit dans la variable et on peut l'utiliser comme un objet normal.
 
@@ -847,7 +847,7 @@ func main() {
 
 ---
 
-## errors.Join
+## `errors.Join`
 
 Cette methode permet de regrouper plusieurs erreurs. Au lieu d'obtenir une erreur, on obtient le rapprt d'erreur complet.
 Par exemple, un formulaire qui attends plusieurs valeurs. Au lieu de saisir, valider avoir une erreur pour un champ, puis relancer avec une erreur pour un autre champ, on retourne directement l'ensemble des raisons d'erreurs. Ou encore dans l'import de donnee, on souhaite connaitre toutes les lignes qui pose probleme.
@@ -1102,3 +1102,328 @@ func printUserMessage(err error) {
 Lorsque l'on enveloppe tous, cela peut provoquer des soucis. Cela implique que le code d'un package externe est inclut dans notre code.
 
 Vers l'exterieur, il faut toujours faire remonter la classe `validation|notFounf|io|internal`, et conserver la cause premiere pour le diag, sans encourager le code externe a construire sa logique dessus. Le moyen le plus simple est que le code externe le verifie que `ErrValidation` et ses semblabe, et que tous le reste soit du texte et du contexte pour l'humain.
+
+--- 
+
+## Panic 
+
+Go propose deux manière de gérer les erreurs. Lorsque quelque chose ne passe mal mais est attendu comme une saisie incorrect, donnée non présente ou lorsque le code viole ses propres promesses et qu'il devient dangereux de continuer.
+
+Go utilise les `error` pour les erreurs attendus. Si cela ne marche pas, on retourne l'erreur et l'appelant décide du traitement.
+
+Lorsque le programme se retrouve dans un état qui ne devrait pas arriver selon la logique du code, cela mène à une **panic**. Le flux d'exécution s'arrête, les `defer` commencent à s'exécuter, la pile se déroule vers le haut, et si personne n'intercepte la panique, le programme plante.
+
+Une `panic` indique que quelque chose est casser dans le programme. C'est un mécanisme intégré à Go qui arrête le flux normal d'exécution, lance le déroulement de la pile et garantit l'exéction des `defer` sur le chemin vers le haut. `panic` n'est pas un moyen de gére la logique métier.
+
+Un cas "approprié" : on vérifie l'entrée, mais on as quand même obtenu un état impossible. Par exemple, la fonction accepte deux commandes ("add" et "div"). En amont une vérif à lieu. Si quelque chose de troisème arrive, cela signie que quelqu'un à modifier le code au point que l'invariant n'est plus vrai. 
+
+```go 
+func computeValidated(cmd string, a, b int) int {
+	switch cmd {
+	case "add":
+		return a + b
+	case "div":
+		return a / b // ici, on suppose que b != 0 (verifie auparavant)
+	default:
+		panic("unreachable: command was validated earlier")
+	}
+}
+```
+
+Ici, l"utilisateur n'est pas coupable, c'est le code qui est cassé. Dans de tel endroits, `panic` peut se justifier, car plus honnête qu'une `error` étrange qui ne devrait pas se produire selon la conception.
+
+## Panic runtime
+
+Go peut provoquer des `panic` lorsque l'on enfrein les règles d'exécution, par exemple sortir des limite d'un slice.
+
+**Dépassement de limites d'un slice**
+```go 
+package main
+
+import "fmt"
+
+func main() {
+	s := []int{10, 20}
+	fmt.Println(s[2]) // panic: index out of range
+}
+```
+
+La bonne approche est d'ajouter une protection avant que la panic puisse se produit 
+
+```go 
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+var ErrNeedAtLeast3 = errors.New("need at least 3 numbers")
+
+func third(s []int) (int, error) {
+	if len(s) < 3 {
+		return 0, ErrNeedAtLeast3
+	}
+	return s[2], nil
+}
+
+func main() {
+	_, err := third([]int{10, 20}) // fonction permet de proteger contre la panic d'out of range 
+	fmt.Println(err) // need at least 3 numbers
+}
+```
+
+**Ecriture dans un map nil**
+Un map `nil` peut être dangereux. On peut lire mais écrire. Pour pouvoir écrire dans un map, il faut le créer avec un `make`
+
+```go 
+package main
+
+func main() {
+	var m map[string]int
+	m["x"] = 1 // panic: assignment to entry in nil map
+}
+```
+
+Généralement, un map `nil` apparait après un oubli d'initialisation. Dans du code interne, cela se rappoche d'une situation de `panic`, mais dans du code extérieur, si le map apparait comme paramètre, il vaut mieux s'assurer de rendre l'API plus sur : soit initialiser le map, soit retourner un `error` clair
+
+```go 
+package main
+
+import "errors"
+
+var ErrNilMap = errors.New("map must be initialized")
+
+func addCount(m map[string]int, key string) error {
+	// protection contre le map nil 
+	if m == nil {
+		return ErrNilMap
+	}
+	m[key]++
+	return nil
+}
+```
+
+**Division par zéro**
+Une division par zero est impossible, et provoque une `panic`. 
+
+--- 
+
+## Style Must 
+
+On peut rencontre des fonction du type `MustXxx`: `template.Must`, `regexp.Mustcompile`, etc. 
+L'idée est que si une erreur survient ici, on termine.
+
+C'est un outil qui permet de figer l'hypothèse qu'ici l'erreur est impossible, et si cela arrive, cela signifie que le programme est mal construit.
+
+```go 
+package main
+
+import "fmt"
+
+func mustCompute(cmd string, a, b int) int {
+	res, err := compute(cmd, a, b)
+	if err != nil {
+		panic(fmt.Errorf("mustCompute failed: %w", err))
+	}
+	return res
+}
+```
+
+---
+
+## `recover`
+
+`recover` permet d'intercepter une panique et de la transformer en résultat controler pour que le programme ne plante pas. Il doit être placé dans un `defer`. Dans le flux normal `recover()` retourne `nil` et n'intercepte rien.
+
+Lorsque Go rencontre un panic, il commence à remonter la pile et exécute les `defer`. A ce moment la, la fonction `deferred` à le temps d'appeller `recover()`, de récupérer la valeur de panic et d'arrêter l'avalanche. 
+`recover` ne reprends pas l'exécution à partir du point de panic. Le code situer après la ligne ou le panic s'est produite ne sera pas exécuter. `recover` ne fait que transformer une sortie de ssecours en sortie normal de la fonction ou se trouvait le `defer` 
+
+```go 
+package main
+
+import "fmt"
+
+func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("recovered:", r) // recovered: boom
+		}
+	}()
+
+	panic("boom")
+}
+```
+
+### Pattern save main
+
+En Go, on utilise le pattern `save main`: `recover` se trouve au niveau supérieur, et le code principal travail selon un contrat `(T, error)`.
+```go
+package main
+
+import "fmt"
+
+func main() {
+	if err := safeRun(); err != nil {
+		fmt.Println("app error:", err) // app error: ...
+	}
+}
+```
+
+`main()` lance le travail et affiche le problème.
+
+**safeRun** 
+`safeRun()` est une frontière. Elle retourne un `err error` nommé. Cela permet à la fonction deferred d'assigner `err = ...` juste avant la sortie. Cette technique est une façon standard d'intervenir dans le résultat d'une fontion via `defer`.
+```go 
+package main
+
+import "fmt"
+
+func safeRun() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("unexpected panic: %v", r)
+		}
+	}()
+
+	return run()
+}
+```
+
+La fonction métier `run()` vit dans le monte des gens normaux : 
+```go 
+package main
+
+import "errors"
+
+func run() error {
+	return errors.New("not implemented yet")
+}
+```
+
+Si dans la fonction `run()` et de ce qu'elle appelle, une panic se produit, on vient transformer un processus sale en `error` compréhensible à la frontière. On permet également à l'erreur de remonter.
+
+---
+
+### Valeur de panic 
+
+La valeur d'une panic n'est pas forcément une chaine. Dans un `panic()`, on peut passer n'importe quel valeur, et elle arrivera dans le `recover()` sous la forme de `any`. 
+
+Cette fonction helper permet de rendre `safeRun` plus propre. 
+```go 
+package main
+
+import "fmt"
+
+func panicToError(r any) error {
+	if e, ok := r.(error); ok {
+		return fmt.Errorf("panic: %w", e)
+	}
+	return fmt.Errorf("panic: %v", r)
+}
+
+func safeRun() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = panicToError(r) // on utilise la fonction helper
+		}
+	}()
+	return run()
+}
+```
+
+### Afficher la pile lors de recover 
+
+Le résultat après un `recover` est de stopper l'opération courante et de renvoyer l'erreur vers le haut. Par défaut, lors d'une panic non interceptée, Go l'affiche. Si on intercepte la panic, on annule la sortie standard de la panic, et la pile ne sera plus imprimée automatiquement. 
+
+Dans le cas ou afficher la pile est nécessaire (par exemple, pendant le développement), on peut prendre la pile depuis `runtime/debug`.
+
+```go 
+package main
+
+import (
+	"fmt"
+	"runtime/debug"
+)
+
+func safeRun() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("panic stack:\n%s\n", debug.Stack())
+			err = panicToError(r)
+		}
+	}()
+	return run()
+}
+```
+
+`recover` ne doit pas devenir un "aspirateur qui engloutit tous les problèmes". Si on attrape une panic, on rends la chute prévisible mais il faut toujours venir corriger la cause.
+
+---
+
+### Limite de l'application 
+
+La limite de l'application c'est l'endoit ou le code rencontre le monde extérieur, et ou l'on doit transformer les problèmes internes en résultat compréhensible. Généralement dans le `main()` qui est le point d'entrée.
+`recover` doit "si quelque chose d'impossible se produit, ne pas exposer l'utiliser à une stack d'erreur, mais terminer l'opération de façon controlée".
+
+Il doit être placer à l'endroit ou est on prêt à terminer l'opération. Si on lancer un `recover` au milieu du code métier, on ne peut pas garantir que l'état est rester correct. La panique a pu arriver au milieu d'une modification de données, d'un calcul ou d'une chaine de plusieurs étapes.
+
+Le code minimal de protection ressemble à ce pattern: on extrait le travail dans une fonction `run()`, puis on place une `safeRun()` qui permet d'intercepter une panique avec `defer` et retourne une erreur.
+
+Après le `recover`, on essaie pas de terminer le travail. On indique que l'opération à rencontrer une erreur critique, voici l'erreur. Cela correspond à la mécanique: `recover` rend le controle, mais le code situé après l'endroit de la panique ne sera déjà plus exécuté.
+
+```go 
+package main
+
+import (
+	"fmt"
+)
+
+// intercepte une panic 
+func safeRun() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("unexpected panic: %v", r)
+		}
+	}()
+	return run() // fonction qui réalise le travail
+}
+
+// point d'entrée
+func main() {
+	if err := safeRun(); err != nil {
+		fmt.Println("error:", err) // error: unexpected panic: ...
+	}
+}
+```
+
+### Panic en interne, error à l'exterieur 
+
+Il est parfois utile d'utiliser un `panic` dans une fonction comme sortie rapide d'une imbrication profonde, pour éviter de passer par `err` si plusieurs niveaux. Cette approche fonctionne uniquement dans les cas on l'on sait avec certitude que la panique sera intercepté en un seul endroit, et si on ne laisse pas fuir vers l'utilisateur.
+
+```go 
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func mustParseInt(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		panic(err)
+	}
+	return n
+}
+
+func parseInt(s string) (n int, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("parse int %q: %v", s, r)
+		}
+	}()
+	return mustParseInt(s), nil
+}
+```
+
