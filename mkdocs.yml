@@ -26,8 +26,9 @@ nav:
       - Tableau et slice: go/slice.md
       - Map: go/map.md
       - Error: go/error.md
-      - Pointeur: go/pointeur.md 
+      - Pointeur: go/pointeur.md
       - Defer: go/defer.md
+      - Struct: go/struct.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:
