@@ -816,7 +816,37 @@ func main(){
 }
 ```
 
-### Nettoyage de chaine 
+### Normalisation de chaîne
+
+Lorsque l'on travail avec des chaîne, il faut normaliser à la fontière. C'est à dire appliquer : 
+
+1. Entrée brute 
+2. `strings.TrimSpace(s)`: pour supprimer les caractères d'espacement aux bords
+3. `strings.Fields(s)`: découpe selon n'importe quels caractères d'espacements et ne retourne pas de token vides
+4. `strings.Join(parts, " ")`: recolle le tout   
+5. `ToLower()`
+6. Validation de la valeur 
+
+```go 
+func normalizeTitle(s string) string {
+	parts := strings.Fields(strings.TrimSpace(s))
+	return strings.Join(parts, " ")
+}
+
+func main() {
+	fmt.Println(normalizeTitle("  buy    milk  ")) // buy milk
+}
+```
+
+Pour comparer des chaines: 
+
+- `strings.EqualFold()`: permet de faire une comparaison sensible à unicode.
+
+```go 
+func main() {
+	fmt.Println(strings.EqualFold("coffee", "COFFEE")) // true
+}
+```
 
 Une application CLI enregistre des tasks. On souhaite normaliser la saisie pour eviter les probleme d'affichage par la suite.
 
@@ -842,11 +872,126 @@ func main(){
 }
 ```
 
+**Analyse de commande utilisateur avec `Field`
 
+On reçoit une chaine de commande et on souhaite la découper : 
 
+- la chaine vide - erreur 
+- premier mot - commande 
+- le reste - arguments 
 
+`Fields` fournis des tokens propre : 
 
+```go 
+package main
 
+import (
+	"errors"
+	"strings"
+)
+
+func parseLine(line string) (string, []string, error) {
+	parts := strings.Fields(strings.TrimSpace(line)) // décooupage de l'entrée
+	if len(parts) == 0 {
+		return "", nil, errors.New("empty command")
+	}
+
+	cmd := strings.ToLower(parts[0]) // récupére la commande issue de la chaine + normalisation 
+
+	return cmd, parts[1:], nil // retourne la commande, puis le reste des arguments 
+}
+
+func main() {
+	cmd, args, err := parseLine("  Add   buy   milk ") // on recupère dans les variables les bon éléments 
+	fmt.Println(cmd, args, err) // add [buy milk] <nil>
+}
+```
+
+**Normalisation de string** 
+
+En utilisant `TrimSpace`, on nettoie uniquement les bords d'une string. Pour nettoyer une chaines complètement, on utilise `Fields` + `Join`
+
+```go 
+package main
+
+import (
+	"errors"
+	"strings"
+)
+
+func newTitle(raw string) (string, error) {
+	parts := strings.Fields(strings.TrimSpace(raw)) // on explose la string + nettoyage autour de chaine mots de la chaîne 
+
+	if len(parts) == 0 {
+		return "", errors.New("title is empty")
+	}
+
+	return strings.Join(parts, " "), nil // retourne la chaîne nettoyer
+}
+
+func main() {
+	t, err := newTitle("   ")
+	fmt.Printf("%q %v\n", t, err) // "" title is empty
+}
+```
+
+**Recherche dans une chaîne**
+
+Pour une recherhe de sous chaîne, on normalise la chaîne en minuscule, et on utilise `strings.Contains`.
+
+```go 
+package main
+
+import (
+	"strings"
+  "fmt"
+)
+
+func containsIgnoreCase(s, sub string) bool {
+  // normalisation des deux chaînes
+	s = strings.ToLower(s)
+	sub = strings.ToLower(sub)
+	return strings.Contains(s, sub) // on retourne un boolean selon le résulat de la fonction 
+}
+
+func main() {
+	fmt.Println(containsIgnoreCase("Buy milk", "MILK")) // true
+}
+```
+
+---
+
+### Assemblage de chaîne 
+
+L'utilisation de `+=` n'est pas idéale pour assembler des chaînes, mais peut conduire à la création de chaînes intermédiaire, et l'assemblage devient plus lours en temps et mémoire. L'utilisation de `Builder` est plus optimiser
+
+```go 
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func formatTask(i int, done bool, title string) string {
+	var b strings.Builder // préparation de la variable final 
+
+	b.WriteString(fmt.Sprintf("%d) ", i))
+
+	if done {
+		b.WriteString("[x] ")
+	} else {
+		b.WriteString("[ ] ")
+	}
+	
+  b.WriteString(title)
+	return b.String()
+}
+
+func main() {
+	fmt.Println(formatTask(1, false, "buy milk")) // 1) [ ] buy milk
+}
+```
 
 ---
 
