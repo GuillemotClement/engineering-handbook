@@ -1157,8 +1157,270 @@ func main() {
 	fmt.Println(p.Done, "/", p.Total) // 3 / 12
 }
 ```
+---
 
+## Composition comme style d'héritage 
 
+En Go, il n'existe pas d'héritage comme dans d'autre langage. On ne peut pas faire de `extends`. 
+Pour retrouver cette logique, on étend le comportement via le contient.
+ 
+En Go, on se pose la question: de quelle petites parties assembler un type afin qu'il fasse son travail et que le code montre clairement la responsabilié de chaque partie.
 
+### Composition de données: une struct composé de parties
 
+Dans un gestionnaire de tache, on peut avoir une `Task`, avec des métadonnée comme l'auteur, ou le projet auquel la tache appartient.
 
+```go 
+type Meta struct {
+	Author  string
+	Project string
+}
+
+type Task struct {
+	Title string
+	Done  bool
+	Meta  Meta // composition: Task contient Meta
+}
+
+func main() {
+	t := Task{
+		Title: "Read Go spec", 
+		Meta: Meta{
+			Author: "Ann", 
+			Project: "study"
+		}
+	}
+
+	fmt.Println(t.Meta.Author) // Ann
+}
+```
+
+`Meta` est un bloc sémantique séparé, on peut venir le réutiliser dans d'autres entités sans recopier les champs.
+
+---
+
+### Composition du comportement: petits types et délégation 
+
+Les méthodes appartiennent au types. Cela signifie que l'on peut étendre un comportement. Il est avantageux de créer de petits types responsables de petits morceaux de logique, puis de les brancher via des champs. Cela permet de réutiliser des methodes.
+
+Par exemple, on souhaite gérer proprement le status d'une tache. On peut utiliser `Done` comme un `bool`, mais dès que l'on souhaite ajouter des status supplémentaires, `bool` est trop limité.
+
+On viens donc créer un type séparé `Status`, puis on ajoute des méthodes.
+On utilise la méthode `Task.Done()` comme méthode d'enrobage. Elle n'est pas obligé de révéler à l'extèrieur la façon dont le status est constuit. Elle délègue la décision à `Status`, mais l
+API de la tache reste pratique: "La tache est=elle faite ?"
+
+```go 
+package main
+
+// ajout du type personnalisé
+type Status string 
+
+// déclaration des différents status avec des const
+const (
+	StatusTodo Status = "todo"
+	StatusDone Status = "done"
+)
+
+// la fonction permet de savoir si la task est terminé
+func (s Status) IsDone() bool {
+	return s == StatusDone 
+}
+
+// on ajoute le nouveau type dans la struct de Task 
+type Task struct {
+	Title  string
+	Status Status
+}
+
+// la fonction appelle la methode de Task pour verifier si la task est terminé
+func (t Task) Done() bool { 
+	return t.Status.IsDone() 
+}
+
+func main() {
+	t := Task{Title: "Write code", Status: StatusDone}
+	fmt.Println(t.Done()) // true
+}
+```
+
+La composition du comportement ressemble souvent a "champ + methode d'enrobage". Cela augmente la verbosite du code, mais on garde le controle sur ce que l'on souhaite exposer.
+
+On pourrait potentiellement avec autre d'entité que `Task` et on pourrais venir reutiliser la méthode pour verifier si autre chose est terminé
+
+### Embedding et controle de l'API 
+
+**Embedding comme accélérateur d'accès** 
+
+Lorsque l'on utilise la composition, on peut écrire dans une struct un champ sans nom, et les champs/méthodes du type imbriqué remontent et son directement accessible.
+
+```go
+type Meta struct {
+	Author  string
+	Project string
+}
+
+type Task struct {
+	Title string
+	Meta // embedded field
+}
+```
+
+Désormais, `t.Author` est une forme courte pour `t.Meta.Author`.
+Lorsque l'on utilise la composition, on indique au lecteur du code que les champs/methode de `Meta` font partie de la surface API de `Task`.
+
+**Méthodes d'enrobage: controler la surface du type**
+
+Au début, on fait de la composition car c'est plus court, puis le temps passe, et on se rend compte que les méthodes/champs ont fui vers l'exèrieur alors qu'il n'aurait pas du faire partie de l'API publique du type.
+
+On passe alors au duo champ + méthode d'enrobage.
+
+Dans notre application de todo, on veux stocker l'auteur et le projet, mais leur modification ne doit etre possible que via des fonction séparées, par exemplem avec des validations.
+
+```go 
+type Meta struct {
+	author  string
+	project string
+}
+// les deux méthodes permet d'afficher la valeur du status
+func (m Meta) Author() string  { return m.author }
+func (m Meta) Project() string { return m.project }
+
+type Task struct {
+	Title string
+	meta  Meta
+}
+// le deux methodes viennent chercher la donnees en passant pas les methodes du type Meta
+func (t Task) Author() string  { return t.meta.Author() }
+func (t Task) Project() string { return t.meta.Project() }
+```
+
+Avec cette approche, on controle désormait un point de controle unique. On peut modifier la structure de `Meta` sans casser les appels exterieur. 
+
+**Composition ou champs: un choix pragmatique**
+
+Il existe un raisonnement pratique. 
+
+Si on vient imbriquer via la composition, on fait automatiquement remonter les champs et méthodes de la struct imbriqué. Cette approche est utile dans les cas ou le type intégré est réellement un morceau de logique de l'objet lui meme.
+
+En revanche, si le type intéré est une dépendance (logger, client, configuration), la composition dégrade la lisibilité. 
+
+```go
+import "fmt"
+
+type Logger struct{}
+
+func (Logger) Debug(msg string) {
+	fmt.Println("DEBUG:", msg) 
+}
+
+type ServiceA struct{ 
+	Logger  // embedding: Debug va "déborder" vers l'extérieur
+}       
+type ServiceB struct{ 
+	logger Logger // field: access controlled
+} 
+
+func main() {
+	ServiceA{}.Debug("hi") // DEBUG: hi
+}
+```
+
+Dans `ServiceA`, la méthode `Debug()` fait maintenant partie de la surface du service, alors que le service peut concerner des taches, et pas la logging.
+Dans `ServiceB`, on créer une méthode propre `LogDebug`, ou un logger interne, sans l'exposer depuis l'extérieur.
+
+### Exemple 
+
+Ce pattern se retrouve très souvent dans les applications réelle: il existe une entitg métier "tache", et il existe une "tache dans le stockage", a laquele s'ajout un `ID`.
+
+En Go, on fait "StoredTask contient Task"
+
+**Option 1: champ nommé**
+```go 
+type Task struct {
+	Title  string
+	Status Status
+}
+
+type StoredTask struct {
+	ID   int
+	Task Task // composition explicite
+}
+
+// utilisation =====
+type Status string
+
+const (
+	StatusTodo Status = "todo"
+)
+
+type Task struct {
+	Title  string
+	Status Status // type personnalisé
+}
+
+type StoredTask struct {
+	ID   int
+	Task Task // champ nommé
+}
+
+func main() {
+	st := StoredTask{ID: 10, Task: Task{Title: "Buy milk", Status: StatusTodo}}
+	fmt.Println(st.Task.Title) // Buy milk => creation avec la méthode du type Task
+}
+```
+
+**Option 2: composition**
+
+```go 
+package main
+
+type StoredTask struct {
+	ID int
+	Task // embedded
+}
+```
+
+Alors `st.Title` fonctionne directement. 
+
+---
+
+### Composition de services: un objet composé de plusieurs composants
+
+La composition est utile pour les modèles de donnéés, mais aussi pour les objets de services qui exécutent des opérations. 
+On peut écrire un code lisible: **un type = une responsabilité**. Le comportement complexe est ensuite assemblé à partir de plusieurs petites parties.
+
+Par exemple, on implémente un validateur de titre de tache, Il n'est pas nécessaire de connaitre toute la `Task`, il ne fait que vérifier la chaine:
+
+```go 
+type TitleValidator struct{}
+
+func (TitleValidator) Validate(title string) error {
+	if len(title) == 0 {
+		return fmt.Errorf("title is empty")
+	}
+	return nil
+}
+
+// implémentation du service de tache qui contient le validateur comme champ:
+type TaskService struct {
+	validator TitleValidator // utilise le type TitleValidator
+}
+
+func (s TaskService) NewTask(title string) (Task, error) {
+	// on peut accéder à la validation via le struct
+	if err := s.validator.Validate(title); err != nil {
+		return Task{}, err
+	}
+	return Task{Title: title, Status: StatusTodo}, nil
+}
+
+// assemblage dans le main 
+func main() {
+	// initialisation du service
+	svc := TaskService{validator: TitleValidator{}}
+	t, err := svc.NewTask("Learn Go") // utilisation de la methode, qui appelle le validator
+	fmt.Println(t.Title, err) // Learn Go <nil>
+}
+```
+
+`TaskService` n'hérite pas du validateur, il l'utilise. ce type de code est plus simple car les détails ne sont pas caché par la "magie" de l'héritage.
