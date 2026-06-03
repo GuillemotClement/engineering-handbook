@@ -1423,3 +1423,77 @@ func main() {
 ```
 
 `TaskService` n'hérite pas du validateur, il l'utilise. ce type de code est plus simple car les détails ne sont pas caché par la "magie" de l'héritage.
+
+---
+
+## Composition d'interfaces
+
+Lorsque l'on commence à programmer, on veux que tout soit au meme endroit: un seul type, et il sait tout faire. Mais à mesure que le programme grandit, cela se tranforme en machine à tout faire. En Go, on créer de petits morceaux de comportement vers des ensembles plus larges, et il est parfois plus pratique de réunir ces morceaux par composition de contrats.
+
+Imaginons qu'une interface soit un contrat: si on promais les méthodes A et B, on peut l'appelez ici. Mais il existe des situations où on as besoin d'un contrat A et B ensemble. C'est là qu'apparait la composition d'interfaces: on assemble un grand contrat à partir de petits, sans réecrire la liste des méthodes à la main à chaque fois.
+
+**Modèle minimal de l'interface**
+
+Une interface est un type défini par un ensemble de signatures de méthodes, et tout type possédant ces méthodes convient.
+
+L'avantage d'une interface est qu'elle décrit le comportement, pas les données. Une interface n'a pas de champs, elle ne stocke pas d'état, elle indique juste "Je sais faire ceci". La variable de type interface signifie presque toujours: "peu importe ce qu'il y a dedans, tant que cela sait exécuter les méthodes requises.
+
+### Composition d'interfaces: la somme des méthodes
+
+Une interface peut inclure d'autre interfaces et signifie: la nouvelle interface contient toutes les méthodes de l'interface incluse, plus ses propres méthodes.
+
+L'interface `ReadWriter` exige les méthodes `Read()` et `Write(string)`. 
+
+```go
+type Reader interface {
+	Read() string
+}
+
+type Writer interface {
+	Write(s string)
+}
+
+// interface avec composition 
+type ReadWriter interface {
+	Reader
+	Writer
+}
+
+// interface sans composition 
+type ReadWriter interface {
+	Read() string 
+	Write(s string)
+}
+
+func main() {}
+```
+
+Dans de vrai projets, les petites interfaces sont réutilisées: un meme `Reader` peut etre nécessaire à dix endroits. Et si on commence à copier à la main `Read() string` dans dix interfaces, un jour on souhaiteras modifier un peu le contrat et il sera nécessaire de trouver les 10 endroits. 
+
+### Exemple 
+
+On retrouve l'application de todo. On as des `Task`, et une partie du programme sait les ajouter, tandis qu'une autre sait afficher la liste.
+
+`TaskAdder` est le contrat "je sais ajouter une tache", `TaskLister` est le contrat "je sais énumérer les taches" et `TaskStore` est "je sais faire les deux"
+
+Dans une application réelle, cela aide à séparer les responsabilités: une fonction peut accepter uniquement `TaskLister` (elle n'a pas besoin de savoir ajouter), tandis qu'une autre n'a besoin que de `TaskAdder`. Et là ou il faut tout à la fois, on prends `TaskStore`.
+
+```go 
+type Task struct {
+	Title string
+	Done  bool
+}
+
+type TaskAdder interface {
+	Add(t Task) error
+}
+
+type TaskLister interface {
+	List() []Task
+}
+
+// création de l'interface composée
+type TaskStore interface {
+	TaskAdder
+	TaskLister
+}
