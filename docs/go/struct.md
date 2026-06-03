@@ -1497,3 +1497,64 @@ type TaskStore interface {
 	TaskAdder
 	TaskLister
 }
+```
+
+---
+
+## Conflits de noms et accès explicite via `x.Field` 
+
+La composition permet de remonter directement les champs d'une struct. Mais si deux sources de noms identiques apparaissent, ou un type externe et un type composé, le validation ne compile pas.
+
+Pour éviter ce type de problème, on utilise le nom complet pour que le compilateur sache quel est la donnees souhaitée.
+
+```go
+type A struct{ ID int }
+type B struct{ ID int }
+
+type X struct{ A; B }
+
+func main() {
+	x := X{A: A{ID: 1}, B: B{ID: 2}}
+	fmt.Println(x.A.ID, x.B.ID) // 1 2 => accès avec le chemin complet vers la donnée
+}
+```
+
+La meme logique s'applique sur les méthodes :
+
+```go
+type TitleRules struct{}
+func (TitleRules) Validate() error { return nil }
+
+type LimitRules struct{}
+func (LimitRules) Validate() error { return nil }
+
+type TaskRules struct{ TitleRules; LimitRules }
+
+func main() {
+	r := TaskRules{}
+	// on utilise le chemin complet pour appeler la méthode souhaitée
+	_ = r.TitleRules.Validate()
+	_ = r.LimitRules.Validate()
+}
+```
+
+On peut mettre en place une méthode qui appelle explicitement les vérifications nécessaire : 
+
+```go
+type TitleRules struct{}
+func (TitleRules) ValidateTitle(title string) error { return nil }
+
+type LimitRules struct{}
+func (LimitRules) ValidateLimits() error { return nil }
+
+type Task struct {
+	Title string
+	TitleRules
+	LimitRules
+}
+
+func (t Task) Validate() error {
+	if err := t.TitleRules.ValidateTitle(t.Title); err != nil { return err }
+	return t.LimitRules.ValidateLimits()
+}
+```
