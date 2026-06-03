@@ -1558,3 +1558,58 @@ func (t Task) Validate() error {
 	return t.LimitRules.ValidateLimits()
 }
 ```
+
+---
+
+## Précaution avec la composition 
+
+**La composition élargit l'API Publique**
+Une composition peut conduire à un code moins lisible. Les composition font remonter des champs qui me devrait pas etre visible depuis l'extérieur.
+
+**Fuite de dépendance interne**
+La composition peut rendre accessible depuis l'exterieur une méthode utile en interne.
+
+### Bonne pratique 
+On retire le `embedding` pour masquer les dépendances et n'exposer que vers l'extérieur ce qui relève de la responsabilité du projet.
+
+Le code externe ne voit plus, a l'interieur, de `Projet`, les taches sont stockees comme `TaskList`, et les code externe en peut plus acceder au generateur d'ID 
+
+```go
+package main
+
+type Project struct {
+	Name  string
+	tasks TaskList // not embedded and not exported
+	idGen IDGen    // also internal
+}
+
+func (p *Project) AddTask(title string) Task {
+	t := Task{
+		ID:    p.idGen.Next(),
+		Title: title,
+	}
+	p.tasks.Add(t)
+	return t
+}
+
+// permet de lister les taches en cachant le fonctionnement interne
+func (p Project) Tasks() []Task {
+	out := make([]Task, len(p.tasks))
+	copy(out, p.tasks)
+	return out
+}
+
+func main() {
+	p := Project{Name: "Home"}
+	// on utilise la methode exporte pour cacher les details interne et ajouter une task 
+	p.AddTask("Buy milk")
+	p.AddTask("Clean room")
+
+	// on utilise la fonction qui retourne les task et pas directement les elements internes
+	for _, t := range p.Tasks() {
+		fmt.Println(t.ID, t.Title)
+		// 1 Buy milk
+		// 2 Clean room
+	}
+}
+```
