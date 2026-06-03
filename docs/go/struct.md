@@ -1119,12 +1119,11 @@ func main() {
 ## Embedding 
 
 L'embedding permet d'intégrer un type à l'interieur d'un autre pour que ces champs et méthodes soit accessibles. 
-Cela permet d'acceder a des champs d'un type intégré dans un premier type. On peut de manière réaliser des compositions.\
+Cela permet d'acceder a des champs d'un type intégré dans un premier type. On peut de manière réaliser des compositions.
 
 L'utilisation des struct composés permet d'isoler les champs communs dans une struct séparé, qui sont ensuite intégrés dans une autre struct.
 
 Les champs du struct intégrés remonte automatiquement.
-
 
 ```go
 // intégré dans le struct Task
