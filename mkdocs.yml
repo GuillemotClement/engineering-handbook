@@ -29,6 +29,7 @@ nav:
       - Pointeur: go/pointeur.md
       - Defer: go/defer.md
       - Struct: go/struct.md
+      - Interface: go/interface.md
       - Old: go/old_index.md
       - Old2: go/old2.md
   - Php:
